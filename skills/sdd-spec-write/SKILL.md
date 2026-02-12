@@ -302,7 +302,9 @@ Pour chaque composant, documente :
 - **Dépendances** — quels autres composants ou services externes il consomme.
 
 Présente les composants sous forme de tableau, puis illustre leurs interactions
-avec un schéma textuel (Mermaid recommandé, ASCII accepté) :
+avec un schéma textuel (Mermaid recommandé, ASCII accepté).
+
+Exemple pour un interpréteur de langage :
 
 | Composant | Responsabilité | Interfaces exposées | Dépendances |
 |---|---|---|---|
