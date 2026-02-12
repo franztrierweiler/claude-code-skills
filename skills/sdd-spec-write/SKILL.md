@@ -246,6 +246,9 @@ entre profils techniques et décideurs. Ne les remplace pas par des synonymes.
 | **Traçabilité** | Lien vérifiable entre une exigence et son implémentation. Chaque exigence a un identifiant unique référencé dans le code. |
 | **Reproductibilité** | Capacité à obtenir le même résultat à partir de la même spec, quel que soit l'agent qui implémente. |
 | **Phase** | Étape du projet avec un périmètre et un livrable définis. |
+| **Critique** | Priorité d'exigence : le logiciel ne fonctionne pas sans. Bloque la livraison. |
+| **Important** | Priorité d'exigence : nécessaire en production, mais non bloquant pour un premier livrable. |
+| **Souhaité** | Priorité d'exigence : amélioration reportable sans compromettre la viabilité. |
 
 ## Structure d'une SPEC.md
 
@@ -356,6 +359,8 @@ C'est le cœur de la spec. Chaque exigence suit ce format :
 ```markdown
 #### EXG-XXX : [Titre court]
 
+**Priorité :** [Critique | Important | Souhaité]
+
 **Description :** [Ce que le logiciel doit faire, en une à trois phrases.]
 
 **Critères d'acceptation :**
@@ -388,6 +393,25 @@ Règles de rédaction des exigences :
 - **Identifiants uniques.** Chaque exigence (EXG), critère (CA) et cas limite (CL)
   a un identifiant unique. Ces identifiants sont référencés dans le code
   pour assurer la traçabilité.
+
+- **Priorisation.** Chaque exigence porte une priorité qui guide l'ordre
+  d'implémentation :
+  - **Critique** — Le logiciel ne fonctionne pas sans. Bloque la livraison
+    de la phase concernée.
+  - **Important** — Nécessaire pour une utilisation normale. Peut être livré
+    dans un second temps si les contraintes l'imposent, mais doit être présent
+    avant mise en production.
+  - **Souhaité** — Améliore l'expérience ou couvre un cas d'usage secondaire.
+    Peut être reporté sans compromettre la viabilité du livrable.
+
+  En cas de doute entre deux niveaux, choisis le plus élevé et demande
+  confirmation à l'utilisateur. Une exigence sous-priorisée qui s'avère
+  critique coûte plus cher qu'une exigence sur-priorisée qu'on redescend.
+
+  Un agent IA qui reçoit "implémente la Phase 1" traite les exigences Critiques
+  en premier, puis les Importantes, puis les Souhaitées. Si une contrainte de
+  temps force un arbitrage, seules les Souhaitées peuvent être reportées
+  sans validation explicite.
 
 ### 7. Niveaux de support
 
