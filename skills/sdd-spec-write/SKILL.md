@@ -136,6 +136,8 @@ avec suffisamment de structure, de rigueur et d'exemples concrets pour que l'uti
 soit autonome pour la suite. La spec est un document vivant qui s'enrichit au fil du
 projet.
 
+Avant de remettre la spec à l'utilisateur, vérifie chaque point de la checklist et signale les manques.
+
 ### Format de livraison
 
 Produis chaque document comme un fichier téléchargeable, pas comme du texte dans
