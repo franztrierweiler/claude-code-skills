@@ -136,6 +136,38 @@ avec suffisamment de structure, de rigueur et d'exemples concrets pour que l'uti
 soit autonome pour la suite. La spec est un document vivant qui s'enrichit au fil du
 projet.
 
+### Format de livraison
+
+Produis chaque document comme un fichier téléchargeable, pas comme du texte dans
+le chat. Le chat sert au dialogue (questions, validations, arbitrages). Les fichiers
+portent le contenu livrable.
+
+**Création initiale :**
+1. Rédige le SPEC.md au fil des étapes. À chaque validation de section par
+   l'utilisateur, mets à jour le fichier.
+2. Si un GRAMMAR.md est nécessaire, ne le produis qu'après validation de la
+   section Exigences du SPEC.md — les exigences révèlent souvent des besoins
+   grammaticaux non anticipés au cadrage.
+3. Livre chaque document séparément. Ne fusionne pas GRAMMAR.md ou DATA-MODEL.md
+   dans le SPEC.md.
+
+**Mise à jour :**
+1. Produis le SPEC.md modifié complet, pas un diff. Un agent IA qui reçoit la spec
+   doit pouvoir l'utiliser sans reconstituer les pièces.
+2. Si la modification impacte un document de référence (GRAMMAR.md, DATA-MODEL.md),
+   livre la version mise à jour de ce document dans le même échange.
+
+**Nommage :**
+- Document principal : `SPEC.md`
+- Grammaire formelle : `GRAMMAR.md`
+- Schéma de données : `DATA-MODEL.md`
+- Tout document complémentaire : référencé dans la section Documents de référence
+  avec son nom exact.
+
+Ne préfixe pas les noms de fichiers avec le nom du projet ou une date — le
+versioning est porté par le champ Version de l'en-tête et le changelog, pas par
+le nom de fichier.
+
 ### Mise à jour d'une spec existante
 
 Quand l'utilisateur fournit un SPEC.md existant et demande une modification, Claude
