@@ -136,6 +136,98 @@ avec suffisamment de structure, de rigueur et d'exemples concrets pour que l'uti
 soit autonome pour la suite. La spec est un document vivant qui s'enrichit au fil du
 projet.
 
+### Mise à jour d'une spec existante
+
+Quand l'utilisateur fournit un SPEC.md existant et demande une modification, Claude
+ne repart pas de zéro. Il opère en mode chirurgical : modifier ce qui doit l'être,
+préserver tout le reste.
+
+#### Identifier le type de modification
+
+Avant toute modification, identifie et confirme avec l'utilisateur le type d'opération :
+
+| Type | Exemples | Impact |
+|---|---|---|
+| **Ajout** | Nouvelle exigence, nouveau domaine fonctionnel, nouvelle phase | Insertion sans modifier l'existant |
+| **Modification** | Reformulation d'un CA, ajout d'un cas limite, changement de comportement | Mise à jour ciblée d'éléments existants |
+| **Dépréciation** | Une exigence n'est plus pertinente mais doit rester traçable | Marquage, pas suppression |
+| **Restructuration** | Découpage d'une exigence en deux, fusion de domaines, réorganisation des phases | Modification structurelle avec renumérotation potentielle |
+
+#### Règles de gestion des identifiants
+
+Les identifiants sont le squelette de la traçabilité. Les corrompre, c'est casser
+le lien entre spec et code.
+
+**Ajout d'exigences :**
+- Numérote à la suite du dernier identifiant existant, jamais dans les trous.
+- Si la dernière exigence est EXG-047, la suivante est EXG-048, même si EXG-012
+  a été dépréciée.
+
+**Dépréciation d'exigences :**
+- Ne supprime jamais une exigence du document. Marque-la comme dépréciée :
+```
+#### ~~EXG-012 : Validation synchrone des entrées~~ [DÉPRÉCIÉE v2.1]
+
+**Remplacée par :** EXG-048, EXG-049
+**Raison :** Découpage en validation syntaxique (EXG-048) et validation sémantique
+(EXG-049) suite à [justification métier].
+```
+
+- Les critères d'acceptation et cas limites associés sont conservés barrés,
+  pour historique.
+- Le code qui référençait EXG-012 doit être mis à jour vers les nouveaux
+  identifiants — mentionne-le à l'utilisateur.
+
+**Modification de critères d'acceptation :**
+- Si un CA est reformulé sans changer le comportement testé : modifie en place,
+  note le changement dans le changelog.
+- Si un CA change le comportement attendu : déprécie l'ancien, crée un nouveau CA
+  avec le numéro suivant disponible.
+
+**Ajout de cas limites a posteriori :**
+- Numérote à la suite : si CL-007-03 existe, le suivant est CL-007-04.
+- Signale à l'utilisateur que l'implémentation existante de EXG-007 doit être
+  revue pour couvrir ce nouveau cas.
+
+#### Changelog
+
+Toute mise à jour de la spec incrémente la version et ajoute une entrée au changelog,
+inséré entre l'en-tête (section 1) et le contexte (section 2) :
+```markdown
+## Changelog
+
+| Version | Date | Auteur | Modifications |
+|---|---|---|---|
+| 2.1 | 2025-07-15 | [Auteur] | Ajout EXG-048, EXG-049. Dépréciation EXG-012. Ajout CL-007-04. |
+| 2.0 | 2025-06-01 | [Auteur] | Ajout Phase 3. Restructuration domaine "Export". |
+| 1.0 | 2025-04-10 | [Auteur] | Version initiale. |
+```
+
+**Convention de versioning :**
+- **Majeure (X.0)** : ajout ou retrait d'une phase, restructuration significative
+  du périmètre.
+- **Mineure (X.Y)** : ajout, modification ou dépréciation d'exigences à l'intérieur
+  du périmètre existant.
+
+L'objectif n'est pas de reproduire git — c'est de donner à un agent IA qui reçoit
+la spec v2.1 une vision claire de ce qui a changé depuis la version qu'il a peut-être
+déjà implémentée.
+
+#### Workflow de mise à jour
+
+Quand l'utilisateur demande de modifier une spec existante, suis ce processus :
+
+1. **Lis la spec entière** avant de toucher quoi que ce soit. Identifie la version
+   actuelle, le dernier identifiant utilisé, et la structure existante.
+2. **Confirme le périmètre** : "Tu veux [résumé de la modification]. Ça impacte
+   [exigences/sections concernées]. Je confirme avant de modifier."
+3. **Applique les modifications** en respectant les règles d'identifiants ci-dessus.
+4. **Mets à jour le changelog** et incrémente la version.
+5. **Signale les impacts** : toute exigence modifiée ou dépréciée implique une revue
+   de l'implémentation correspondante. Liste-les explicitement :
+   "Exigences impactées côté code : EXG-012 (dépréciée → retirer), EXG-048/049
+   (nouvelles → implémenter), CL-007-04 (nouveau cas limite → tester)."
+
 ## Glossaire SDD
 
 Reproduis ce glossaire en dernière section de chaque SPEC.md produite.
