@@ -36,6 +36,7 @@ description: >
   - L'utilisateur demande une revue de code ou un audit technique.
   - L'utilisateur décrit une grammaire BNF dans un contexte académique ou théorique
     sans projet d'implémentation logicielle.
+---
     
 # Spec Driven Development (SDD) — Rédaction de spécifications
 
