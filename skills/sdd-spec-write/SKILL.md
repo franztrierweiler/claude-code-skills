@@ -287,10 +287,48 @@ quoi faire et quoi ne pas faire.
 
 ### 4. Architecture
 
-Décris les composants principaux du système, leurs responsabilités et leurs interactions.
-Utilise un schéma textuel (ASCII, Mermaid) si nécessaire. Cette section guide les choix
-de découpage du code sans les imposer — l'agent reste libre de l'organisation interne
-tant qu'il respecte les exigences.
+Décris les composants principaux du système à un niveau suffisant pour qu'un agent IA
+comprenne la topologie du projet sans que ce soit un dictât d'implémentation.
+
+Pour chaque composant, documente :
+
+- **Nom** — identifiant court utilisé dans le reste de la spec.
+- **Responsabilité** — ce qu'il fait, en une à deux phrases. Applique le même test
+  que pour les exigences : si tu utilises "et" pour relier deux responsabilités
+  distinctes, c'est probablement deux composants.
+- **Interfaces exposées** — ce que les autres composants peuvent appeler ou consommer
+  (API, événements, fichiers, flux). Pas besoin de signatures détaillées, mais les
+  noms et le type d'échange (synchrone/asynchrone, lecture/écriture) doivent être clairs.
+- **Dépendances** — quels autres composants ou services externes il consomme.
+
+Présente les composants sous forme de tableau, puis illustre leurs interactions
+avec un schéma textuel (Mermaid recommandé, ASCII accepté) :
+
+| Composant | Responsabilité | Interfaces exposées | Dépendances |
+|---|---|---|---|
+| Parser | Transforme le code source en AST | `parse(source) → AST` | Lexer |
+| Lexer | Découpe le code source en tokens | `tokenize(source) → Token[]` | — |
+| Evaluator | Exécute un AST et produit un résultat | `eval(ast, env) → Value` | Parser, Environment |
+| Environment | Stocke les variables et leur portée | `get(name)`, `set(name, value)` | — |
+```mermaid
+graph LR
+    Source -->|texte| Lexer
+    Lexer -->|tokens| Parser
+    Parser -->|AST| Evaluator
+    Evaluator -->|lecture/écriture| Environment
+```
+
+Ce que cette section est : un guide de découpage qui aide l'agent IA à organiser
+le code en modules cohérents et à comprendre les flux de données entre eux.
+
+Ce que cette section n'est pas : une architecture technique imposée. L'agent reste
+libre de l'organisation interne de chaque composant (classes, fonctions, modules,
+fichiers) tant qu'il respecte les responsabilités décrites et les exigences
+fonctionnelles.
+
+Quand le projet est simple (un seul script, un CLI linéaire), cette section peut
+se réduire à un paragraphe décrivant le flux de traitement. Ne force pas un
+découpage en composants quand il n'y en a pas.
 
 ### 5. Documents de référence (si applicable)
 
