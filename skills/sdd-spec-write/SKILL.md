@@ -1,44 +1,55 @@
 ---
 name: sdd-spec-write
-description: >
-  Rédige des spécifications logicielles exploitables par des agents IA selon la méthodologie
-  Spec Driven Development (SDD).
-
-  DÉCLENCHEMENT PRIMAIRE (haute confiance — active le skill directement) :
-  - L'utilisateur demande explicitement une spec SDD, un SPEC.md, ou mentionne
-    "Spec Driven Development" / "SDD" comme méthodologie.
-  - L'utilisateur demande de rédiger ou créer une spécification logicielle destinée
-    à être implémentée par un agent IA.
-  - L'utilisateur demande de produire des exigences avec critères d'acceptation
-    au format Soit/Quand/Alors (ou Given/When/Then dans un contexte de spec).
-  - L'utilisateur fournit des notes informelles et demande de les transformer
-    en spécification structurée pour implémentation.
-
-  DÉCLENCHEMENT SECONDAIRE (confiance moyenne — demande confirmation avant d'activer) :
-  - L'utilisateur veut "formaliser" ou "structurer" un cahier des charges sans
-    mentionner SDD → Demande : "Tu veux un cahier des charges classique ou une
-    spec SDD exploitable par un agent IA ?"
-  - L'utilisateur veut documenter des règles métier sans contexte d'implémentation
-    → Demande : "Ces règles doivent-elles aboutir à une implémentation logicielle ?"
-  - L'utilisateur mentionne "spécifier un comportement" ou "documenter des cas limites"
-    sans contexte clair → Demande : "Tu veux intégrer ça dans une spec SDD complète
-    ou juste documenter ce point isolément ?"
-
-  NE PAS DÉCLENCHER (anti-triggers) :
-  - L'utilisateur demande de lire, analyser ou résumer une spec existante (qu'elle
-    soit SDD ou non) sans intention de produire ou modifier un SPEC.md.
-  - L'utilisateur rédige de la documentation utilisateur, un README, ou un guide
-    d'utilisation.
-  - L'utilisateur écrit des tests, même s'il mentionne des critères d'acceptation
-    (les tests consomment la spec, ils ne la produisent pas).
-  - L'utilisateur pose une question technique sur une API ou un format sans vouloir
-    produire de spécification.
-  - L'utilisateur demande une revue de code ou un audit technique.
-  - L'utilisateur décrit une grammaire BNF dans un contexte académique ou théorique
-    sans projet d'implémentation logicielle.
+description:
+  Rédige des spécifications logicielles exploitables par des agents IA selon la
+  méthodologie Spec Driven Development (SDD). Se déclenche quand l'utilisateur
+  demande une spec SDD, un SPEC.md, une spécification pour agent IA, ou veut
+  transformer des notes en spec structurée. Demande confirmation si l'utilisateur
+  veut formaliser un cahier des charges ou documenter des règles métier sans
+  mentionner SDD. Ne se déclenche pas pour lire/analyser une spec existante,
+  rédiger de la documentation utilisateur, écrire des tests, faire une revue
+  de code, ou décrire une grammaire BNF dans un contexte académique.
 ---
-    
+
 # Spec Driven Development (SDD) — Rédaction de spécifications
+
+## Déclenchement
+
+### Déclenchement primaire (active le skill directement)
+
+- L'utilisateur demande explicitement une spec SDD, un SPEC.md, ou mentionne
+  "Spec Driven Development" / "SDD" comme méthodologie.
+- L'utilisateur demande de rédiger ou créer une spécification logicielle destinée
+  à être implémentée par un agent IA.
+- L'utilisateur demande de produire des exigences avec critères d'acceptation
+  au format Soit/Quand/Alors (ou Given/When/Then dans un contexte de spec).
+- L'utilisateur fournit des notes informelles et demande de les transformer
+  en spécification structurée pour implémentation.
+
+### Déclenchement secondaire (demande confirmation avant d'activer)
+
+- L'utilisateur veut "formaliser" ou "structurer" un cahier des charges sans
+  mentionner SDD → Demande : "Tu veux un cahier des charges classique ou une
+  spec SDD exploitable par un agent IA ?"
+- L'utilisateur veut documenter des règles métier sans contexte d'implémentation
+  → Demande : "Ces règles doivent-elles aboutir à une implémentation logicielle ?"
+- L'utilisateur mentionne "spécifier un comportement" ou "documenter des cas limites"
+  sans contexte clair → Demande : "Tu veux intégrer ça dans une spec SDD complète
+  ou juste documenter ce point isolément ?"
+
+### Ne pas déclencher (anti-triggers)
+
+- L'utilisateur demande de lire, analyser ou résumer une spec existante (qu'elle
+  soit SDD ou non) sans intention de produire ou modifier un SPEC.md.
+- L'utilisateur rédige de la documentation utilisateur, un README, ou un guide
+  d'utilisation.
+- L'utilisateur écrit des tests, même s'il mentionne des critères d'acceptation
+  (les tests consomment la spec, ils ne la produisent pas).
+- L'utilisateur pose une question technique sur une API ou un format sans vouloir
+  produire de spécification.
+- L'utilisateur demande une revue de code ou un audit technique.
+- L'utilisateur décrit une grammaire BNF dans un contexte académique ou théorique
+  sans projet d'implémentation logicielle.
 
 ## Philosophie
 
