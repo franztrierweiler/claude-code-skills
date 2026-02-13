@@ -55,6 +55,11 @@ La spec est le contrat entre celui qui spécifie et celui qui implémente — qu
 Elle est le point de vérité unique du projet. Le code en découle et doit être traçable
 jusqu'à la spec.
 
+Les critères d'acceptation sont conçus pour être directement convertibles en tests automatisés.
+Un agent IA peut générer une suite de tests à partir de la seule lecture des CA et CL, sans
+information supplémentaire. Cette propriété est intentionnelle : si un critère d'acceptation
+n'est pas transformable en test, il est trop vague — reformule-le.
+
 ## Processus de rédaction
 
 La rédaction d'une spec SDD est un dialogue, pas une génération en un coup. Claude guide
@@ -85,6 +90,12 @@ Contexte, Phases, Architecture et Documents de référence. Pose-les par petits 
   à parser ? → Déclenche la production d'un GRAMMAR.md.
 - Y a-t-il un cadre réglementaire dont certaines obligations se traduisent en comportements
   implémentables ? → Déclenche des exigences spécifiques.
+- Le projet a-t-il plusieurs composants distincts qui interagissent entre eux
+  (ex : un parser et un évaluateur, un frontend et un backend, un CLI et une
+  bibliothèque) ? → Déclenche le tableau de composants et le schéma d'interactions
+  dans la section Architecture.
+- Y a-t-il des contraintes de performance, de sécurité, de fiabilité ou de
+  portabilité ? → Déclenche la section Exigences non-fonctionnelles.
 
 Quand les réponses sont suffisantes, rédige les sections 1 à 5 du SPEC.md et présente-les
 à l'utilisateur pour validation avant de poursuivre.
@@ -118,26 +129,6 @@ Une fois les exigences principales posées, aborde explicitement :
 2. **Hors périmètre** : "Qu'est-ce que le logiciel ne fait explicitement pas ? Quelles
    demandes prévisibles des utilisateurs doivent être refusées ?"
 
-### Passage de relais
-
-Quand les trois étapes sont terminées et que le SPEC.md contient un cadrage validé,
-des exigences couvrant les domaines principaux, et des limites documentées, informe
-l'utilisateur que le document est suffisamment structuré pour qu'il puisse le compléter
-et l'enrichir lui-même.
-
-Dis-le explicitement, par exemple : "Le SPEC.md a maintenant une structure solide avec
-[N] exigences couvrant [domaines]. Tu peux désormais le compléter directement — ajouter
-des exigences, affiner les critères d'acceptation, préciser les cas limites — en suivant
-le format et les conventions établis. Le glossaire et la structure des identifiants
-(EXG/CA/CL) te guident."
-
-L'objectif du skill n'est pas de rédiger 100% de la spec. C'est d'amorcer le document
-avec suffisamment de structure, de rigueur et d'exemples concrets pour que l'utilisateur
-soit autonome pour la suite. La spec est un document vivant qui s'enrichit au fil du
-projet.
-
-Avant de remettre la spec à l'utilisateur, vérifie chaque point de la checklist et signale les manques.
-
 ### Format de livraison
 
 Produis chaque document comme un fichier téléchargeable, pas comme du texte dans
@@ -169,6 +160,26 @@ portent le contenu livrable.
 Ne préfixe pas les noms de fichiers avec le nom du projet ou une date — le
 versioning est porté par le champ Version de l'en-tête et le changelog, pas par
 le nom de fichier.
+
+### Passage de relais
+
+Quand les trois étapes sont terminées et que le SPEC.md contient un cadrage validé,
+des exigences couvrant les domaines principaux, et des limites documentées, informe
+l'utilisateur que le document est suffisamment structuré pour qu'il puisse le compléter
+et l'enrichir lui-même.
+
+Dis-le explicitement, par exemple : "Le SPEC.md a maintenant une structure solide avec
+[N] exigences couvrant [domaines]. Tu peux désormais le compléter directement — ajouter
+des exigences, affiner les critères d'acceptation, préciser les cas limites — en suivant
+le format et les conventions établis. Le glossaire et la structure des identifiants
+(EXG/ENF/CA/CL) te guident."
+
+L'objectif du skill n'est pas de rédiger 100% de la spec. C'est d'amorcer le document
+avec suffisamment de structure, de rigueur et d'exemples concrets pour que l'utilisateur
+soit autonome pour la suite. La spec est un document vivant qui s'enrichit au fil du
+projet.
+
+Avant de remettre la spec à l'utilisateur, vérifie chaque point de la checklist et signale les manques.
 
 ### Mise à jour d'une spec existante
 
@@ -299,7 +310,13 @@ Auteur : [Nom]
 Statut : [Brouillon | En revue | Validée]
 ```
 
-### 2. Contexte et objectifs
+### 2. Changelog (à partir de la v1.1)
+
+Le changelog est inséré entre l'en-tête et le contexte. Il n'est pas nécessaire en v1.0
+mais son emplacement doit être réservé. Dès la première mise à jour, il apparaît ici.
+Voir la section "Mise à jour d'une spec existante" pour le format et les conventions.
+
+### 3. Contexte et objectifs
 
 Décris en quelques paragraphes :
 - **Ce que le projet fait** — en une phrase.
@@ -310,7 +327,7 @@ Décris en quelques paragraphes :
 Cette section donne à l'agent IA le cadre mental pour prendre les bonnes décisions
 quand la spec est silencieuse sur un détail.
 
-### 3. Phases du projet
+### 4. Phases du projet
 
 Découpe le projet en phases séquentielles. Chaque phase a :
 - Un nom court.
@@ -322,7 +339,7 @@ Les phases servent à prioriser le travail et à limiter le périmètre de chaqu
 d'implémentation. Un agent IA qui reçoit "implémente la Phase 1" doit savoir exactement
 quoi faire et quoi ne pas faire.
 
-### 4. Architecture
+### 5. Architecture
 
 Décris les composants principaux du système à un niveau suffisant pour qu'un agent IA
 comprenne la topologie du projet sans que ce soit un dictât d'implémentation.
@@ -369,7 +386,7 @@ Quand le projet est simple (un seul script, un CLI linéaire), cette section peu
 se réduire à un paragraphe décrivant le flux de traitement. Ne force pas un
 découpage en composants quand il n'y en a pas.
 
-### 5. Documents de référence (si applicable)
+### 6. Documents de référence (si applicable)
 
 Quand le projet nécessite des documents complémentaires (grammaire formelle, schémas
 de données, spécifications de protocole), référence-les ici avec leur chemin relatif
@@ -386,7 +403,7 @@ Ces documents font partie intégrante de la spec mais sont maintenus séparémen
 pour ne pas alourdir le SPEC.md. L'agent IA doit les consulter quand une exigence
 y fait référence.
 
-### 6. Exigences fonctionnelles
+### 7. Exigences fonctionnelles
 
 C'est le cœur de la spec. Chaque exigence suit ce format :
 
@@ -447,7 +464,80 @@ Règles de rédaction des exigences :
   temps force un arbitrage, seules les Souhaitées peuvent être reportées
   sans validation explicite.
 
-### 7. Niveaux de support
+- **Référencement de la grammaire.** Quand une exigence dépend d'une production
+  définie dans le GRAMMAR.md, référence-la explicitement dans la description :
+  "Voir GRAMMAR.md § `<production>`". Un agent IA ne doit pas avoir à deviner
+  quelles règles grammaticales sous-tendent un comportement.
+
+### 8. Exigences non-fonctionnelles
+
+Les exigences non-fonctionnelles décrivent comment le logiciel se comporte, pas ce
+qu'il fait. Elles s'appliquent transversalement à l'ensemble du système ou à un
+composant spécifique.
+
+Chaque exigence non-fonctionnelle suit le même format que les exigences fonctionnelles
+(identifiant, priorité, description, critères d'acceptation, cas limites) et obéit aux
+mêmes règles de rédaction — notamment la précision des valeurs. "Le système doit être
+performant" n'est pas une exigence. "Le système répond en moins de 200ms au 95e
+percentile pour une entrée de 1000 caractères" en est une.
+
+Les domaines à explorer avec l'utilisateur :
+
+- **Performance** — temps de réponse, débit, consommation mémoire, taille des entrées
+  supportées. Précise les conditions de mesure (volume de données, charge concurrente,
+  matériel cible).
+- **Sécurité** — authentification, autorisation, chiffrement, validation des entrées,
+  gestion des secrets. Inclut les obligations réglementaires identifiées au cadrage
+  (RGPD, HDS, etc.).
+- **Fiabilité** — comportement en cas de panne, stratégie de reprise, tolérance aux
+  erreurs, intégrité des données.
+- **Scalabilité** — limites de dimensionnement connues, comportement au-delà de ces
+  limites.
+- **Observabilité** — logs, métriques, traces. Ce qui doit être observable pour
+  diagnostiquer un problème en production.
+- **Accessibilité** — si applicable, conformité WCAG ou équivalent.
+- **Portabilité** — systèmes d'exploitation, versions de runtime, environnements
+  cibles.
+
+Ne traite pas ces domaines comme une checklist exhaustive à remplir pour chaque projet.
+Certains projets n'ont aucune exigence de scalabilité. D'autres n'ont pas d'interface
+utilisateur et l'accessibilité est sans objet. Documente ce qui est pertinent, marque
+explicitement en Hors périmètre ce qui ne l'est pas.
+
+Les identifiants suivent la même convention, avec un préfixe distinct :
+
+```
+ENF-001      Exigence non-fonctionnelle numéro 1
+CA-NF-001-01 Premier critère d'acceptation de ENF-001
+CL-NF-001-01 Premier cas limite de ENF-001
+```
+
+Exemple :
+
+```markdown
+#### ENF-001 : Temps de réponse du parser
+
+**Priorité :** Critique
+
+**Description :** Le parser produit un AST en temps proportionnel à la taille
+de l'entrée, sans dépassement de seuil pour les entrées typiques.
+
+**Critères d'acceptation :**
+
+- **CA-NF-001-01 :** Soit un fichier source de 1000 lignes, Quand le parser
+  est invoqué, Alors l'AST est produit en moins de 100ms sur le matériel cible.
+- **CA-NF-001-02 :** Soit un fichier source de 10 000 lignes, Quand le parser
+  est invoqué, Alors l'AST est produit en moins de 2s sur le matériel cible.
+
+**Cas limites :**
+
+- **CL-NF-001-01 :** Fichier source vide (0 lignes) → Le parser retourne un AST
+  vide en moins de 1ms sans erreur.
+- **CL-NF-001-02 :** Fichier source dépassant 100 000 lignes → Le parser retourne
+  une erreur explicite plutôt que de consommer la mémoire disponible.
+```
+
+### 9. Niveaux de support
 
 Quand le projet interagit avec un environnement externe (hardware, API, système existant),
 certaines fonctionnalités ne peuvent pas être entièrement reproduites. Documente
@@ -473,7 +563,7 @@ explicitement trois catégories :
 Cette section est critique pour la reproductibilité. Sans elle, chaque agent IA
 inventerait son propre comportement face à une fonctionnalité non supportée.
 
-### 8. Hors périmètre
+### 10. Hors périmètre
 
 Liste explicitement ce que le projet ne fait pas. Chaque exclusion en une phrase.
 
@@ -481,7 +571,7 @@ Cette section empêche un agent IA de sur-interpréter la spec et d'implémenter
 des fonctionnalités non demandées. Elle est aussi utile pour les décideurs :
 elle fixe les limites de l'engagement.
 
-### 9. Glossaire projet
+### 11. Glossaire projet
 
 Définis ici les termes spécifiques au domaine du projet. Chaque terme métier, technique ou
 acronyme utilisé dans la spec doit avoir une entrée. Un agent IA ne doit jamais avoir à
@@ -495,7 +585,7 @@ Exemple :
 | Mode programme | Stockage d'une instruction précédée d'un numéro de ligne pour exécution ultérieure via RUN. |
 ```
 
-### 10. Glossaire SDD
+### 12. Glossaire SDD
 
 Reproduis le glossaire SDD défini plus haut dans ce skill, tel quel. Il est commun à tous
 les projets SDD et constitue le vocabulaire de référence de la méthodologie.
@@ -548,11 +638,11 @@ structurée, produis un document `GRAMMAR.md` séparé et référence-le dans la
 
 Le GRAMMAR.md contient la grammaire en notation BNF avec ces conventions :
 ```
-Production     := Terme { Terme }
-Terme          := 'littéral' | NonTerminal | Terme '|' Terme
-Optionnel      := '[' Production ']'
-Répétition     := '{' Production '}'
-Groupement     := '(' Production ')'
+Production     ::= Terme { Terme }
+Terme          ::= 'littéral' | NonTerminal | Terme '|' Terme
+Optionnel      ::= '[' Production ']'
+Répétition     ::= '{' Production '}'
+Groupement     ::= '(' Production ')'
 ```
 
 Documente chaque production avec un commentaire si son intention n'est pas évidente.
@@ -580,9 +670,12 @@ catégories. Aucune ne doit rester implicite.
 ### Identifiants — convention de nommage
 
 ```
-EXG-001      Exigence numéro 1
-CA-001-01    Premier critère d'acceptation de l'exigence 1
-CL-001-01    Premier cas limite de l'exigence 1
+EXG-001       Exigence fonctionnelle numéro 1
+CA-001-01     Premier critère d'acceptation de l'exigence 1
+CL-001-01     Premier cas limite de l'exigence 1
+ENF-001       Exigence non-fonctionnelle numéro 1
+CA-NF-001-01  Premier critère d'acceptation de ENF-001
+CL-NF-001-01  Premier cas limite de ENF-001
 ```
 
 Numérote séquentiellement. Ne réutilise jamais un identifiant supprimé.
@@ -594,9 +687,11 @@ Avant de considérer la spec comme terminée, vérifie :
 
 - [ ] Le glossaire SDD est présent et intact.
 - [ ] Le glossaire projet couvre tous les termes spécifiques utilisés.
-- [ ] Chaque exigence a au moins un critère d'acceptation.
+- [ ] Chaque exigence (EXG et ENF) a au moins un critère d'acceptation.
 - [ ] Chaque critère d'acceptation est au format Soit/Quand/Alors.
 - [ ] Les cas limites sont documentés pour chaque exigence.
+- [ ] Les exigences qui dépendent de la grammaire référencent les productions concernées.
 - [ ] La section Hors périmètre est renseignée.
 - [ ] Les niveaux de support sont documentés (si applicable).
+- [ ] Les exigences non-fonctionnelles pertinentes sont documentées.
 - [ ] Un agent IA pourrait implémenter chaque exigence sans poser de question.
