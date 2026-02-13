@@ -695,3 +695,174 @@ Avant de considérer la spec comme terminée, vérifie :
 - [ ] Les niveaux de support sont documentés (si applicable).
 - [ ] Les exigences non-fonctionnelles pertinentes sont documentées.
 - [ ] Un agent IA pourrait implémenter chaque exigence sans poser de question.
+
+**Utilisation du template :**
+
+Utilise le template SPEC.md défini en annexe de ce skill comme point de départ.
+Ne génère jamais la structure du SPEC.md de mémoire — le template est la référence.
+Remplis les sections au fil du dialogue, supprime les sections marquées comme
+optionnelles si elles ne s'appliquent pas, et retire les commentaires HTML
+avant livraison.
+
+## Annexe — Template SPEC.md
+````markdown
+# [Nom du projet] — Spécification SDD
+
+Version : 1.0
+Date : [YYYY-MM-DD]
+Auteur : [Nom]
+Statut : Brouillon
+
+<!-- CHANGELOG — Ne pas inclure en v1.0. Décommenter à partir de la v1.1.
+## Changelog
+
+| Version | Date | Auteur | Modifications |
+|---|---|---|---|
+| 1.1 | YYYY-MM-DD | [Auteur] | [Description des modifications] |
+| 1.0 | YYYY-MM-DD | [Auteur] | Version initiale. |
+-->
+
+## Contexte et objectifs
+
+**Ce que le projet fait :** [Une phrase.]
+
+**Pourquoi il existe :** [Le problème résolu ou le besoin couvert.]
+
+**Pour qui :** [L'utilisateur cible.]
+
+**Contraintes structurantes :** [Techniques, réglementaires, de performance. Supprimer si aucune.]
+
+## Phases du projet
+
+### Phase 1 — [Nom court]
+
+- **Périmètre :** [Ce qui est inclus.]
+- **Livrable :** [Livrable vérifiable.]
+- **Dépendances :** Aucune.
+
+<!-- Ajouter des phases supplémentaires au besoin. Chaque phase a un nom, un périmètre,
+un livrable vérifiable et des dépendances vers les phases précédentes. -->
+
+## Architecture
+
+<!-- PROJET SIMPLE : remplacer le tableau et le schéma par un paragraphe décrivant
+le flux de traitement. Ne pas forcer un découpage en composants quand il n'y en a pas. -->
+
+| Composant | Responsabilité | Interfaces exposées | Dépendances |
+|---|---|---|---|
+| [Nom] | [Une à deux phrases. Si "et" relie deux responsabilités distinctes, séparer en deux composants.] | [Noms et type d'échange : synchrone/asynchrone, lecture/écriture.] | [Composants ou services externes consommés, ou —] |
+```mermaid
+graph LR
+    A[Composant A] -->|type| B[Composant B]
+```
+
+## Documents de référence
+
+<!-- Supprimer cette section si le projet ne nécessite aucun document complémentaire. -->
+
+| Document | Description |
+|---|---|
+| GRAMMAR.md | [Description du contenu.] |
+| DATA-MODEL.md | [Description du contenu.] |
+
+## Exigences fonctionnelles
+
+<!-- Chaque exigence suit ce format exact. Ne pas modifier la structure.
+     Numéroter séquentiellement. Ne jamais réutiliser un identifiant supprimé.
+     Référencer la grammaire si applicable : "Voir GRAMMAR.md § <production>". -->
+
+#### EXG-001 : [Titre court]
+
+**Priorité :** [Critique | Important | Souhaité]
+
+**Description :** [Ce que le logiciel doit faire, en une à trois phrases.]
+
+**Critères d'acceptation :**
+
+- **CA-001-01 :** Soit [contexte initial], Quand [action], Alors [résultat attendu].
+
+**Cas limites :**
+
+- **CL-001-01 :** [Description de la situation extrême] → [Comportement attendu].
+
+## Exigences non-fonctionnelles
+
+<!-- Mêmes règles que les exigences fonctionnelles. Préfixe ENF.
+     Domaines à considérer : Performance, Sécurité, Fiabilité, Scalabilité,
+     Observabilité, Accessibilité, Portabilité.
+     Ne documenter que ce qui est pertinent. Marquer le reste en Hors périmètre.
+     Supprimer cette section si aucune ENF n'est identifiée. -->
+
+#### ENF-001 : [Titre court]
+
+**Priorité :** [Critique | Important | Souhaité]
+
+**Description :** [Comment le logiciel se comporte, avec des valeurs mesurables.]
+
+**Critères d'acceptation :**
+
+- **CA-NF-001-01 :** Soit [contexte initial], Quand [action], Alors [résultat attendu avec valeur mesurable].
+
+**Cas limites :**
+
+- **CL-NF-001-01 :** [Description de la situation extrême] → [Comportement attendu].
+
+## Niveaux de support
+
+<!-- Supprimer cette section si le projet n'interagit pas avec un système existant,
+     du hardware, ou un environnement non contrôlé. Chaque fonctionnalité de l'original
+     doit apparaître dans exactement une des trois catégories. -->
+
+### Supporté
+
+| Fonctionnalité | Comportement | Exigence liée |
+|---|---|---|
+| [Fonction X] | [Comportement fidèle à l'original] | EXG-XXX |
+
+### Ignoré (no-op silencieux)
+
+| Fonctionnalité | Raison |
+|---|---|
+| [Fonction Y] | [Pourquoi elle est ignorée sans erreur] |
+
+### Erreur explicite
+
+| Fonctionnalité | Message d'erreur | Raison |
+|---|---|---|
+| [Fonction Z] | "[Message exact]" | [Pourquoi elle est rejetée] |
+
+## Hors périmètre
+
+<!-- Chaque exclusion en une phrase. Pour chaque domaine fonctionnel couvert,
+     lister les extensions prévisibles qui ne seront pas traitées. -->
+
+- [Ce que le logiciel ne fait explicitement pas.]
+
+## Glossaire projet
+
+<!-- Chaque terme métier, technique ou acronyme utilisé dans la spec.
+     Un agent IA ne doit jamais avoir à deviner le sens d'un terme.
+     Alimenter au fil de la rédaction des exigences. -->
+
+| Terme | Définition |
+|---|---|
+| [Terme] | [Définition.] |
+
+## Glossaire SDD
+
+| Terme | Définition |
+|---|---|
+| **Spec** | Document qui décrit exactement ce que le logiciel doit faire. Point de vérité unique du projet. |
+| **Exigence** | Comportement précis que le logiciel doit respecter. Une exigence est atomique, vérifiable et non ambiguë. |
+| **Critère d'acceptation** | Condition vérifiable prouvant qu'une exigence est satisfaite. Formulé en Soit/Quand/Alors. |
+| **Cas limite** | Situation extrême ou inattendue dont le comportement doit être explicitement défini dans la spec. |
+| **Hors périmètre** | Ce que le logiciel ne fait explicitement pas. Aussi important que ce qu'il fait. |
+| **Niveau de support** | Degré de prise en charge d'une fonctionnalité : **Supporté** (implémenté), **Ignoré** (no-op silencieux), **Erreur** (rejeté avec message explicite). |
+| **Grammaire** | Description formelle de la syntaxe acceptée, en notation BNF quand le domaine s'y prête. |
+| **Traçabilité** | Lien vérifiable entre une exigence et son implémentation. Chaque exigence a un identifiant unique référencé dans le code. |
+| **Reproductibilité** | Capacité à obtenir le même résultat à partir de la même spec, quel que soit l'agent qui implémente. |
+| **Phase** | Étape du projet avec un périmètre et un livrable définis. |
+| **Critique** | Priorité d'exigence : le logiciel ne fonctionne pas sans. Bloque la livraison. |
+| **Important** | Priorité d'exigence : nécessaire en production, mais non bloquant pour un premier livrable. |
+| **Souhaité** | Priorité d'exigence : amélioration reportable sans compromettre la viabilité. |
+````
