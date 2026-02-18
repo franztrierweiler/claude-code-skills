@@ -933,8 +933,6 @@ graph LR
 | **Souhaité** | Priorité d'exigence : amélioration reportable sans compromettre la viabilité. |
 ````
 
---
-
 ## Changelog du skill
 
 | Version | Date | Modifications |
