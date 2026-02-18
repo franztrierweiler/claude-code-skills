@@ -71,6 +71,59 @@ Un agent IA peut générer une suite de tests à partir de la seule lecture des 
 information supplémentaire. Cette propriété est intentionnelle : si un critère d'acceptation
 n'est pas transformable en test, il est trop vague — reformule-le.
 
+## Identification du skill dans les réponses
+
+Chaque réponse produite sous ce skill commence par une barre de progression
+indiquant le skill actif, l'étape en cours et l'avancement. Cette ligne est
+obligatoire, sans exception.
+
+**Format :**
+
+```
+🏗️ skill:sdd-spec-write · [Étape] [barre] sous-étape N/T — [Nom]
+```
+
+**Règles de la barre de progression :**
+
+- Caractère plein : `█` — Caractère vide : `░`
+- Largeur fixe : 3 caractères pour Cadrage (3 sous-étapes), variable pour
+  Exigences (1 caractère par domaine fonctionnel), 3 caractères pour Limites.
+- La barre reflète la sous-étape en cours (incluse).
+
+**Découpage en sous-étapes :**
+
+| Étape | Sous-étapes | Total |
+|-------|-------------|-------|
+| Cadrage | 1. Questions obligatoires · 2. Questions conditionnelles · 3. Rédaction & validation sections 1-5 | 3 |
+| Exigences | 1 sous-étape par domaine fonctionnel identifié (nombre variable, noté N/M où M = nombre de domaines) | M |
+| Limites | 1. Niveaux de support · 2. Hors périmètre · 3. Rédaction finale & passage de relais | 3 |
+
+**Exemples :**
+
+```
+🏗️ skill:sdd-spec-write · Cadrage [█░░] 1/3 — Questions obligatoires
+🏗️ skill:sdd-spec-write · Cadrage [██░] 2/3 — Questions conditionnelles
+🏗️ skill:sdd-spec-write · Cadrage [███] 3/3 — Rédaction & validation
+🏗️ skill:sdd-spec-write · Exigences [██░░░] domaine 2/5 — Authentification
+🏗️ skill:sdd-spec-write · Exigences [████░] domaine 4/5 — Export
+🏗️ skill:sdd-spec-write · Limites [█░░] 1/3 — Niveaux de support
+🏗️ skill:sdd-spec-write · Limites [██░] 2/3 — Hors périmètre
+🏗️ skill:sdd-spec-write · Limites [███] 3/3 — Rédaction finale & passage de relais
+```
+
+**Cas particulier — Mise à jour d'une spec existante :**
+
+```
+🏗️ skill:sdd-spec-write · Mise à jour [██░] 2/3 — Application des modifications
+```
+
+Sous-étapes de mise à jour : 1. Lecture & périmètre · 2. Application ·
+3. Changelog & impacts.
+
+Si plusieurs messages se succèdent au sein de la même sous-étape (ex :
+clarifications, allers-retours), la barre reste identique. Elle avance
+uniquement au passage à la sous-étape suivante.
+
 ## Processus de rédaction
 
 La rédaction d'une spec SDD est un dialogue, pas une génération en un coup. Claude guide
