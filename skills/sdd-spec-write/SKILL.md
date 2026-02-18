@@ -80,8 +80,10 @@ obligatoire, sans exception.
 **Format :**
 
 ```
-🏗️ skill:sdd-spec-write · [Étape] [barre] sous-étape N/T — [Nom]
+🏗️ skill:sdd-spec-write vX.Y.Z · [Étape] [barre] sous-étape N/T — [Nom]
 ```
+
+où `vX.Y.Z` est la version indiquée dans l'en-tête du skill.
 
 **Règles de la barre de progression :**
 
@@ -101,20 +103,20 @@ obligatoire, sans exception.
 **Exemples :**
 
 ```
-🏗️ skill:sdd-spec-write · Cadrage [█░░] 1/3 — Questions obligatoires
-🏗️ skill:sdd-spec-write · Cadrage [██░] 2/3 — Questions conditionnelles
-🏗️ skill:sdd-spec-write · Cadrage [███] 3/3 — Rédaction & validation
-🏗️ skill:sdd-spec-write · Exigences [██░░░] domaine 2/5 — Authentification
-🏗️ skill:sdd-spec-write · Exigences [████░] domaine 4/5 — Export
-🏗️ skill:sdd-spec-write · Limites [█░░] 1/3 — Niveaux de support
-🏗️ skill:sdd-spec-write · Limites [██░] 2/3 — Hors périmètre
-🏗️ skill:sdd-spec-write · Limites [███] 3/3 — Rédaction finale & passage de relais
+🏗️ skill:sdd-spec-write v1.0.0 · Cadrage [█░░] 1/3 — Questions obligatoires
+🏗️ skill:sdd-spec-write v1.0.0 · Cadrage [██░] 2/3 — Questions conditionnelles
+🏗️ skill:sdd-spec-write v1.0.0 · Cadrage [███] 3/3 — Rédaction & validation
+🏗️ skill:sdd-spec-write v1.0.0 · Exigences [██░░░] domaine 2/5 — Authentification
+🏗️ skill:sdd-spec-write v1.0.0 · Exigences [████░] domaine 4/5 — Export
+🏗️ skill:sdd-spec-write v1.0.0 · Limites [█░░] 1/3 — Niveaux de support
+🏗️ skill:sdd-spec-write v1.0.0 · Limites [██░] 2/3 — Hors périmètre
+🏗️ skill:sdd-spec-write v1.0.0 · Limites [███] 3/3 — Rédaction finale & passage de relais
 ```
 
 **Cas particulier — Mise à jour d'une spec existante :**
 
 ```
-🏗️ skill:sdd-spec-write · Mise à jour [██░] 2/3 — Application des modifications
+🏗️ skill:sdd-spec-write v1.0.0 · Mise à jour [██░] 2/3 — Application des modifications
 ```
 
 Sous-étapes de mise à jour : 1. Lecture & périmètre · 2. Application ·
@@ -930,3 +932,11 @@ graph LR
 | **Important** | Priorité d'exigence : nécessaire en production, mais non bloquant pour un premier livrable. |
 | **Souhaité** | Priorité d'exigence : amélioration reportable sans compromettre la viabilité. |
 ````
+
+--
+
+## Changelog du skill
+
+| Version | Date | Modifications |
+|---------|------|---------------|
+| 1.0.0 | 2026-02-18 | Version initiale. |
