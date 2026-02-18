@@ -13,6 +13,9 @@ description:
 
 # Spec Driven Development (SDD) — Rédaction de spécifications
 
+Version : 1.0.0
+Date : 2026-02-18
+
 ## Déclenchement
 
 ### Déclenchement primaire (active le skill directement)
@@ -937,4 +940,4 @@ graph LR
 
 | Version | Date | Modifications |
 |---------|------|---------------|
-| 1.0.0 | 2026-02-18 | Version initiale. |
+| 1.0.0 | 2026-02-18 | Version initiale. Cadrage, exigences, limites. Barre de progression avec versioning. |
