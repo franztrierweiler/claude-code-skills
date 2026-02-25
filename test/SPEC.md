@@ -1573,6 +1573,1737 @@ Identiques à UC-016.
 - **CA-UC-021-02 :** Soit un praticien qui a vu un patient hier, Quand il accède à la file active, Alors ce patient apparaît dans la section "patients récents".
 - **CA-UC-021-03 :** Soit un praticien sans aucun RDV ni patient récent, Quand il accède à la file active, Alors le message "Aucun patient dans la file active" est affiché.
 
+
+#### Pathologies
+
+```mermaid
+graph LR
+    subgraph Acteurs
+        CLIN([Cliniciens])
+    end
+
+    UC022[UC-022 : Ajouter<br/>une pathologie]
+    UC023[UC-023 : Consulter<br/>une pathologie]
+    UC024[UC-024 : Modifier<br/>une pathologie]
+    UC025[UC-025 : Indiquer absence<br/>de pathologie]
+    UC026[UC-026 : Ajouter une note<br/>sur une pathologie]
+    UC027[UC-027 : Visualiser traitements<br/>et consultations liés]
+
+    CLIN --> UC022
+    CLIN --> UC023
+    CLIN --> UC024
+    CLIN --> UC025
+    CLIN --> UC026
+    CLIN --> UC027
+```
+
+##### UC-022 : Ajouter une pathologie (codification CIM-10)
+
+**Résumé :** Le praticien ajoute une pathologie au profil médical d'un patient, avec codification CIM-10 obligatoire. Il peut la marquer comme ALD et/ou antécédent.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM.
+
+**Fréquence d'utilisation :** Fréquent (à chaque diagnostic ou mise à jour du profil médical).
+
+**État initial :** Le dossier du patient est ouvert. L'utilisateur est authentifié.
+
+**État final :** La pathologie est ajoutée au profil médical du patient avec son code CIM-10.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède à la section "Pathologies" du profil médical du patient et clique sur "Ajouter une pathologie". |
+| 1b | ← Système | Le système affiche le formulaire d'ajout de pathologie. (IHM-015) |
+| 2a | → Acteur | Le praticien recherche la pathologie par mot-clé ou code CIM-10. |
+| 2b | ← Système | Le système affiche les résultats de la nomenclature CIM-10 correspondants (autocomplétion). |
+| 3a | → Acteur | Le praticien sélectionne la pathologie dans la liste, renseigne les informations complémentaires (date de début, flag ALD, flag antécédent, commentaire) et valide. |
+| 3b | ← Système | Le système enregistre la pathologie dans le profil médical du patient. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 2b | Si aucun résultat CIM-10 ne correspond à la recherche | Message "Aucun résultat dans la nomenclature CIM-10. Reformulez votre recherche". |
+| 3a | Si la pathologie est déjà présente dans le profil du patient | Message "Cette pathologie est déjà enregistrée pour ce patient". Retour étape 2a. |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0044 | 2a | La codification CIM-10 est obligatoire. Le praticien ne peut pas ajouter une pathologie en texte libre sans code CIM-10 associé. |
+| RG-0045 | 3a | Le flag ALD et le flag antécédent sont optionnels. Leur rattachement exact (pathologie ou relation patient-pathologie) est à préciser. |
+| RG-0046 | 3b | L'ajout d'une pathologie est tracé : praticien auteur, date et heure. |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-015 | Section Pathologies du profil médical : liste des pathologies du patient (code CIM-10, libellé, date de début, statut ALD, statut antécédent), bouton "Ajouter", formulaire avec recherche CIM-10 par autocomplétion, champs date de début, flags ALD/antécédent, commentaire. |
+
+**Objets participants :** Patient, Pathologie, Nomenclature CIM-10.
+
+**Contraintes non fonctionnelles :** Performance de l'autocomplétion CIM-10 à préciser (voir ENF).
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-022-01 :** Soit un praticien authentifié sur le dossier d'un patient, Quand il recherche "dépression" dans le formulaire d'ajout de pathologie, Alors les codes CIM-10 correspondants (F32.x, F33.x) sont proposés en autocomplétion.
+- **CA-UC-022-02 :** Soit un praticien qui sélectionne "F32.1 — Épisode dépressif moyen" avec le flag ALD coché, Quand il valide, Alors la pathologie apparaît dans le profil médical avec le flag ALD.
+- **CA-UC-022-03 :** Soit un patient ayant déjà la pathologie F32.1, Quand le praticien tente de l'ajouter à nouveau, Alors le message de doublon est affiché.
+- **CA-UC-022-04 :** Soit un praticien qui saisit un mot-clé ne correspondant à aucun code CIM-10, Quand il recherche, Alors le message "Aucun résultat" est affiché.
+
+---
+
+##### UC-023 : Consulter les informations d'une pathologie
+
+**Résumé :** Le praticien consulte les informations détaillées d'une pathologie enregistrée dans le profil médical d'un patient : code CIM-10, libellé, date de début, flags ALD/antécédent, commentaires, notes associées.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM, Assistant médical.
+
+**Fréquence d'utilisation :** Fréquent.
+
+**État initial :** Le dossier du patient est ouvert. Au moins une pathologie est enregistrée.
+
+**État final :** Les informations de la pathologie sont affichées.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède à la section "Pathologies" du profil médical. |
+| 1b | ← Système | Le système affiche la liste des pathologies du patient. (IHM-015) |
+| 2a | → Acteur | Le praticien sélectionne une pathologie. |
+| 2b | ← Système | Le système affiche le détail : code CIM-10, libellé, date de début, date de fin (si applicable), flags ALD/antécédent, commentaire, notes associées, historique des modifications. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 1b | Si aucune pathologie n'est enregistrée | Message "Aucune pathologie enregistrée pour ce patient". |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0047 | 2b | L'assistant médical peut consulter les pathologies mais ne peut pas les modifier. |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-015 | Section Pathologies (partagée — vue détail d'une pathologie). |
+
+**Objets participants :** Patient, Pathologie, Note.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-023-01 :** Soit un patient avec la pathologie "F32.1 — Épisode dépressif moyen" (ALD, date début 2024-01-15), Quand le praticien la sélectionne, Alors le code, le libellé, la date de début et le flag ALD sont affichés.
+- **CA-UC-023-02 :** Soit un patient sans pathologie, Quand le praticien accède à la section Pathologies, Alors le message "Aucune pathologie enregistrée" est affiché.
+
+---
+
+##### UC-024 : Modifier une pathologie existante
+
+**Résumé :** Le praticien modifie les informations d'une pathologie enregistrée : date de début/fin, flags ALD/antécédent, commentaire. Le code CIM-10 n'est pas modifiable — si le diagnostic change, la pathologie est clôturée et une nouvelle est créée.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM.
+
+**Fréquence d'utilisation :** Occasionnel.
+
+**État initial :** Le dossier du patient est ouvert. La pathologie existe.
+
+**État final :** La pathologie est mise à jour.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède au détail d'une pathologie et clique sur "Modifier". |
+| 1b | ← Système | Le système affiche le formulaire de modification. Le code CIM-10 est grisé. (IHM-015) |
+| 2a | → Acteur | Le praticien modifie les champs (date de début/fin, flags, commentaire) et valide. |
+| 2b | ← Système | Le système enregistre les modifications et met à jour l'historique. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 2a | Si le praticien souhaite changer le code CIM-10 | Message "Le code CIM-10 n'est pas modifiable. Clôturez cette pathologie et créez-en une nouvelle (UC-022)". |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0048 | 1b | Le code CIM-10 d'une pathologie n'est pas modifiable après enregistrement. Un changement de diagnostic nécessite de clôturer l'ancienne pathologie et d'en créer une nouvelle. |
+| RG-0049 | 2b | Chaque modification est tracée dans l'historique : auteur, date, champs modifiés, valeurs avant/après. |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-015 | Section Pathologies (partagée — mode édition). |
+
+**Objets participants :** Patient, Pathologie, Historique de modifications.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-024-01 :** Soit une pathologie F32.1 sans date de fin, Quand le praticien ajoute une date de fin "2025-06-01" et valide, Alors la date de fin est enregistrée et la modification apparaît dans l'historique.
+- **CA-UC-024-02 :** Soit une pathologie, Quand le praticien tente de modifier le code CIM-10, Alors le champ est grisé et un message explicite est affiché.
+- **CA-UC-024-03 :** Soit un praticien qui modifie le flag ALD, Quand il valide, Alors l'historique enregistre l'auteur, la date, et les valeurs avant/après du flag.
+
+---
+
+##### UC-025 : Indiquer une absence de pathologie
+
+**Résumé :** Le praticien déclare explicitement qu'un patient n'a aucune pathologie connue. Cette déclaration distingue "aucune pathologie connue" de "non renseigné".
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM.
+
+**Fréquence d'utilisation :** Occasionnel.
+
+**État initial :** Le dossier du patient est ouvert. Aucune pathologie n'est enregistrée.
+
+**État final :** Le profil médical indique explicitement "Aucune pathologie connue".
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède à la section "Pathologies" du profil médical. |
+| 1b | ← Système | Le système affiche la section vide avec l'option "Déclarer aucune pathologie connue". (IHM-015) |
+| 2a | → Acteur | Le praticien clique sur "Déclarer aucune pathologie connue". |
+| 2b | ← Système | Le système enregistre la déclaration avec la date et l'auteur. La section affiche "Aucune pathologie connue — déclaré par [praticien] le [date]". |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 1b | Si des pathologies sont déjà enregistrées | L'option "Déclarer aucune pathologie connue" n'est pas affichée. |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0050 | 2b | La déclaration d'absence de pathologie est tracée : auteur, date. Elle est annulée automatiquement si une pathologie est ajoutée ultérieurement. |
+| RG-0051 | 1b | La déclaration ne peut être faite que si aucune pathologie active n'est enregistrée. |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-015 | Section Pathologies (partagée). |
+
+**Objets participants :** Patient, Déclaration d'absence.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-025-01 :** Soit un patient sans pathologie enregistrée, Quand le praticien déclare "aucune pathologie connue", Alors la section affiche "Aucune pathologie connue — déclaré par Dr. Dupont le 2026-02-25".
+- **CA-UC-025-02 :** Soit un patient avec une déclaration d'absence, Quand un praticien ajoute une pathologie (UC-022), Alors la déclaration d'absence est automatiquement annulée.
+- **CA-UC-025-03 :** Soit un patient avec des pathologies actives, Quand le praticien accède à la section, Alors l'option "Déclarer aucune pathologie connue" n'est pas visible.
+
+---
+
+##### UC-026 : Ajouter une note sur une pathologie
+
+**Résumé :** Le praticien ajoute une note textuelle sur une pathologie existante (observation, évolution, remarque clinique).
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM.
+
+**Fréquence d'utilisation :** Occasionnel.
+
+**État initial :** Le dossier du patient est ouvert. La pathologie existe.
+
+**État final :** La note est ajoutée à la pathologie.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède au détail d'une pathologie et clique sur "Ajouter une note". |
+| 1b | ← Système | Le système affiche le champ de saisie de note. (IHM-015) |
+| 2a | → Acteur | Le praticien saisit la note et valide. |
+| 2b | ← Système | Le système enregistre la note avec l'auteur et la date. La note apparaît dans l'historique de la pathologie. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 2a | Si le champ de note est vide | Message "La note ne peut pas être vide". Retour étape 2a. |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0052 | 2b | Les notes sont immuables après enregistrement. Elles ne peuvent pas être modifiées ni supprimées. |
+| RG-0053 | 2b | Chaque note est horodatée et associée à son auteur. |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-015 | Section Pathologies (partagée — ajout de note dans la vue détail). |
+
+**Objets participants :** Patient, Pathologie, Note.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-026-01 :** Soit une pathologie F32.1, Quand le praticien ajoute la note "Amélioration sous traitement ISRS", Alors la note apparaît dans l'historique avec date et auteur.
+- **CA-UC-026-02 :** Soit une note enregistrée, Quand le praticien consulte le détail de la pathologie, Alors la note est affichée et non modifiable.
+
+---
+
+##### UC-027 : Visualiser traitements et consultations liés à une pathologie
+
+**Résumé :** Le praticien visualise de manière transversale les traitements prescrits et les consultations associées à une pathologie spécifique du patient.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM, Assistant médical.
+
+**Fréquence d'utilisation :** Occasionnel.
+
+**État initial :** Le dossier du patient est ouvert. La pathologie existe. Des traitements et/ou consultations sont liés.
+
+**État final :** La vue transversale pathologie-traitements-consultations est affichée.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède au détail d'une pathologie et sélectionne la vue "Traitements et consultations liés". |
+| 1b | ← Système | Le système affiche les traitements associés à cette pathologie (nom, posologie, dates, statut) et les consultations où cette pathologie a été abordée (date, praticien, résumé). (IHM-016) |
+| 2a | → Acteur | Le praticien sélectionne un traitement ou une consultation pour en voir le détail. |
+| 2b | ← Système | Le système navigue vers le détail du traitement (UC-029) ou de la consultation sélectionnée. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 1b | Si aucun traitement ni consultation n'est lié à cette pathologie | Message "Aucun traitement ni consultation associé à cette pathologie". |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0054 | 1b | Le rattachement exact entre pathologie, traitements et consultations est à préciser. La vue est construite sur les liens existants dans le modèle de données. |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-016 | Vue transversale pathologie : liste des traitements liés (nom, CIP13, posologie, dates) et consultations liées (date, praticien, résumé). Navigation vers le détail. Mode d'affichage (écran dédié ou onglet) à préciser. |
+
+**Objets participants :** Patient, Pathologie, Traitement, Consultation.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-027-01 :** Soit un patient avec la pathologie F32.1 liée à 2 traitements (Sertraline, Mirtazapine) et 3 consultations, Quand le praticien ouvre la vue transversale, Alors les 2 traitements et 3 consultations sont affichés.
+- **CA-UC-027-02 :** Soit une pathologie sans traitement ni consultation liée, Quand le praticien ouvre la vue, Alors le message "Aucun traitement ni consultation associé" est affiché.
+
+---
+
+#### Traitements
+
+```mermaid
+graph LR
+    subgraph Acteurs
+        CLIN([Cliniciens])
+    end
+
+    UC028[UC-028 : Ajouter<br/>un traitement]
+    UC029[UC-029 : Consulter<br/>un traitement]
+    UC030[UC-030 : Modifier<br/>un traitement]
+    UC031[UC-031 : Indiquer absence<br/>de traitement]
+
+    CLIN --> UC028
+    CLIN --> UC029
+    CLIN --> UC030
+    CLIN --> UC031
+```
+
+##### UC-028 : Ajouter un traitement (codification CIP13/ATC)
+
+**Résumé :** Le praticien ajoute un traitement au profil médical d'un patient, avec codification CIP13 (présentation) et/ou ATC (classe thérapeutique). La posologie complète est renseignée.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM.
+
+**Fréquence d'utilisation :** Fréquent.
+
+**État initial :** Le dossier du patient est ouvert. L'utilisateur est authentifié.
+
+**État final :** Le traitement est ajouté au profil médical du patient.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède à la section "Traitements" du profil médical et clique sur "Ajouter un traitement". |
+| 1b | ← Système | Le système affiche le formulaire d'ajout de traitement. (IHM-017) |
+| 2a | → Acteur | Le praticien recherche le médicament par nom commercial, DCI ou code CIP13. |
+| 2b | ← Système | Le système affiche les résultats correspondants (autocomplétion sur la base de données des médicaments). |
+| 3a | → Acteur | Le praticien sélectionne le médicament, renseigne la posologie (dose, fréquence, voie d'administration, durée), la date de début, la pathologie associée (optionnel) et valide. |
+| 3b | ← Système | Le système enregistre le traitement dans le profil médical du patient. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 2b | Si aucun médicament ne correspond à la recherche | Message "Aucun médicament trouvé. Reformulez votre recherche". |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0055 | 2a | La codification CIP13/ATC est obligatoire. La recherche s'appuie sur la base de données des médicaments. |
+| RG-0056 | 3a | La posologie complète comprend : dose, unité, fréquence, voie d'administration, durée. Tous les champs sont obligatoires. |
+| RG-0057 | 3a | Un traitement peut être associé à une pathologie existante du patient (lien optionnel). |
+| RG-0058 | 3b | L'ajout d'un traitement est tracé : praticien auteur, date et heure. |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-017 | Section Traitements du profil médical : liste des traitements du patient (nom, CIP13, posologie, dates, statut), bouton "Ajouter", formulaire avec recherche médicament par autocomplétion, champs de posologie, association pathologie. |
+
+**Objets participants :** Patient, Traitement, Médicament, Nomenclature CIP13/ATC, Pathologie.
+
+**Contraintes non fonctionnelles :** Performance de l'autocomplétion sur la base médicaments à préciser (voir ENF).
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-028-01 :** Soit un praticien sur le dossier d'un patient, Quand il recherche "Sertraline" dans le formulaire d'ajout, Alors les présentations CIP13 de Sertraline sont proposées.
+- **CA-UC-028-02 :** Soit un praticien qui sélectionne "Sertraline 50mg" avec posologie "1 cp/jour, voie orale, 6 mois", Quand il valide, Alors le traitement apparaît dans le profil médical avec la posologie complète.
+- **CA-UC-028-03 :** Soit un praticien qui associe le traitement à la pathologie F32.1, Quand il valide, Alors le lien traitement-pathologie est enregistré et visible dans UC-027.
+
+---
+
+##### UC-029 : Consulter les informations d'un traitement
+
+**Résumé :** Le praticien consulte les informations détaillées d'un traitement du patient : médicament, CIP13/ATC, posologie, dates, pathologie associée, historique des modifications.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM, Assistant médical.
+
+**Fréquence d'utilisation :** Fréquent.
+
+**État initial :** Le dossier du patient est ouvert. Au moins un traitement est enregistré.
+
+**État final :** Les informations du traitement sont affichées.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède à la section "Traitements" du profil médical. |
+| 1b | ← Système | Le système affiche la liste des traitements du patient. (IHM-017) |
+| 2a | → Acteur | Le praticien sélectionne un traitement. |
+| 2b | ← Système | Le système affiche le détail : médicament, CIP13, code ATC, posologie, date de début/fin, statut (actif/arrêté), pathologie associée, praticien prescripteur, historique des modifications. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 1b | Si aucun traitement n'est enregistré | Message "Aucun traitement enregistré pour ce patient". |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0059 | 2b | L'assistant médical peut consulter les traitements mais ne peut pas les modifier. |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-017 | Section Traitements (partagée — vue détail). |
+
+**Objets participants :** Patient, Traitement, Médicament.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-029-01 :** Soit un patient avec le traitement "Sertraline 50mg — 1 cp/jour", Quand le praticien le sélectionne, Alors le détail complet est affiché (CIP13, posologie, dates, prescripteur).
+- **CA-UC-029-02 :** Soit un patient sans traitement, Quand le praticien accède à la section, Alors le message "Aucun traitement enregistré" est affiché.
+
+---
+
+##### UC-030 : Modifier un traitement existant
+
+**Résumé :** Le praticien modifie un traitement existant : posologie, dates, statut (arrêt du traitement), pathologie associée.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM.
+
+**Fréquence d'utilisation :** Occasionnel.
+
+**État initial :** Le dossier du patient est ouvert. Le traitement existe.
+
+**État final :** Le traitement est mis à jour.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède au détail d'un traitement et clique sur "Modifier". |
+| 1b | ← Système | Le système affiche le formulaire de modification pré-rempli. (IHM-017) |
+| 2a | → Acteur | Le praticien modifie les champs (posologie, dates, statut, pathologie) et valide. |
+| 2b | ← Système | Le système enregistre les modifications et met à jour l'historique. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 2a | Si la posologie est incomplète (champ obligatoire manquant) | Message d'erreur sur le champ manquant. Retour étape 2a. |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0060 | 2b | Chaque modification est tracée dans l'historique : auteur, date, champs modifiés, valeurs avant/après. |
+| RG-0061 | 2a | L'arrêt d'un traitement se fait en ajoutant une date de fin et en passant le statut à "arrêté". Le traitement reste visible dans l'historique. |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-017 | Section Traitements (partagée — mode édition). |
+
+**Objets participants :** Patient, Traitement, Historique de modifications.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-030-01 :** Soit le traitement "Sertraline 50mg", Quand le praticien modifie la posologie en "2 cp/jour" et valide, Alors la nouvelle posologie est enregistrée et l'historique est mis à jour.
+- **CA-UC-030-02 :** Soit un traitement actif, Quand le praticien ajoute une date de fin et passe le statut à "arrêté", Alors le traitement apparaît comme arrêté mais reste visible dans le profil.
+
+---
+
+##### UC-031 : Indiquer une absence de traitement
+
+**Résumé :** Le praticien déclare explicitement qu'un patient n'a aucun traitement en cours. Distingue "aucun traitement connu" de "non renseigné".
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM.
+
+**Fréquence d'utilisation :** Occasionnel.
+
+**État initial :** Le dossier du patient est ouvert. Aucun traitement actif n'est enregistré.
+
+**État final :** Le profil médical indique explicitement "Aucun traitement en cours".
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède à la section "Traitements" du profil médical. |
+| 1b | ← Système | Le système affiche la section vide avec l'option "Déclarer aucun traitement en cours". (IHM-017) |
+| 2a | → Acteur | Le praticien clique sur "Déclarer aucun traitement en cours". |
+| 2b | ← Système | Le système enregistre la déclaration avec la date et l'auteur. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 1b | Si des traitements actifs sont enregistrés | L'option "Déclarer aucun traitement en cours" n'est pas affichée. |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0062 | 2b | La déclaration est annulée automatiquement si un traitement est ajouté ultérieurement. |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-017 | Section Traitements (partagée). |
+
+**Objets participants :** Patient, Déclaration d'absence.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-031-01 :** Soit un patient sans traitement actif, Quand le praticien déclare "aucun traitement en cours", Alors la déclaration est enregistrée avec date et auteur.
+- **CA-UC-031-02 :** Soit un patient avec une déclaration d'absence de traitement, Quand un traitement est ajouté (UC-028), Alors la déclaration est automatiquement annulée.
+
+---
+
+#### Allergies
+
+```mermaid
+graph LR
+    subgraph Acteurs
+        CLIN([Cliniciens])
+    end
+
+    UC032[UC-032 : Ajouter une<br/>allergie/intolérance]
+    UC033[UC-033 : Consulter une<br/>allergie/intolérance]
+    UC034[UC-034 : Modifier une<br/>allergie/intolérance]
+    UC035[UC-035 : Déclarer des<br/>effets indésirables]
+
+    CLIN --> UC032
+    CLIN --> UC033
+    CLIN --> UC034
+    CLIN --> UC035
+```
+
+##### UC-032 : Ajouter une allergie ou une intolérance
+
+**Résumé :** Le praticien ajoute une allergie ou une intolérance au profil médical d'un patient : recherche et codification de l'agent responsable, qualification (type, sévérité, réaction, date de survenue).
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM.
+
+**Fréquence d'utilisation :** Occasionnel.
+
+**État initial :** Le dossier du patient est ouvert.
+
+**État final :** L'allergie ou l'intolérance est enregistrée dans le profil médical.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède à la section "Allergies" et clique sur "Ajouter". |
+| 1b | ← Système | Le système affiche le formulaire d'ajout d'allergie. (IHM-018) |
+| 2a | → Acteur | Le praticien recherche l'agent responsable (médicament, aliment, substance environnementale) par mot-clé. |
+| 2b | ← Système | Le système affiche les résultats codifiés correspondants (autocomplétion). |
+| 3a | → Acteur | Le praticien sélectionne l'agent, qualifie l'allergie (type : médicamenteuse/alimentaire/environnementale, sévérité : légère/modérée/sévère, réaction observée, date de survenue) et valide. |
+| 3b | ← Système | Le système enregistre l'allergie dans le profil médical du patient. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 2b | Si aucun agent codifié ne correspond | Proposition de saisie en texte libre avec un avertissement "Agent non codifié". |
+| 3a | Si l'allergie au même agent est déjà enregistrée | Message "Cette allergie est déjà enregistrée". Retour étape 2a. |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0063 | 3a | Les types d'allergie sont : médicamenteuse, alimentaire, environnementale. |
+| RG-0064 | 3a | Les niveaux de sévérité sont : légère, modérée, sévère. |
+| RG-0065 | 3b | L'ajout d'une allergie est tracé : praticien auteur, date et heure. |
+| RG-0066 | 3b | Les allergies médicamenteuses sont prises en compte par le module de prescription (alerte interaction — voir UC-061). |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-018 | Section Allergies du profil médical : liste des allergies (agent, type, sévérité, date), bouton "Ajouter", formulaire avec recherche agent par autocomplétion, qualification (type, sévérité, réaction, date). |
+
+**Objets participants :** Patient, Allergie, Agent responsable.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-032-01 :** Soit un praticien sur le dossier d'un patient, Quand il ajoute une allergie à la "Pénicilline" de type médicamenteuse, sévérité sévère, Alors l'allergie apparaît dans le profil médical.
+- **CA-UC-032-02 :** Soit un patient avec une allergie à la Pénicilline déjà enregistrée, Quand le praticien tente de l'ajouter à nouveau, Alors le message de doublon est affiché.
+- **CA-UC-032-03 :** Soit un agent non trouvé dans la base codifiée, Quand le praticien valide en texte libre, Alors l'allergie est enregistrée avec un avertissement "Agent non codifié".
+
+---
+
+##### UC-033 : Consulter une allergie ou une intolérance
+
+**Résumé :** Le praticien consulte les informations détaillées d'une allergie ou intolérance : agent, type, sévérité, réaction, date de survenue, historique.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM, Assistant médical.
+
+**Fréquence d'utilisation :** Fréquent (consultation systématique avant prescription).
+
+**État initial :** Le dossier du patient est ouvert. Au moins une allergie est enregistrée.
+
+**État final :** Les informations de l'allergie sont affichées.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède à la section "Allergies" du profil médical. |
+| 1b | ← Système | Le système affiche la liste des allergies du patient. (IHM-018) |
+| 2a | → Acteur | Le praticien sélectionne une allergie. |
+| 2b | ← Système | Le système affiche le détail : agent, type, sévérité, réaction, date, auteur, historique. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 1b | Si aucune allergie n'est enregistrée | Message "Aucune allergie enregistrée pour ce patient". |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-018 | Section Allergies (partagée — vue détail). |
+
+**Objets participants :** Patient, Allergie.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-033-01 :** Soit un patient avec une allergie à la Pénicilline (sévère, médicamenteuse), Quand le praticien la sélectionne, Alors le détail complet est affiché.
+
+---
+
+##### UC-034 : Modifier une allergie ou une intolérance
+
+**Résumé :** Le praticien modifie une allergie existante : sévérité, réaction, commentaires. L'agent responsable n'est pas modifiable.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM.
+
+**Fréquence d'utilisation :** Rare.
+
+**État initial :** Le dossier du patient est ouvert. L'allergie existe.
+
+**État final :** L'allergie est mise à jour.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède au détail d'une allergie et clique sur "Modifier". |
+| 1b | ← Système | Le système affiche le formulaire de modification. L'agent responsable est grisé. (IHM-018) |
+| 2a | → Acteur | Le praticien modifie les champs et valide. |
+| 2b | ← Système | Le système enregistre les modifications et met à jour l'historique. |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0067 | 1b | L'agent responsable n'est pas modifiable. Pour changer l'agent, supprimer l'allergie et en créer une nouvelle. |
+| RG-0068 | 2b | Chaque modification est tracée dans l'historique. |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-018 | Section Allergies (partagée — mode édition). |
+
+**Objets participants :** Patient, Allergie, Historique de modifications.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-034-01 :** Soit une allergie à la Pénicilline de sévérité "modérée", Quand le praticien modifie la sévérité en "sévère", Alors la modification est enregistrée et l'historique est mis à jour.
+
+---
+
+##### UC-035 : Déclarer des effets indésirables
+
+**Résumé :** Le praticien déclare un ou plusieurs effets indésirables liés à un médicament ou une substance, dans le cadre de la pharmacovigilance.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM.
+
+**Fréquence d'utilisation :** Rare.
+
+**État initial :** Le dossier du patient est ouvert. Un traitement ou une allergie est identifié comme source potentielle.
+
+**État final :** L'effet indésirable est enregistré dans le dossier du patient.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède à la section "Allergies" ou "Traitements" et clique sur "Déclarer un effet indésirable". |
+| 1b | ← Système | Le système affiche le formulaire de déclaration. (IHM-019) |
+| 2a | → Acteur | Le praticien renseigne : substance suspecte, effet observé, date de survenue, gravité, évolution. |
+| 2b | ← Système | Le système enregistre la déclaration et l'associe au dossier du patient. |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0069 | 2b | La déclaration d'effets indésirables est tracée : auteur, date. |
+| RG-0070 | 2b | La transmission à l'ANSM (pharmacovigilance nationale) n'est pas dans le périmètre actuel. Seul l'enregistrement local est géré. |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-019 | Formulaire de déclaration d'effet indésirable : substance suspecte, effet observé, date, gravité (légère/modérée/sévère/décès), évolution (guérison/séquelles/en cours). |
+
+**Objets participants :** Patient, Effet indésirable, Traitement, Allergie.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-035-01 :** Soit un patient sous Sertraline, Quand le praticien déclare un effet indésirable "nausées" de gravité légère, Alors l'effet est enregistré et associé au dossier du patient.
+- **CA-UC-035-02 :** Soit un effet indésirable enregistré, Quand le praticien consulte le dossier, Alors l'effet apparaît dans la section allergies/effets indésirables.
+
+---
+
+#### Habitus & modes de vie
+
+```mermaid
+graph LR
+    subgraph Acteurs
+        CLIN([Cliniciens])
+    end
+
+    UC036[UC-036 : Ajouter<br/>un habitus]
+    UC037[UC-037 : Modifier<br/>un habitus]
+    UC038[UC-038 : Consulter<br/>les habitus]
+
+    CLIN --> UC036
+    CLIN --> UC037
+    CLIN --> UC038
+```
+
+##### UC-036 : Ajouter un habitus (alcool, tabac, exercice, drogue, social)
+
+**Résumé :** Le praticien ajoute un habitus ou mode de vie au profil médical d'un patient. Les types d'habitus sont prédéfinis : consommation d'alcool, consommation tabagique, exercice physique, consommation de drogue, exposition à des produits toxiques, facteur social professionnel, régime alimentaire, autre.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM.
+
+**Fréquence d'utilisation :** Occasionnel (mise à jour du profil médical).
+
+**État initial :** Le dossier du patient est ouvert.
+
+**État final :** L'habitus est enregistré dans le profil médical.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède à la section "Habitus et modes de vie" et clique sur "Ajouter". |
+| 1b | ← Système | Le système affiche le formulaire d'ajout avec le choix du type d'habitus. (IHM-020) |
+| 2a | → Acteur | Le praticien sélectionne le type d'habitus. |
+| 2b | ← Système | Le système affiche les champs spécifiques au type sélectionné (ex : pour alcool — quantité, fréquence ; pour tabac — nombre de cigarettes/jour, date de début). |
+| 3a | → Acteur | Le praticien renseigne les informations et valide. |
+| 3b | ← Système | Le système enregistre l'habitus. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 3a | Si les champs obligatoires ne sont pas renseignés | Message d'erreur sur les champs manquants. Retour étape 3a. |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0071 | 2a | Les types d'habitus sont prédéfinis : alcool, tabac, exercice physique, drogue, exposition produits toxiques, facteur social professionnel, régime alimentaire, autre. |
+| RG-0072 | 2b | Chaque type d'habitus a ses propres champs de saisie adaptés (quantité, fréquence, dates, commentaire). |
+| RG-0073 | 3b | Un patient peut avoir plusieurs habitus du même type (ex : alcool et tabac). |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-020 | Section Habitus et modes de vie : liste des habitus du patient (type, résumé, date), bouton "Ajouter", formulaire avec sélection du type et champs dynamiques selon le type. |
+
+**Objets participants :** Patient, Habitus.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-036-01 :** Soit un praticien sur le dossier d'un patient, Quand il ajoute un habitus "Consommation tabagique — 10 cigarettes/jour depuis 2015", Alors l'habitus apparaît dans le profil médical.
+- **CA-UC-036-02 :** Soit un patient avec un habitus tabac, Quand le praticien ajoute un habitus alcool, Alors les deux habitus coexistent dans le profil.
+
+---
+
+##### UC-037 : Modifier un habitus
+
+**Résumé :** Le praticien modifie un habitus existant (quantité, fréquence, statut).
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM.
+
+**Fréquence d'utilisation :** Occasionnel.
+
+**État initial :** Le dossier du patient est ouvert. L'habitus existe.
+
+**État final :** L'habitus est mis à jour.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède au détail d'un habitus et clique sur "Modifier". |
+| 1b | ← Système | Le système affiche le formulaire de modification pré-rempli. (IHM-020) |
+| 2a | → Acteur | Le praticien modifie les informations et valide. |
+| 2b | ← Système | Le système enregistre les modifications. |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0074 | 2b | La modification est tracée dans l'historique : auteur, date, valeurs avant/après. |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-020 | Section Habitus (partagée — mode édition). |
+
+**Objets participants :** Patient, Habitus, Historique de modifications.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-037-01 :** Soit un habitus "Consommation tabagique — 10 cig/jour", Quand le praticien modifie en "5 cig/jour" et valide, Alors la modification est enregistrée et l'historique est mis à jour.
+
+---
+
+##### UC-038 : Consulter la liste des habitus d'un patient
+
+**Résumé :** Le praticien consulte la liste des habitus et modes de vie enregistrés pour un patient.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM, Assistant médical.
+
+**Fréquence d'utilisation :** Fréquent.
+
+**État initial :** Le dossier du patient est ouvert.
+
+**État final :** La liste des habitus est affichée.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède à la section "Habitus et modes de vie" du profil médical. |
+| 1b | ← Système | Le système affiche la liste des habitus du patient. (IHM-020) |
+| 2a | → Acteur | Le praticien sélectionne un habitus pour en voir le détail. |
+| 2b | ← Système | Le système affiche le détail de l'habitus. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 1b | Si aucun habitus n'est enregistré | Message "Aucun habitus enregistré pour ce patient". |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-020 | Section Habitus (partagée — mode consultation). |
+
+**Objets participants :** Patient, Habitus.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-038-01 :** Soit un patient avec 3 habitus (tabac, alcool, exercice), Quand le praticien accède à la section, Alors les 3 habitus sont listés.
+- **CA-UC-038-02 :** Soit un patient sans habitus, Quand le praticien accède à la section, Alors le message "Aucun habitus enregistré" est affiché.
+
+---
+
+#### Vaccinations
+
+```mermaid
+graph LR
+    subgraph Acteurs
+        CLIN([Cliniciens])
+    end
+
+    UC039[UC-039 : Ajouter<br/>une vaccination]
+    UC040[UC-040 : Consulter<br/>historique vaccinal]
+
+    CLIN --> UC039
+    CLIN --> UC040
+```
+
+##### UC-039 : Ajouter une vaccination avec gestion des rappels
+
+**Résumé :** Le praticien enregistre une vaccination dans le profil médical d'un patient et configure les rappels à venir selon le calendrier vaccinal.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM.
+
+**Fréquence d'utilisation :** Occasionnel.
+
+**État initial :** Le dossier du patient est ouvert.
+
+**État final :** La vaccination est enregistrée et les rappels sont planifiés.
+
+**Relations :**
+- Include : Aucune.
+- Extend : UC-092 — Création automatique de rappels.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède à la section "Vaccinations" et clique sur "Ajouter une vaccination". |
+| 1b | ← Système | Le système affiche le formulaire d'ajout. (IHM-021) |
+| 2a | → Acteur | Le praticien renseigne : vaccin (nom, lot), date d'administration, site d'injection, praticien vaccinateur. |
+| 2b | ← Système | Le système enregistre la vaccination. Si le vaccin a des rappels prévus selon le calendrier vaccinal, le système propose de planifier les rappels. |
+| 3a | → Acteur | Le praticien confirme ou ajuste les dates de rappel. |
+| 3b | ← Système | Le système crée les rappels associés (UC-092). |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 2b | Si le vaccin n'est pas trouvé dans la base | Proposition de saisie manuelle du nom du vaccin. |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0075 | 2b | Les rappels sont suggérés automatiquement selon le calendrier vaccinal mais modifiables par le praticien. |
+| RG-0076 | 3b | Les rappels créés sont liés à la vaccination et au patient. Ils apparaissent dans UC-092 (rappels). |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-021 | Section Vaccinations : historique vaccinal (vaccin, date, lot, praticien, rappels), bouton "Ajouter", formulaire avec recherche vaccin, champs date, lot, site d'injection, gestion des rappels. |
+
+**Objets participants :** Patient, Vaccination, Vaccin, Rappel.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-039-01 :** Soit un praticien vaccinant un patient (DTPc, lot ABC123, bras gauche), Quand il valide, Alors la vaccination est enregistrée et un rappel à +1 an est proposé.
+- **CA-UC-039-02 :** Soit un praticien qui confirme un rappel proposé, Quand il valide, Alors le rappel apparaît dans la section rappels du patient (UC-092).
+
+---
+
+##### UC-040 : Consulter l'historique vaccinal d'un patient
+
+**Résumé :** Le praticien consulte l'historique complet des vaccinations d'un patient : vaccins administrés, dates, lots, rappels à venir.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM, Assistant médical.
+
+**Fréquence d'utilisation :** Fréquent.
+
+**État initial :** Le dossier du patient est ouvert.
+
+**État final :** L'historique vaccinal est affiché.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède à la section "Vaccinations" du profil médical. |
+| 1b | ← Système | Le système affiche l'historique vaccinal : vaccins administrés (nom, date, lot, praticien) et rappels à venir. (IHM-021) |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 1b | Si aucune vaccination n'est enregistrée | Message "Aucune vaccination enregistrée pour ce patient". |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-021 | Section Vaccinations (partagée — vue historique). |
+
+**Objets participants :** Patient, Vaccination, Rappel.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-040-01 :** Soit un patient avec 5 vaccinations et 2 rappels à venir, Quand le praticien accède à la section, Alors les 5 vaccinations et les 2 rappels sont affichés.
+- **CA-UC-040-02 :** Soit un patient sans vaccination, Quand le praticien accède à la section, Alors le message "Aucune vaccination enregistrée" est affiché.
+
+---
+
+#### Biométries
+
+##### UC-041 : Saisir des biométries (taille, poids, IMC, TA, FC)
+
+**Résumé :** Le praticien saisit les mesures biométriques d'un patient : taille, poids, IMC (calculé automatiquement), tension artérielle, fréquence cardiaque, et autres paramètres cliniques.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM, Assistant médical.
+
+**Fréquence d'utilisation :** Fréquent (à chaque consultation).
+
+**État initial :** Le dossier du patient est ouvert.
+
+**État final :** Les biométries sont enregistrées dans le dossier.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède à la section "Biométries" et clique sur "Ajouter des mesures". |
+| 1b | ← Système | Le système affiche le formulaire de saisie biométrique : taille, poids, TA systolique/diastolique, fréquence cardiaque, température, SpO2. (IHM-022) |
+| 2a | → Acteur | Le praticien saisit les mesures disponibles et valide. |
+| 2b | ← Système | Le système calcule l'IMC à partir de la taille et du poids, enregistre toutes les mesures avec la date et l'heure. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 2a | Si une valeur est en dehors des plages physiologiques (ex : poids > 500 kg) | Avertissement "Valeur inhabituelle — veuillez vérifier". La saisie reste possible après confirmation. |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0077 | 2b | L'IMC est calculé automatiquement : IMC = poids (kg) / taille² (m). Il n'est pas saisi manuellement. |
+| RG-0078 | 2b | Chaque jeu de mesures est horodaté. L'historique des mesures est conservé pour suivi de l'évolution. |
+| RG-0079 | 2a | Tous les champs sont optionnels. Le praticien peut ne saisir que les mesures pertinentes (ex : TA seule). |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-022 | Section Biométries : historique des mesures (courbes d'évolution optionnelles), formulaire de saisie avec champs taille (cm), poids (kg), IMC (calculé), TA (systolique/diastolique mmHg), FC (bpm), température (°C), SpO2 (%). |
+
+**Objets participants :** Patient, Biométrie, Mesure.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-041-01 :** Soit un praticien qui saisit taille 175 cm et poids 80 kg, Quand il valide, Alors l'IMC est calculé à 26.1 et les mesures sont enregistrées.
+- **CA-UC-041-02 :** Soit un praticien qui saisit un poids de 600 kg, Quand il valide, Alors un avertissement est affiché mais la saisie reste possible après confirmation.
+- **CA-UC-041-03 :** Soit un praticien qui ne saisit que la TA (120/80 mmHg), Quand il valide, Alors seule la TA est enregistrée (pas d'erreur sur les champs vides).
+
+---
+
+#### Antécédents familiaux
+
+##### UC-042 : Ajouter un antécédent familial
+
+**Résumé :** Le praticien ajoute un antécédent familial au profil médical d'un patient : pathologie, lien de parenté, commentaire.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM.
+
+**Fréquence d'utilisation :** Rare.
+
+**État initial :** Le dossier du patient est ouvert.
+
+**État final :** L'antécédent familial est enregistré dans le profil médical.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède à la section "Antécédents familiaux" et clique sur "Ajouter". |
+| 1b | ← Système | Le système affiche le formulaire d'ajout. (IHM-023) |
+| 2a | → Acteur | Le praticien renseigne : pathologie (recherche CIM-10 ou texte libre), lien de parenté (père, mère, frère, sœur, grands-parents, etc.), âge de survenue (optionnel), commentaire. |
+| 2b | ← Système | Le système enregistre l'antécédent familial. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 2a | Si les champs obligatoires ne sont pas renseignés (pathologie, lien de parenté) | Message d'erreur. Retour étape 2a. |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0080 | 2a | La codification CIM-10 est optionnelle pour les antécédents familiaux (contrairement aux pathologies du patient). Le texte libre est accepté. |
+| RG-0081 | 2a | Les liens de parenté sont prédéfinis : père, mère, frère, sœur, grand-père paternel, grand-mère paternelle, grand-père maternel, grand-mère maternelle, oncle, tante, enfant, autre. |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-023 | Section Antécédents familiaux : liste (pathologie, lien de parenté, âge de survenue), bouton "Ajouter", formulaire avec recherche pathologie (CIM-10 ou texte libre), sélection lien de parenté, âge de survenue, commentaire. |
+
+**Objets participants :** Patient, Antécédent familial, Nomenclature CIM-10.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-042-01 :** Soit un praticien sur le dossier d'un patient, Quand il ajoute un antécédent "Diabète de type 2 — père — survenu à 55 ans", Alors l'antécédent apparaît dans le profil médical.
+- **CA-UC-042-02 :** Soit un praticien qui saisit un antécédent en texte libre sans code CIM-10, Quand il valide, Alors l'antécédent est accepté et enregistré.
+
+
+
+#### Épisodes de soins
+
+##### UC-043 : Consulter les épisodes de soins d'un patient
+
+**Résumé :** Le praticien consulte les épisodes de soins d'un patient. Un épisode de soins regroupe plusieurs consultations liées à une même pathologie ou problématique clinique, offrant une vue longitudinale du parcours de soins.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM, Assistant médical.
+
+**Fréquence d'utilisation :** Fréquent.
+
+**État initial :** Le dossier du patient est ouvert. Au moins un épisode de soins existe.
+
+**État final :** La liste des épisodes de soins est affichée avec les consultations regroupées.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède à la section "Épisodes de soins" du dossier patient. |
+| 1b | ← Système | Le système affiche la liste des épisodes de soins : pathologie/problématique, date de début, date de fin (si clôturé), nombre de consultations associées, statut (ouvert/clôturé). (IHM-024) |
+| 2a | → Acteur | Le praticien sélectionne un épisode de soins. |
+| 2b | ← Système | Le système affiche le détail de l'épisode : pathologie liée, liste des consultations associées (date, praticien, résumé), traitements prescrits dans le cadre de cet épisode. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 1b | Si aucun épisode de soins n'existe | Message "Aucun épisode de soins enregistré pour ce patient". |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0082 | 1b | Un épisode de soins regroupe les consultations liées à une même pathologie ou problématique. Il peut s'étendre sur plusieurs mois ou années. |
+| RG-0083 | 2b | Un épisode de soins est lié à une ou plusieurs pathologies du profil médical du patient. |
+| RG-0084 | 1b | Un épisode de soins peut être ouvert (en cours) ou clôturé (résolu ou terminé). |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-024 | Section Épisodes de soins : liste des épisodes (pathologie, dates, nombre de consultations, statut), vue détail avec consultations et traitements regroupés. |
+
+**Objets participants :** Patient, Épisode de soins, Consultation, Pathologie, Traitement.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-043-01 :** Soit un patient avec un épisode de soins "Épisode dépressif" lié à F32.1, regroupant 4 consultations, Quand le praticien ouvre l'épisode, Alors les 4 consultations sont listées avec date et résumé.
+- **CA-UC-043-02 :** Soit un patient sans épisode de soins, Quand le praticien accède à la section, Alors le message "Aucun épisode de soins" est affiché.
+- **CA-UC-043-03 :** Soit un épisode clôturé, Quand le praticien le consulte, Alors le statut "clôturé" et la date de clôture sont affichés.
+
+---
+
+#### Consultation
+
+```mermaid
+graph LR
+    subgraph Acteurs
+        CLIN([Cliniciens])
+        AM([Assistant médical])
+    end
+
+    UC044[UC-044 : Créer une<br/>consultation]
+    UC045[UC-045 : Conduire avec<br/>assistant IA]
+    UC046[UC-046 : Gérer modèles<br/>de consultation]
+    UC047[UC-047 : Calculer un<br/>score clinique]
+    UC048[UC-048 : Utiliser dispositif<br/>connecté]
+    UC049[UC-049 : Clôturer et<br/>transmettre facturation]
+
+    CLIN --> UC044
+    CLIN --> UC045
+    CLIN --> UC046
+    CLIN --> UC047
+    CLIN --> UC048
+    CLIN --> UC049
+    AM --> UC044
+
+    UC044 -.->|extend| UC045
+    UC044 -.->|extend| UC047
+    UC044 -.->|extend| UC048
+    UC049 -.->|extend| UC044
+```
+
+##### UC-044 : Créer une consultation
+
+**Résumé :** Le praticien crée une nouvelle consultation pour un patient. Il renseigne les informations cliniques : date, motif, observations (texte libre), diagnostic (codification CIM-10), actes réalisés. Les champs IA (transcript, summary) sont disponibles pour les praticiens utilisant l'assistant IA (UC-045).
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM, Assistant médical.
+
+**Fréquence d'utilisation :** Très fréquent (plusieurs fois par jour — cœur de l'activité du praticien).
+
+**État initial :** Le dossier du patient est ouvert. L'utilisateur est authentifié.
+
+**État final :** La consultation est créée au statut "en_cours".
+
+**Relations :**
+- Include : Aucune.
+- Extend : UC-045 — Utilisation de l'assistant IA. UC-047 — Calcul de score clinique. UC-048 — Utilisation d'un dispositif connecté.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien ouvre une nouvelle consultation depuis le dossier du patient. |
+| 1b | ← Système | Le système crée une consultation au statut "en_cours" avec la date et l'heure courantes, et affiche le formulaire de consultation. Le profil médical du patient (pathologies, traitements, allergies) est visible en contexte. (IHM-025) |
+| 2a | → Acteur | Le praticien renseigne le motif de la consultation. |
+| 2b | ← Système | Le système enregistre le motif. |
+| 3a | → Acteur | Le praticien saisit ses observations cliniques en texte libre. |
+| 3b | ← Système | Le système enregistre les observations. |
+| 4a | → Acteur | Le praticien renseigne le diagnostic (recherche CIM-10) et les actes réalisés. |
+| 4b | ← Système | Le système enregistre le diagnostic et les actes. Si un modèle de consultation est actif (UC-046), les champs spécifiques du modèle sont affichés et renseignés. |
+| 5a | → Acteur | Le praticien enregistre la consultation (sans la clôturer). |
+| 5b | ← Système | Le système sauvegarde la consultation au statut "en_cours". La consultation apparaît dans la timeline du patient (UC-093). |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 1b | Si une consultation "en_cours" existe déjà pour ce patient avec ce praticien aujourd'hui | Message "Une consultation est déjà en cours pour ce patient". Proposition de la reprendre ou d'en créer une nouvelle. |
+| 4a | Si aucun résultat CIM-10 ne correspond à la recherche de diagnostic | Message "Aucun résultat CIM-10". Le diagnostic peut être laissé vide ou saisi ultérieurement. |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0085 | 1b | Le statut initial d'une consultation est "en_cours". Les statuts possibles sont : en_cours, terminée, facturée, annulée. |
+| RG-0086 | 1b | Le profil médical du patient (pathologies, traitements, allergies) est affiché en contexte pour aider le praticien pendant la consultation. |
+| RG-0087 | 4a | Le diagnostic CIM-10 n'est pas obligatoire à la création. Il peut être ajouté ultérieurement. |
+| RG-0088 | 5b | La consultation peut être enregistrée en mode brouillon (statut "en_cours") et reprise ultérieurement. |
+| RG-0089 | 1b | Une consultation est rattachée à un praticien et à un patient. Elle peut être associée à un épisode de soins existant ou en créer un nouveau. |
+| RG-0090 | 1b | Les champs IA (transcript, summary) sont présents dans le formulaire mais ne sont renseignés que si l'assistant IA est utilisé (UC-045). |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-025 | Écran de consultation : en-tête (patient, date, praticien, statut), panneau latéral profil médical (pathologies, traitements, allergies), zone motif, zone observations (texte libre), zone diagnostic (recherche CIM-10), zone actes réalisés, champs IA (transcript, summary — lecture seule sauf via UC-045), boutons (enregistrer, clôturer, annuler). Si un modèle est actif, champs spécifiques du modèle affichés. |
+
+**Objets participants :** Patient, Consultation, Praticien, Épisode de soins, Pathologie, Nomenclature CIM-10.
+
+**Contraintes non fonctionnelles :** Sauvegarde automatique fréquente pour éviter la perte de données en cas de coupure (fréquence à préciser — voir ENF).
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-044-01 :** Soit un praticien sur le dossier d'un patient, Quand il crée une consultation avec motif "Suivi dépression", Alors la consultation est créée au statut "en_cours" avec la date du jour.
+- **CA-UC-044-02 :** Soit un praticien qui renseigne le diagnostic F32.1, Quand il enregistre, Alors le diagnostic est associé à la consultation.
+- **CA-UC-044-03 :** Soit un praticien qui crée une consultation, Quand il consulte l'écran, Alors le profil médical du patient (pathologies, traitements, allergies) est visible en panneau latéral.
+- **CA-UC-044-04 :** Soit une consultation "en_cours" déjà ouverte pour ce patient aujourd'hui, Quand le praticien tente d'en créer une nouvelle, Alors le message d'avertissement est affiché avec proposition de reprendre l'existante.
+- **CA-UC-044-05 :** Soit un praticien qui enregistre une consultation sans diagnostic, Quand il enregistre, Alors la consultation est sauvegardée au statut "en_cours" sans erreur.
+
+---
+
+##### UC-045 : Conduire une consultation avec assistant IA
+
+**Résumé :** Le praticien active l'assistant IA pendant une consultation. L'assistant transcrit en temps réel l'échange vocal entre le praticien et le patient, puis produit un résumé structuré. Les champs transcript et summary de la consultation sont renseignés automatiquement.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM.
+
+**Fréquence d'utilisation :** Variable (dépend de l'adoption par le praticien).
+
+**État initial :** Une consultation est ouverte au statut "en_cours" (UC-044 exécuté). Le microphone du poste est disponible.
+
+**État final :** Le transcript et le résumé sont enregistrés dans la consultation.
+
+**Relations :**
+- Include : Aucune.
+- Extend : UC-044 — Extension optionnelle de la consultation.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien clique sur "Activer l'assistant IA" dans l'écran de consultation. |
+| 1b | ← Système | Le système active la capture audio et affiche l'indicateur d'enregistrement. La transcription en temps réel commence à apparaître dans le champ transcript. (IHM-025) |
+| 2a | → Acteur | Le praticien conduit la consultation normalement (échange verbal avec le patient). |
+| 2b | ← Système | Le système transcrit en continu l'échange et affiche le texte en temps réel. |
+| 3a | → Acteur | Le praticien clique sur "Arrêter l'assistant IA". |
+| 3b | ← Système | Le système arrête la capture audio, finalise la transcription, et génère un résumé structuré de la consultation (champ summary). |
+| 4a | → Acteur | Le praticien relit et corrige si nécessaire le transcript et le résumé. |
+| 4b | ← Système | Le système enregistre les corrections. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 1b | Si le microphone n'est pas accessible (permissions navigateur, matériel absent) | Message "Impossible d'accéder au microphone. Vérifiez les permissions du navigateur". L'assistant IA n'est pas activé. |
+| 2b | Si la connexion au service de transcription est perdue | Message "Transcription interrompue". Le transcript partiel est conservé. Le praticien peut reprendre manuellement. |
+| 3b | Si la génération du résumé échoue | Message "Erreur lors de la génération du résumé". Le transcript est conservé. Le résumé peut être rédigé manuellement. |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0091 | 1b | L'assistant IA n'est pas intégré dans la version actuelle. Les champs transcript et summary sont prêts dans le modèle de données. L'intégration est à planifier. |
+| RG-0092 | 4a | Le praticien a toujours la main sur le transcript et le résumé. Les contenus générés par l'IA sont modifiables. |
+| RG-0093 | 1b | L'activation de l'assistant IA nécessite le consentement préalable du patient (affichage d'un avertissement). |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-025 | Écran de consultation (partagé) : indicateur d'enregistrement IA, champ transcript en temps réel (scrollable), champ summary (généré après arrêt), boutons "Activer IA" / "Arrêter IA". |
+
+**Objets participants :** Patient, Consultation, Transcript, Summary, Service IA.
+
+**Contraintes non fonctionnelles :** Latence de transcription temps réel à préciser (voir ENF). Qualité de transcription et de résumé à évaluer.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-045-01 :** Soit une consultation ouverte avec microphone disponible, Quand le praticien active l'assistant IA, Alors l'indicateur d'enregistrement est affiché et la transcription apparaît en temps réel.
+- **CA-UC-045-02 :** Soit une transcription en cours, Quand le praticien arrête l'assistant IA, Alors le transcript est finalisé et un résumé structuré est généré.
+- **CA-UC-045-03 :** Soit un résumé généré par l'IA, Quand le praticien le modifie et enregistre, Alors la version corrigée est sauvegardée.
+- **CA-UC-045-04 :** Soit un microphone non accessible, Quand le praticien tente d'activer l'IA, Alors le message d'erreur est affiché et la consultation continue normalement sans IA.
+- **CA-UC-045-05 :** Soit l'activation de l'assistant IA, Quand le praticien clique sur "Activer", Alors un avertissement de consentement patient est affiché avant le démarrage.
+
+---
+
+##### UC-046 : Gérer les modèles de consultation (formulaires)
+
+**Résumé :** Le praticien crée, modifie ou supprime des modèles de consultation personnalisés. Un modèle définit un ensemble de champs spécifiques à un type de consultation (ex : "Consultation psychiatrique", "Suivi diabète") qui s'ajoutent aux champs standard de la consultation.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM.
+
+**Fréquence d'utilisation :** Rare (configuration, puis utilisation courante des modèles créés).
+
+**État initial :** L'utilisateur est authentifié.
+
+**État final :** Le modèle de consultation est créé, modifié ou supprimé.
+
+**Relations :**
+- Include : Aucune.
+- Extend : Aucune.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal — création) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien accède à la gestion des modèles de consultation. |
+| 1b | ← Système | Le système affiche la liste des modèles existants (personnels et partagés). (IHM-026) |
+| 2a | → Acteur | Le praticien clique sur "Créer un modèle". |
+| 2b | ← Système | Le système affiche l'éditeur de modèle : nom, description, liste de champs personnalisés (type : texte, nombre, choix multiple, date, case à cocher). (IHM-026) |
+| 3a | → Acteur | Le praticien définit le nom du modèle, ajoute les champs personnalisés et valide. |
+| 3b | ← Système | Le système enregistre le modèle. Il est désormais disponible lors de la création de consultations (UC-044). |
+
+**Étapes (cas nominal — utilisation en consultation) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien sélectionne un modèle lors de la création d'une consultation (UC-044). |
+| 1b | ← Système | Le système affiche les champs standard de la consultation plus les champs personnalisés définis dans le modèle. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 3a | Si le nom du modèle est déjà utilisé | Message "Un modèle avec ce nom existe déjà". Retour étape 3a. |
+| 3a | Si aucun champ personnalisé n'est ajouté | Message "Un modèle doit contenir au moins un champ personnalisé". Retour étape 3a. |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0094 | 3b | Un modèle est créé par un praticien. Il est utilisable par son créateur. Le partage de modèles entre praticiens du même cabinet est à préciser. |
+| RG-0095 | 3a | Les types de champs personnalisés sont : texte libre, nombre, choix multiple (liste de valeurs), date, case à cocher. |
+| RG-0096 | 1b | La suppression d'un modèle n'affecte pas les consultations déjà créées avec ce modèle. Les données saisies dans les champs personnalisés sont conservées. |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-026 | Gestion des modèles de consultation : liste des modèles (nom, description, nombre de champs, date de création), éditeur de modèle avec drag-and-drop de champs, aperçu du formulaire. |
+
+**Objets participants :** Modèle de consultation, Champ personnalisé, Praticien.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-046-01 :** Soit un praticien, Quand il crée un modèle "Consultation psychiatrique" avec les champs "Humeur (choix multiple)", "Score HAM-D (nombre)", "Idées suicidaires (case à cocher)", Alors le modèle apparaît dans la liste.
+- **CA-UC-046-02 :** Soit un modèle "Consultation psychiatrique" créé, Quand le praticien crée une consultation et sélectionne ce modèle, Alors les 3 champs personnalisés apparaissent en plus des champs standard.
+- **CA-UC-046-03 :** Soit un modèle utilisé dans 5 consultations, Quand le praticien supprime le modèle, Alors les 5 consultations conservent les données saisies dans les champs personnalisés.
+
+---
+
+##### UC-047 : Calculer un score clinique
+
+**Résumé :** Le praticien calcule un score clinique standardisé pendant une consultation (ex : HAM-D, MADRS, MMSE, score de Framingham). Le score est enregistré dans la consultation.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM.
+
+**Fréquence d'utilisation :** Occasionnel (dépend de la spécialité et du type de consultation).
+
+**État initial :** Une consultation est ouverte au statut "en_cours" (UC-044 exécuté).
+
+**État final :** Le score est calculé et enregistré dans la consultation.
+
+**Relations :**
+- Include : Aucune.
+- Extend : UC-044 — Extension optionnelle de la consultation.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien clique sur "Calculer un score" dans l'écran de consultation. |
+| 1b | ← Système | Le système affiche la liste des scores cliniques disponibles. (IHM-027) |
+| 2a | → Acteur | Le praticien sélectionne un score (ex : HAM-D). |
+| 2b | ← Système | Le système affiche le questionnaire du score avec les items à renseigner. |
+| 3a | → Acteur | Le praticien renseigne les réponses à chaque item. |
+| 3b | ← Système | Le système calcule le score total, affiche le résultat et son interprétation (ex : HAM-D 18 — dépression modérée). Le score est enregistré dans la consultation. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 3a | Si tous les items obligatoires ne sont pas renseignés | Message "Veuillez renseigner tous les items pour calculer le score". Retour étape 3a. |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0097 | 1b | La liste des scores disponibles dépend de la spécialité du praticien et du contexte clinique. |
+| RG-0098 | 3b | Le calcul du score est automatique. La formule est définie par le score standardisé. |
+| RG-0099 | 3b | L'historique des scores est conservé pour suivre l'évolution dans le temps. |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-027 | Calcul de score clinique : liste des scores disponibles, questionnaire d'items, résultat avec score total et interprétation, historique des scores précédents du patient pour ce même score (graphique d'évolution). |
+
+**Objets participants :** Consultation, Score clinique, Item de score, Patient.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-047-01 :** Soit un praticien en consultation, Quand il sélectionne le score HAM-D et renseigne les 17 items, Alors le score total est calculé et l'interprétation "dépression modérée" est affichée.
+- **CA-UC-047-02 :** Soit un patient avec 3 scores HAM-D précédents, Quand le praticien calcule un nouveau score, Alors l'historique des 4 scores est visible.
+- **CA-UC-047-03 :** Soit un praticien qui ne renseigne pas tous les items, Quand il tente de calculer, Alors le message d'erreur est affiché.
+
+---
+
+##### UC-048 : Utiliser un dispositif connecté en consultation
+
+**Résumé :** Le praticien récupère les données d'un dispositif médical connecté (tensiomètre, oxymètre, ECG) directement dans la consultation en cours.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM.
+
+**Fréquence d'utilisation :** Occasionnel (dépend de l'équipement du cabinet).
+
+**État initial :** Une consultation est ouverte au statut "en_cours". Un dispositif connecté est disponible et appairé.
+
+**État final :** Les données du dispositif sont enregistrées dans la consultation et/ou les biométries du patient.
+
+**Relations :**
+- Include : Aucune.
+- Extend : UC-044 — Extension optionnelle de la consultation.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien clique sur "Récupérer données dispositif" dans l'écran de consultation. |
+| 1b | ← Système | Le système affiche la liste des dispositifs connectés disponibles. (IHM-028) |
+| 2a | → Acteur | Le praticien sélectionne un dispositif et déclenche la mesure. |
+| 2b | ← Système | Le système récupère les données du dispositif et les affiche (ex : TA 120/80, FC 72). |
+| 3a | → Acteur | Le praticien valide les données. |
+| 3b | ← Système | Le système enregistre les données dans la consultation et met à jour les biométries du patient (UC-041). |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 1b | Si aucun dispositif n'est détecté | Message "Aucun dispositif connecté détecté. Vérifiez l'appairage". |
+| 2b | Si la récupération des données échoue | Message "Erreur de communication avec le dispositif". Proposition de saisie manuelle des mesures. |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0100 | 1b | L'intégration des dispositifs connectés est à planifier. La liste des dispositifs supportés est à définir. |
+| RG-0101 | 3b | Les données récupérées sont automatiquement ajoutées aux biométries du patient avec la date et l'heure de mesure. |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-028 | Interface dispositifs connectés : liste des dispositifs détectés, indicateur de mesure en cours, affichage des données récupérées avec validation. |
+
+**Objets participants :** Consultation, Dispositif connecté, Biométrie, Patient.
+
+**Contraintes non fonctionnelles :** Aucune spécifique.
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-048-01 :** Soit un tensiomètre connecté appairé, Quand le praticien déclenche la mesure, Alors la TA et la FC sont récupérées et affichées.
+- **CA-UC-048-02 :** Soit des données validées par le praticien, Quand il confirme, Alors les mesures sont enregistrées dans la consultation et dans les biométries du patient.
+- **CA-UC-048-03 :** Soit aucun dispositif détecté, Quand le praticien clique sur "Récupérer données", Alors le message d'absence de dispositif est affiché.
+
+---
+
+##### UC-049 : Clôturer et transmettre vers facturation
+
+**Résumé :** Le praticien clôture une consultation en passant son statut à "terminée", puis déclenche la transmission des données de facturation vers Stellair Intégral via l'interface inter-applications.
+
+**Acteurs :** Médecin titulaire, Médecin remplaçant, Interne / Docteur junior, PSNM.
+
+**Fréquence d'utilisation :** Très fréquent (à chaque fin de consultation).
+
+**État initial :** La consultation est au statut "en_cours" avec les informations cliniques renseignées.
+
+**État final :** La consultation est au statut "terminée", puis "facturée" après transmission réussie à Stellair Intégral.
+
+**Relations :**
+- Include : Aucune.
+- Extend : UC-044 — Extension de la consultation.
+- Généralisation : Aucune.
+
+**Étapes (cas nominal) :**
+
+| # | Direction | Description |
+|---|---|---|
+| 1a | → Acteur | Le praticien clique sur "Clôturer la consultation". |
+| 1b | ← Système | Le système vérifie que les champs minimaux sont renseignés et affiche un récapitulatif de la consultation (motif, diagnostic, actes). (IHM-025) |
+| 2a | → Acteur | Le praticien confirme la clôture. |
+| 2b | ← Système | Le système passe le statut à "terminée". |
+| 3a | → Acteur | Le praticien clique sur "Transmettre pour facturation". |
+| 3b | ← Système | Le système transmet les données de la consultation (actes, diagnostic, patient) à Stellair Intégral via l'interface inter-applications. Le statut passe à "facturée" après confirmation de réception. |
+
+**Exceptions :**
+
+| Id étape | Condition | Réaction du système |
+|---|---|---|
+| 1b | Si les champs minimaux ne sont pas renseignés (motif manquant) | Message "Veuillez renseigner au minimum le motif de la consultation". Retour à la consultation. |
+| 3b | Si Stellair Intégral est indisponible | Message "Stellair Intégral indisponible. La facturation sera transmise ultérieurement". Le statut reste "terminée". |
+| 3b | Si la transmission échoue (erreur de format, données manquantes) | Message "Erreur de transmission" avec détail. Le statut reste "terminée". |
+
+**Règles de gestion :**
+
+| n° RG | Id étape | Énoncé |
+|---|---|---|
+| RG-0102 | 2b | Une consultation clôturée (statut "terminée") ne peut plus être modifiée sauf par un praticien autorisé (correction d'erreur). |
+| RG-0103 | 3b | La transmission vers Stellair Intégral utilise l'interface inter-applications. Le format d'échange est à définir. |
+| RG-0104 | 3b | Si la transmission échoue, le système conserve les données en file d'attente et retente ultérieurement. |
+| RG-0105 | 2b | Le passage au statut "annulée" est possible depuis "en_cours" ou "terminée" (mais pas depuis "facturée"). |
+| RG-0106 | 1b | Les champs minimaux pour clôturer une consultation sont : motif. Le diagnostic et les actes sont recommandés mais non bloquants. |
+
+**IHM :**
+
+| Id IHM | Description |
+|---|---|
+| IHM-025 | Écran de consultation (partagé) : récapitulatif pré-clôture (motif, diagnostic, actes, prescriptions associées), boutons "Clôturer", "Transmettre pour facturation", indicateur de statut. |
+
+**Objets participants :** Consultation, Patient, Praticien, Stellair Intégral.
+
+**Contraintes non fonctionnelles :** Temps de transmission vers Stellair Intégral à préciser (voir ENF).
+
+**Critères d'acceptation / Cas de tests :**
+
+- **CA-UC-049-01 :** Soit une consultation "en_cours" avec motif et diagnostic renseignés, Quand le praticien clôture, Alors le statut passe à "terminée" et le récapitulatif est affiché.
+- **CA-UC-049-02 :** Soit une consultation "terminée", Quand le praticien transmet pour facturation et que Stellair Intégral confirme la réception, Alors le statut passe à "facturée".
+- **CA-UC-049-03 :** Soit Stellair Intégral indisponible, Quand le praticien transmet, Alors le message d'indisponibilité est affiché et le statut reste "terminée".
+- **CA-UC-049-04 :** Soit une consultation sans motif, Quand le praticien tente de clôturer, Alors le message d'erreur est affiché et la consultation reste "en_cours".
+- **CA-UC-049-05 :** Soit une consultation "facturée", Quand le praticien tente de l'annuler, Alors l'action est refusée.
+- **CA-UC-049-06 :** Soit une consultation "terminée", Quand le praticien tente de la modifier, Alors l'accès en écriture est refusé (sauf correction autorisée).
+
+
 ## Objets participants
 
 <!-- À compléter lors de l'étape 3 — Compléments -->
