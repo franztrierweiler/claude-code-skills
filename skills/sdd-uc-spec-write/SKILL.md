@@ -1,47 +1,15 @@
 ---
 name: sdd-uc-spec-write
 description: >
-  Rédige des spécifications logicielles par cas d'utilisation (UC) selon la méthodologie
-  Spec Driven Development (SDD).
-
-  DÉCLENCHEMENT PRIMAIRE (haute confiance — active le skill directement) :
-  - L'utilisateur demande explicitement une spec SDD, un SPEC.md, ou mentionne
-    "Spec Driven Development" / "SDD" comme méthodologie.
-  - L'utilisateur demande de rédiger des cas d'utilisation (UC) pour un projet logiciel.
-  - L'utilisateur demande de rédiger une spécification par cas d'utilisation.
-  - L'utilisateur demande de produire une spécification structurée destinée
-    à être implémentée par un agent IA.
-  - L'utilisateur fournit des notes informelles et demande de les transformer
-    en spécification structurée par cas d'utilisation.
-  - L'utilisateur fournit un SPEC.md existant et demande de le modifier, compléter
-    ou mettre à jour.
-
-  DÉCLENCHEMENT SECONDAIRE (confiance moyenne — demande confirmation avant d'activer) :
-  - L'utilisateur veut "formaliser" ou "structurer" un cahier des charges sans
-    mentionner SDD → Demande : "Tu veux un cahier des charges classique ou une
-    spec SDD structurée par cas d'utilisation ?"
-  - L'utilisateur veut documenter des règles métier sans contexte d'implémentation
-    → Demande : "Ces règles doivent-elles aboutir à une implémentation logicielle ?"
-  - L'utilisateur mentionne "spécifier un comportement" ou "documenter des scénarios"
-    sans contexte clair → Demande : "Tu veux intégrer ça dans une spec SDD complète
-    ou juste documenter ce point isolément ?"
-
-  NE PAS DÉCLENCHER (anti-triggers) :
-  - L'utilisateur demande de lire, analyser ou résumer une spec existante sans
-    intention de produire ou modifier un SPEC.md.
-  - L'utilisateur rédige de la documentation utilisateur, un README, ou un guide
-    d'utilisation.
-  - L'utilisateur écrit des tests, même s'il mentionne des critères d'acceptation
-    (les tests consomment la spec, ils ne la produisent pas).
-  - L'utilisateur pose une question technique sur une API ou un format sans vouloir
-    produire de spécification.
-  - L'utilisateur demande une revue de code ou un audit technique.
+  Rédige et met à jour des spécifications logicielles structurées par cas d'utilisation (UC)
+  selon la méthodologie Spec Driven Development (SDD). Produit des SPEC.md exploitables par
+  des agents IA pour l'implémentation.
 ---
 
 # Spec Driven Development (SDD) — Rédaction par cas d'utilisation
 
-Version : 1.0.0
-Date : 2026-02-25
+Version : 1.1.0
+Date : 2026-03-03
 
 ## Message d'accueil
 
@@ -76,6 +44,44 @@ d'utilisation. Je peux intervenir sur :
 
 Quelle section veux-tu modifier ?
 ```
+
+## Critères de déclenchement
+
+### Déclenchement primaire (haute confiance — active le skill directement)
+
+- L'utilisateur demande explicitement une spec SDD, un SPEC.md, ou mentionne
+  "Spec Driven Development" / "SDD" comme méthodologie.
+- L'utilisateur demande de rédiger des cas d'utilisation (UC) pour un projet logiciel.
+- L'utilisateur demande de rédiger une spécification par cas d'utilisation.
+- L'utilisateur demande de produire une spécification structurée destinée
+  à être implémentée par un agent IA.
+- L'utilisateur fournit des notes informelles et demande de les transformer
+  en spécification structurée par cas d'utilisation.
+- L'utilisateur fournit un SPEC.md existant et demande de le modifier, compléter
+  ou mettre à jour.
+
+### Déclenchement secondaire (confiance moyenne — demande confirmation)
+
+- L'utilisateur veut "formaliser" ou "structurer" un cahier des charges sans
+  mentionner SDD → Demande : "Tu veux un cahier des charges classique ou une
+  spec SDD structurée par cas d'utilisation ?"
+- L'utilisateur veut documenter des règles métier sans contexte d'implémentation
+  → Demande : "Ces règles doivent-elles aboutir à une implémentation logicielle ?"
+- L'utilisateur mentionne "spécifier un comportement" ou "documenter des scénarios"
+  sans contexte clair → Demande : "Tu veux intégrer ça dans une spec SDD complète
+  ou juste documenter ce point isolément ?"
+
+### Anti-triggers (ne pas déclencher)
+
+- L'utilisateur demande de lire, analyser ou résumer une spec existante sans
+  intention de produire ou modifier un SPEC.md.
+- L'utilisateur rédige de la documentation utilisateur, un README, ou un guide
+  d'utilisation.
+- L'utilisateur écrit des tests, même s'il mentionne des critères d'acceptation
+  (les tests consomment la spec, ils ne la produisent pas).
+- L'utilisateur pose une question technique sur une API ou un format sans vouloir
+  produire de spécification.
+- L'utilisateur demande une revue de code ou un audit technique.
 
 ## Philosophie
 
@@ -1100,5 +1106,5 @@ graph LR
 
 | Version | Date | Modifications |
 |---------|------|---------------|
+| 1.1.0 | 2026-03-03 | YAML allégé (description concise). Critères de déclenchement déplacés du YAML vers une section dédiée avant Philosophie. |
 | 1.0.0 | 2026-02-25 | Version initiale. Rédaction par cas d'utilisation (UC). Arborescence à deux niveaux de packages. Relations include/extend/généralisation. Diagramme de contexte. Régénération automatique des diagrammes Mermaid. |
-
