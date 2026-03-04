@@ -8,8 +8,8 @@ description: >
 
 # Spec Driven Development (SDD) — Rédaction par cas d'utilisation
 
-Version : 1.1.0
-Date : 2026-03-03
+Version : 1.2.0
+Date : 2026-03-04
 
 ## Message d'accueil
 
@@ -423,7 +423,7 @@ le lien entre spec et code.
 **Dépréciation de UC :**
 - Ne supprime jamais un UC du document. Marque-le comme déprécié :
 ```
-#### ~~UC-012 : Validation synchrone des entrées~~ [DÉPRÉCIÉ v2.1]
+#### ~~**UC-012** : Validation synchrone des entrées~~ [DÉPRÉCIÉ v2.1]
 
 **Remplacé par :** UC-048, UC-049
 **Raison :** Découpage en validation syntaxique (UC-048) et validation sémantique
@@ -490,7 +490,7 @@ Quand l'utilisateur demande de modifier une spec existante, suis ce processus :
 Chaque cas d'utilisation suit ce format exact :
 
 ```markdown
-#### UC-XXX : [Intitulé]
+#### **UC-XXX** : [Intitulé]
 
 **Résumé :** [Description en une à trois phrases de ce que fait ce cas d'utilisation.]
 
@@ -575,6 +575,10 @@ elle peut être traitée par le service logistique."]
 
 - **Identifiants uniques.** Chaque UC, RG, IHM, CA a un identifiant unique. Ces
   identifiants sont référencés dans le code pour assurer la traçabilité.
+
+- **Visibilité de la référence UC.** L'identifiant UC dans le titre du cas
+  d'utilisation est toujours en gras : `#### **UC-XXX** : [Intitulé]`.
+  Cela garantit un repérage visuel immédiat lors de la lecture du document.
 
 ### Critères d'acceptation — format Soit/Quand/Alors
 
@@ -987,7 +991,7 @@ graph LR
 
 #### [Package niveau 1 : Nom]
 
-##### UC-001 : [Intitulé]
+##### **UC-001** : [Intitulé]
 
 **Résumé :** [Description en une à trois phrases.]
 
@@ -1106,5 +1110,6 @@ graph LR
 
 | Version | Date | Modifications |
 |---------|------|---------------|
+| 1.2.0 | 2026-03-04 | Référence UC en gras dans les titres de UC (structure, template, dépréciation). Règle de rédaction "Visibilité de la référence UC" ajoutée. |
 | 1.1.0 | 2026-03-03 | YAML allégé (description concise). Critères de déclenchement déplacés du YAML vers une section dédiée avant Philosophie. |
 | 1.0.0 | 2026-02-25 | Version initiale. Rédaction par cas d'utilisation (UC). Arborescence à deux niveaux de packages. Relations include/extend/généralisation. Diagramme de contexte. Régénération automatique des diagrammes Mermaid. |
