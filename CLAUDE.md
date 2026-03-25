@@ -5,7 +5,7 @@ Ce fichier fournit des instructions à Claude Code (claude.ai/code) pour travail
 ## Processus global
 
 ```
-SPEC.md + fichiers annexes
+docs/SPEC.md + fichiers annexes
        |
        v
 [1. Spécification]──correction──> sdd-uc-spec-write
