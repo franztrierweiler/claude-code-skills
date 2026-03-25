@@ -11,7 +11,7 @@ docs/SPEC.md + fichiers annexes
 [1. Spécification]──correction──> sdd-uc-spec-write
        |
        v
-[2. Conception technique]───────> sdd-system-design
+[2. Conception technique]───────> sdd-uc-system-design
        |                            ├─> docs/ARCHITECTURE.md
        |                            ├─> docs/DEPLOYMENT.md
        |                            ├─> docs/SECURITY.md
@@ -46,8 +46,8 @@ La documentation évolue au fur et à mesure des phases d'exécution du projet.
 ## Méthode de travail pour ce projet
 
 ### Travail au sein de l'équipe
-1- Le fichier SPEC.md et les premiers fichiers référencés par le fichier SPEC.md constituent les documents de référence. Ils sont utilisés en entrée du skill sdd-system-design lors de la phase de mise au point. Si besoin, le skill sdd-uc-spec-write permet de corriger la spécification et les fichiers qu'elle référence.
-2- Le skill sdd-system-design est utilisé pour produire les fichiers de conception technique.
+1- Le fichier SPEC.md et les premiers fichiers référencés par le fichier SPEC.md constituent les documents de référence. Ils sont utilisés en entrée du skill sdd-uc-system-design lors de la phase de mise au point. Si besoin, le skill sdd-uc-spec-write permet de corriger la spécification et les fichiers qu'elle référence.
+2- Le skill sdd-uc-system-design est utilisé pour produire les fichiers de conception technique.
 3- La planification est utilisée si et seulement si les fichiers de conception technique sont disponibles.
 
 ### Rôle de Claude Code
