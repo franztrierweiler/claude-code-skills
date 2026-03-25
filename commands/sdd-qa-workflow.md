@@ -26,7 +26,8 @@ $ARGUMENTS — nom de l'EPIC (ex: `epic-01-lexer`)
    - Scénarios de test aux limites (basés sur les CL-XXX-XX de la spec)
    - Scénarios de test en erreur
 3. Identifier les tests manuels nécessaires (si applicable)
-4. Soumettre le plan de test au pilote du projet pour validation
+4. **Traçabilité obligatoire :** chaque fonction de test doit inclure le numéro de scénario QA dans son nom, au format `test_tXX_YY_description` (ex: `test_t09_01_two_char_truncation` pour le scénario T09-01).
+5. Soumettre le plan de test au pilote du projet pour validation
 
 ### 3. Exécution de la recette
 
