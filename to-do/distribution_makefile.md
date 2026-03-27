@@ -90,3 +90,86 @@ status:
 ```
 
 Ajouter `targets.txt` au `.gitignore` car les chemins sont specifiques a chaque machine.
+
+## Distribution enterprise — make zip
+
+### Contexte
+
+Claude.ai en version entreprise permet d'installer des skills a disposition de tous les utilisateurs de l'organisation. Les skills doivent etre uploadees sous forme de fichier ZIP.
+
+### Cibles de packaging
+
+Chaque skill doit etre zippee individuellement (un ZIP par skill) pour pouvoir etre installee separement dans claude.ai :
+
+```
+dist/
+├── sdd-spec-write.zip
+├── sdd-uc-spec-write.zip
+├── sdd-system-design.zip
+└── sdd-uc-system-design.zip
+```
+
+On peut aussi produire un ZIP global contenant toutes les skills pour un import en lot :
+
+```
+dist/
+├── sdd-spec-write.zip
+├── sdd-uc-spec-write.zip
+├── sdd-system-design.zip
+├── sdd-uc-system-design.zip
+└── sdd-all-skills.zip          # toutes les skills dans un seul ZIP
+```
+
+### Decisions
+
+1. **Commands et rules : non inclus.** Claude.ai web (enterprise) fonctionne avec des projets et du "project knowledge". Il n'a pas d'equivalent aux `.claude/commands/` ni aux `.claude/rules/` qui sont specifiques a Claude Code (CLI/IDE). Seules les skills (SKILL.md) sont portables entre Claude Code et claude.ai. Les commands et rules restent distribues uniquement via `make copy` pour les projets Claude Code locaux.
+
+2. **Pas de version dans le nom du ZIP.** La version est deja dans le SKILL.md (frontmatter ou corps). Versionner le nom du fichier (`sdd-spec-write-v1.0.0.zip`) cree une charge de maintenance (renommer a chaque release, supprimer l'ancien upload, gerer les anciens noms). Garder des noms stables (`sdd-spec-write.zip`) et laisser la version interne faire foi.
+
+3. **ZIP avec dossier racine.** Le standard agentskills.io definit une skill comme un dossier contenant un `SKILL.md`. Le ZIP doit contenir `sdd-spec-write/SKILL.md` (et `sdd-spec-write/references/` si present), pas un `SKILL.md` nu. C'est ce que le `(cd skills && zip -r ...)` produit deja.
+
+### Esquisse Makefile
+
+```makefile
+DIST_DIR := dist
+SKILLS := $(wildcard skills/*)
+
+# Zip chaque skill individuellement
+zip: clean-dist
+	@mkdir -p $(DIST_DIR)
+	@for skill in $(SKILLS); do \
+	    name=$$(basename $$skill); \
+	    (cd skills && zip -r ../$(DIST_DIR)/$$name.zip $$name/); \
+	    echo "-> $(DIST_DIR)/$$name.zip"; \
+	done
+	@echo "Done. $$(ls $(DIST_DIR)/*.zip | wc -l) archives created in $(DIST_DIR)/"
+
+# Zip toutes les skills dans un seul fichier
+zip-all: zip
+	@(cd skills && zip -r ../$(DIST_DIR)/sdd-all-skills.zip ./)
+	@echo "-> $(DIST_DIR)/sdd-all-skills.zip"
+
+# Lister le contenu des ZIPs pour verification
+zip-check:
+	@for z in $(DIST_DIR)/*.zip; do \
+	    echo "=== $$z ==="; \
+	    unzip -l "$$z"; \
+	done
+
+# Nettoyer le repertoire de distribution
+clean-dist:
+	@rm -rf $(DIST_DIR)
+```
+
+### Workflow prevu
+
+```bash
+# Generer les ZIPs
+make zip
+
+# Verifier le contenu
+make zip-check
+
+# Uploader dans claude.ai enterprise
+# (manuel — via l'interface admin claude.ai)
+```
