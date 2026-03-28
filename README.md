@@ -12,6 +12,7 @@ Les skills sont conformes au standard [agentskills.io](https://agentskills.io/ho
 | `commands/` | Commandes slash — workflows de développement et QA | Claude Code uniquement |
 | `rules/` | Règles auto-déclenchées sur des chemins de fichiers | Claude Code uniquement |
 | `claude-file/` | Template CLAUDE.md décrivant la boucle de rétroaction SDD | À copier dans les projets cibles |
+| `tests/` | Tests de régression des skills (CDC de référence, prompts, sorties) | Interne |
 | `to-do/` | Revues et améliorations planifiées | Interne |
 
 ## Deux variantes SDD
@@ -124,6 +125,34 @@ Pilote la recette de test d'un EPIC : plan de test, exécution, revue de code, r
 **Prérequis :** l'EPIC doit être complet avec des AC à 100%. Sinon, redirige vers `/sdd-dev-workflow`.
 
 **Processus :** charge le contexte → élabore le plan de test dans `qa/plan-test-<epic>.md` (soumis au pilote pour validation) → exécute les scénarios → effectue une revue de code dans `qa/code-review/<epic>-review.md` → produit le rapport final dans `qa/qa-results/rapport-<epic>.md`.
+
+## Tests
+
+Les skills sont testés avec un cahier des charges fixe (CDC BiblioSoft — gestion de bibliothèque municipale) qui produit un SPEC.md quasi-déterministe. Cela permet de détecter les régressions lors des modifications de skills.
+
+Le flux de test complet simule un projet réel :
+1. `make test-init` — génère le CLAUDE.md du projet via `/init` puis le complète avec le template SDD
+2. `make test-spec-write` — produit un SPEC.md avec la variante exigences
+3. `make test-uc-spec-write` — produit un SPEC.md avec la variante UC
+4. `make test-check` — compare toutes les sorties (CLAUDE.md + SPECs) contre les références
+
+| Commande | Rôle |
+|---|---|
+| `make test` | Lance tous les tests dans l'ordre |
+| `make test-check` | Vérifie les sorties contre les références |
+| `make test-accept` | Accepte les sorties courantes comme nouvelles références |
+| `make clean-test` | Supprime les sorties de test |
+
+Première exécution : `make test` puis `make test-accept` pour établir les références. Exécutions suivantes : `make test` puis `make test-check` pour détecter les écarts.
+
+## Améliorations planifiées
+
+Les revues et améliorations sont documentées dans `to-do/` :
+
+- **Skills** — Réduire la taille des SKILL.md (2-3x au-dessus de la limite agentskills.io), extraire les templates et glossaires dans des fichiers `references/`, harmoniser les frontmatter YAML entre les 4 skills.
+- **Commandes** — Ajouter le frontmatter YAML (description, argument-hint, allowed-tools), aligner les identifiants AC/CA entre commandes et skills, ajouter des gardes sur les fichiers manquants.
+- **Rules** — À supprimer ou repurposer : le contenu actuel est redondant avec les commandes et le CLAUDE.md.
+- **Distribution** — Le Makefile de distribution (`make copy`, `make zip`) est opérationnel. Reste à valider le format de ZIP attendu par claude.ai enterprise.
 
 ## Fichiers CLAUDE.md
 
