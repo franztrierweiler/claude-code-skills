@@ -128,13 +128,16 @@ Pilote la recette de test d'un EPIC : plan de test, exécution, revue de code, r
 
 ## Tests
 
-Les skills sont testés avec un cahier des charges fixe (CDC BiblioSoft — gestion de bibliothèque municipale) qui produit un SPEC.md quasi-déterministe. Cela permet de détecter les régressions lors des modifications de skills.
+Le skill `sdd-uc-spec-write` est testé avec un cahier des charges fixe (CDC MaintiX — coordination d'interventions de maintenance industrielle) qui produit un SPEC.md quasi-déterministe. Cela permet de détecter les régressions lors des modifications du skill.
+
+Le CDC MaintiX couvre largement les capacités du skill : machine à états, niveaux de support GMAO (système existant), mode offline, capteurs IoT, phases de livraison, permis de travail réglementaire, 5 acteurs dont 2 systèmes.
+
+Les skills sans UC (`sdd-spec-write`, `sdd-system-design`) ne sont pas testés : ils sont destinés à être rendus obsolètes au profit des variantes UC.
 
 Le flux de test complet simule un projet réel :
 1. `make test-init` — génère le CLAUDE.md du projet via `/init` puis le complète avec le template SDD
-2. `make test-spec-write` — produit un SPEC.md avec la variante exigences
-3. `make test-uc-spec-write` — produit un SPEC.md avec la variante UC
-4. `make test-check` — compare toutes les sorties (CLAUDE.md + SPECs) contre les références
+2. `make test-uc-spec` — produit un SPEC.md avec le skill `sdd-uc-spec-write`
+3. `make test-check` — compare toutes les sorties (CLAUDE.md + SPEC.md) contre les références
 
 | Commande | Rôle |
 |---|---|

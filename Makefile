@@ -15,14 +15,13 @@
 #   make clean-dist — Supprime le répertoire dist/
 #
 # Tests :
-#   make test                 — Lance tous les tests (init + spec-write + uc-spec-write)
-#   make test-init            — Génère le CLAUDE.md via claude /init + template SDD
-#   make test-spec-write      — Teste le skill sdd-spec-write
-#   make test-uc-spec-write   — Teste le skill sdd-uc-spec-write
-#   make test-setup           — Prépare l'environnement de test
-#   make test-check           — Vérifie les sorties contre les références
-#   make test-accept          — Accepte les sorties courantes comme références
-#   make clean-test           — Supprime les sorties de test
+#   make test              — Lance tous les tests
+#   make test-init         — Génère le CLAUDE.md via /init + template SDD
+#   make test-uc-spec      — Teste sdd-uc-spec-write sur MaintiX
+#   make test-setup        — Prépare l'environnement de test
+#   make test-check        — Vérifie les sorties contre les références
+#   make test-accept       — Accepte les sorties courantes comme références
+#   make clean-test        — Supprime les sorties de test
 # =============================================================================
 
 TARGETS_FILE := targets.txt
@@ -34,8 +33,8 @@ TEST_DIR     := tests
 TEST_OUT     := $(TEST_DIR)/output
 
 .PHONY: help copy copy-dry diff status zip zip-all zip-check clean-dist \
-        test test-init test-spec-write test-uc-spec-write test-setup \
-        test-check test-accept clean-test
+        test test-init test-uc-spec test-setup test-check test-accept \
+        clean-test
 
 .DEFAULT_GOAL := help
 
@@ -59,14 +58,12 @@ help:
 	@echo "    make clean-dist Supprime le répertoire dist/"
 	@echo ""
 	@echo "  Tests :"
-	@echo "    make test               Lance tous les tests"
-	@echo "    make test-init          Génère le CLAUDE.md via /init + template SDD"
-	@echo "    make test-spec-write    Teste le skill sdd-spec-write"
-	@echo "    make test-uc-spec-write Teste le skill sdd-uc-spec-write"
-	@echo "    make test-setup         Prépare l'environnement de test"
-	@echo "    make test-check         Vérifie les sorties contre les références"
-	@echo "    make test-accept        Accepte les sorties courantes comme références"
-	@echo "    make clean-test         Supprime les sorties de test"
+	@echo "    make test            Lance tous les tests"
+	@echo "    make test-init       Génère le CLAUDE.md via /init + template SDD"
+	@echo "    make test-uc-spec    Teste sdd-uc-spec-write sur MaintiX"
+	@echo "    make test-check      Vérifie les sorties contre les références"
+	@echo "    make test-accept     Accepte les sorties comme références"
+	@echo "    make clean-test      Supprime les sorties de test"
 	@echo ""
 	@echo "  Configuration :"
 	@echo "    Créer un fichier targets.txt avec un chemin absolu par ligne."
@@ -187,15 +184,21 @@ clean-dist:
 	@rm -rf $(DIST_DIR)
 
 # -----------------------------------------------------------------------------
-# Tests — validation des skills avec un CDC de référence
+# Tests — validation du skill sdd-uc-spec-write avec un CDC de référence
 # -----------------------------------------------------------------------------
 #
+# CDC de test : MaintiX (maintenance industrielle)
+# Couvre : machine à états, niveaux de support GMAO, mode offline,
+#          capteurs IoT, phases de livraison, permis de travail (ICPE)
+#
+# Seul le skill sdd-uc-spec-write est testé. Les skills sans UC
+# (sdd-spec-write, sdd-system-design) ne sont pas testés.
+#
 # Flux de test complet :
-#   1. test-setup           Copie skills/commands/rules dans tests/.claude/
-#   2. test-init            Génère CLAUDE.md via /init puis complète avec le template SDD
-#   3. test-spec-write      Produit un SPEC.md avec la variante exigences
-#   4. test-uc-spec-write   Produit un SPEC.md avec la variante UC
-#   5. test-check           Compare toutes les sorties contre les références
+#   1. test-setup       Copie skills/commands/rules dans tests/.claude/
+#   2. test-init        Génère CLAUDE.md via /init + template SDD
+#   3. test-uc-spec     Produit un SPEC.md (variante UC, MaintiX)
+#   4. test-check       Compare toutes les sorties contre les références
 #
 # Première exécution :
 #   make test               Génère toutes les sorties
@@ -207,6 +210,9 @@ clean-dist:
 #   make test-check         Compare avec les références
 # -----------------------------------------------------------------------------
 
+# Valeurs métier attendues dans le SPEC.md (séparées par |)
+EXPECTED_VALUES := 15 min|4h|24h|10 ans|6 mois|2 ans|300ms|99,5%|200 techniciens|8 heures|30 secondes|10 secondes
+
 # Prépare l'environnement de test : copie skills/commands/rules dans tests/.claude/
 test-setup:
 	@echo "Préparation de l'environnement de test..."
@@ -217,12 +223,12 @@ test-setup:
 	@echo "  -> $(TEST_DIR)/.claude/ prêt"
 
 # Lance tous les tests dans l'ordre
-test: test-init test-spec-write test-uc-spec-write
+test: test-init test-uc-spec
 	@echo ""
 	@echo "Tous les tests ont été exécutés."
 	@echo "Lancer 'make test-check' pour comparer avec les références."
 
-# Étape 1 — Génère le CLAUDE.md via claude /init puis complète avec le template SDD
+# Génère le CLAUDE.md via claude /init puis complète avec le template SDD
 test-init: test-setup
 	@echo ""
 	@echo "=== Test init ==="
@@ -244,39 +250,21 @@ test-init: test-setup
 	@cp $(TEST_DIR)/CLAUDE.md $(TEST_OUT)/init/CLAUDE.md
 	@echo "  -> $(TEST_OUT)/init/CLAUDE.md généré"
 
-# Étape 2 — Teste le skill sdd-spec-write
-test-spec-write: test-init
+# Teste sdd-uc-spec-write sur MaintiX
+test-uc-spec: test-init
 	@echo ""
-	@echo "=== Test sdd-spec-write ==="
-	@mkdir -p $(TEST_OUT)/spec-write
+	@echo "=== Test sdd-uc-spec-write (MaintiX) ==="
+	@mkdir -p $(TEST_OUT)/uc-spec
 	@rm -f $(TEST_DIR)/docs/SPEC.md
 	cd $(TEST_DIR) && claude --print \
-		"$$(cat prompts/prompt-sdd-spec-write.md)" \
-		> $(abspath $(TEST_OUT))/spec-write/session.log 2>&1
+		"$$(cat prompts/prompt-uc-spec-write.md)" \
+		> $(abspath $(TEST_OUT))/uc-spec/session.log 2>&1
 	@if [ -f $(TEST_DIR)/docs/SPEC.md ]; then \
-		cp $(TEST_DIR)/docs/SPEC.md $(TEST_OUT)/spec-write/SPEC.md; \
-		echo "  -> $(TEST_OUT)/spec-write/SPEC.md généré"; \
+		cp $(TEST_DIR)/docs/SPEC.md $(TEST_OUT)/uc-spec/SPEC.md; \
+		echo "  -> $(TEST_OUT)/uc-spec/SPEC.md généré"; \
 	else \
 		echo "  ÉCHEC — docs/SPEC.md non produit"; \
-		echo "  Consulter $(TEST_OUT)/spec-write/session.log"; \
-		exit 1; \
-	fi
-
-# Étape 3 — Teste le skill sdd-uc-spec-write
-test-uc-spec-write: test-init
-	@echo ""
-	@echo "=== Test sdd-uc-spec-write ==="
-	@mkdir -p $(TEST_OUT)/uc-spec-write
-	@rm -f $(TEST_DIR)/docs/SPEC.md
-	cd $(TEST_DIR) && claude --print \
-		"$$(cat prompts/prompt-sdd-uc-spec-write.md)" \
-		> $(abspath $(TEST_OUT))/uc-spec-write/session.log 2>&1
-	@if [ -f $(TEST_DIR)/docs/SPEC.md ]; then \
-		cp $(TEST_DIR)/docs/SPEC.md $(TEST_OUT)/uc-spec-write/SPEC.md; \
-		echo "  -> $(TEST_OUT)/uc-spec-write/SPEC.md généré"; \
-	else \
-		echo "  ÉCHEC — docs/SPEC.md non produit"; \
-		echo "  Consulter $(TEST_OUT)/uc-spec-write/session.log"; \
+		echo "  Consulter $(TEST_OUT)/uc-spec/session.log"; \
 		exit 1; \
 	fi
 
@@ -303,25 +291,21 @@ test-check:
 			fi; \
 		done; \
 	fi; \
-	for variant in spec-write uc-spec-write; do \
-		echo ""; \
-		echo "=== $$variant ==="; \
-		out="$(TEST_OUT)/$$variant/SPEC.md"; \
-		ref="$(TEST_DIR)/reference/$$variant-SPEC.md"; \
-		if [ ! -f "$$out" ]; then \
-			echo "  SKIP — pas de sortie (lancer 'make test' d'abord)"; \
-			continue; \
-		fi; \
-		if [ ! -f "$$ref" ]; then \
-			echo "  SKIP — pas de référence (lancer 'make test-accept' pour créer)"; \
-			continue; \
-		fi; \
+	echo ""; \
+	echo "=== SPEC.md (uc-spec) ==="; \
+	out="$(TEST_OUT)/uc-spec/SPEC.md"; \
+	ref="$(TEST_DIR)/reference/uc-spec-SPEC.md"; \
+	if [ ! -f "$$out" ]; then \
+		echo "  SKIP — pas de sortie (lancer 'make test' d'abord)"; \
+	elif [ ! -f "$$ref" ]; then \
+		echo "  SKIP — pas de référence (lancer 'make test-accept' pour créer)"; \
+	else \
 		echo "  Structure :"; \
 		out_sections=$$(grep -c '^#' "$$out" || true); \
 		ref_sections=$$(grep -c '^#' "$$ref" || true); \
 		echo "    Sections : sortie=$$out_sections référence=$$ref_sections"; \
 		echo "  Identifiants :"; \
-		for prefix in EXG ENF CA CL UC RG IHM; do \
+		for prefix in ENF CA UC RG IHM; do \
 			out_count=$$(grep -oE "$$prefix-[0-9]+" "$$out" 2>/dev/null | sort -u | wc -l); \
 			ref_count=$$(grep -oE "$$prefix-[0-9]+" "$$ref" 2>/dev/null | sort -u | wc -l); \
 			if [ "$$ref_count" -gt 0 ] || [ "$$out_count" -gt 0 ]; then \
@@ -331,7 +315,7 @@ test-check:
 			fi; \
 		done; \
 		echo "  Valeurs métier :"; \
-		for val in "5 emprunts" "21 jours" "14 jours" "0,20" "10 €" "5 €" "48" "12 mois" "500ms" "200ms" "99%"; do \
+		echo "$(EXPECTED_VALUES)" | tr '|' '\n' | while IFS= read -r val; do \
 			if grep -q "$$val" "$$ref"; then \
 				if grep -q "$$val" "$$out"; then \
 					echo "    \"$$val\" : OK"; \
@@ -341,7 +325,7 @@ test-check:
 				fi; \
 			fi; \
 		done; \
-	done; \
+	fi; \
 	echo ""; \
 	if [ "$$fail" -eq 0 ]; then \
 		echo "Tous les contrôles passent."; \
@@ -357,16 +341,12 @@ test-accept:
 	else \
 		echo "  SKIP init — pas de sortie"; \
 	fi
-	@for variant in spec-write uc-spec-write; do \
-		out="$(TEST_OUT)/$$variant/SPEC.md"; \
-		ref="$(TEST_DIR)/reference/$$variant-SPEC.md"; \
-		if [ -f "$$out" ]; then \
-			cp "$$out" "$$ref"; \
-			echo "  -> $$ref mis à jour"; \
-		else \
-			echo "  SKIP $$variant — pas de sortie"; \
-		fi; \
-	done
+	@if [ -f "$(TEST_OUT)/uc-spec/SPEC.md" ]; then \
+		cp "$(TEST_OUT)/uc-spec/SPEC.md" "$(TEST_DIR)/reference/uc-spec-SPEC.md"; \
+		echo "  -> $(TEST_DIR)/reference/uc-spec-SPEC.md mis à jour"; \
+	else \
+		echo "  SKIP uc-spec — pas de sortie"; \
+	fi
 
 # Supprime les sorties de test et les fichiers générés
 clean-test:
