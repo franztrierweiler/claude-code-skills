@@ -135,21 +135,19 @@ Le CDC MaintiX couvre largement les capacités du skill : machine à états, niv
 Les skills sans UC (`sdd-spec-write`, `sdd-system-design`) ne sont pas testés : ils sont destinés à être rendus obsolètes au profit des variantes UC.
 
 Le flux de test simule un vrai projet SDD dans `tests/output/` :
-1. `make test-setup` — prépare le projet simulé (copie skills/commands/rules dans `.claude/`, copie le CDC dans `docs/`)
-2. `make test-init` — Claude analyse le projet et génère `CLAUDE.md` en fusionnant avec le template SDD
-3. `make test-uc-spec` — Claude produit `docs/SPEC.md` à partir du CDC via le skill `sdd-uc-spec-write`
-4. `make test-check` — compare les fichiers générés contre les références
+1. `make test-init` — Claude analyse le projet et génère `CLAUDE.md` en fusionnant avec le template SDD
+2. `make test-uc-spec` — Claude produit `docs/SPEC.md` à partir du CDC via le skill `sdd-uc-spec-write`
+3. `make test-review` — Claude évalue la complétude du SPEC.md par rapport au CDC
+4. `make test-check` — contrôles déterministes : seuils minimaux d'identifiants (UC, RG, CA, ENF) et présence des valeurs métier clés
 
 Les tests appellent `claude -p --output-format stream-json` via le script `tests/run-tests.sh`. La sortie est affichée en temps réel par `tests/stream_filter.py` (filtre Python unbuffered) et sauvegardée dans `tests/log/`. Prérequis : `claude`, `python3`.
 
 | Commande | Rôle |
 |---|---|
 | `make test` | Lance tous les tests dans l'ordre |
-| `make test-check` | Vérifie les sorties contre les références |
-| `make test-accept` | Accepte les sorties courantes comme nouvelles références |
+| `make test-check` | Contrôles déterministes (seuils, valeurs métier) |
+| `make test-review` | Évaluation de complétude par Claude |
 | `make clean-test` | Supprime les sorties de test |
-
-Première exécution : `make test` puis `make test-accept` pour établir les références. Exécutions suivantes : `make test` puis `make test-check` pour détecter les écarts.
 
 ## Améliorations planifiées
 

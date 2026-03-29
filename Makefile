@@ -15,12 +15,12 @@
 #   make clean-dist — Supprime le répertoire dist/
 #
 # Tests :
-#   make test              — Lance tous les tests
+#   make test              — Lance tous les tests (init + uc-spec + review)
 #   make test-init         — Génère le CLAUDE.md via /init + template SDD
 #   make test-uc-spec      — Teste sdd-uc-spec-write sur MaintiX
+#   make test-review       — Claude évalue la complétude du SPEC.md
+#   make test-check        — Contrôles déterministes (seuils, valeurs métier)
 #   make test-setup        — Prépare l'environnement de test
-#   make test-check        — Vérifie les sorties contre les références
-#   make test-accept       — Accepte les sorties courantes comme références
 #   make clean-test        — Supprime les sorties de test
 # =============================================================================
 
@@ -34,7 +34,7 @@ TEST_OUT     := $(TEST_DIR)/output
 TEST_LOG     := $(TEST_DIR)/log
 
 .PHONY: help copy copy-dry diff status zip zip-all zip-check clean-dist \
-        test test-init test-uc-spec test-setup test-check test-accept \
+        test test-init test-uc-spec test-review test-check test-setup \
         clean-test
 
 .DEFAULT_GOAL := help
@@ -60,10 +60,10 @@ help:
 	@echo ""
 	@echo "  Tests :"
 	@echo "    make test            Lance tous les tests"
-	@echo "    make test-init       Génère le CLAUDE.md via /init + template SDD"
-	@echo "    make test-uc-spec    Teste sdd-uc-spec-write sur MaintiX"
-	@echo "    make test-check      Vérifie les sorties contre les références"
-	@echo "    make test-accept     Accepte les sorties comme références"
+	@echo "    make test-init       Génère le CLAUDE.md"
+	@echo "    make test-uc-spec    Produit le SPEC.md (sdd-uc-spec-write)"
+	@echo "    make test-review     Claude évalue la complétude du SPEC.md"
+	@echo "    make test-check      Contrôles déterministes (seuils, valeurs)"
 	@echo "    make clean-test      Supprime les sorties de test"
 	@echo ""
 	@echo "  Configuration :"
@@ -189,36 +189,27 @@ clean-dist:
 # -----------------------------------------------------------------------------
 #
 # CDC de test : MaintiX (maintenance industrielle)
-# Couvre : machine à états, niveaux de support GMAO, mode offline,
-#          capteurs IoT, phases de livraison, permis de travail (ICPE)
 #
-# Seul le skill sdd-uc-spec-write est testé. Les skills sans UC
-# (sdd-spec-write, sdd-system-design) ne sont pas testés.
-#
-# Le répertoire tests/output/ est le projet simulé (répertoire de travail
-# de Claude). Il contient la même structure qu'un vrai projet SDD :
+# Le répertoire tests/output/ est le projet simulé :
 #   output/.claude/     skills/commands/rules
 #   output/CLAUDE.md    généré par test-init
 #   output/docs/        CDC (copié) + SPEC.md (généré par test-uc-spec)
 #
-# Flux de test complet :
-#   1. test-setup       Prépare output/ (skills + CDC)
-#   2. test-init        Génère output/CLAUDE.md
-#   3. test-uc-spec     Génère output/docs/SPEC.md
-#   4. test-check       Compare output/ contre reference/
-#
-# Première exécution :
-#   make test               Génère toutes les sorties
-#   make test-check         Vérifie (échoue car pas de références)
-#   make test-accept        Accepte les sorties comme références
-#
-# Exécutions suivantes (après modification d'un skill) :
-#   make test               Régénère toutes les sorties
-#   make test-check         Compare avec les références
+# Flux :
+#   make test          Génère CLAUDE.md + SPEC.md
+#   make test-check    Contrôles déterministes (seuils, valeurs métier)
+#   make test-review   Claude évalue la complétude du SPEC.md vs le CDC
 # -----------------------------------------------------------------------------
 
-# Valeurs métier attendues dans le SPEC.md (séparées par |)
+# Valeurs métier qui doivent apparaître dans le SPEC.md (séparées par |)
 EXPECTED_VALUES := 15 min|4h|24h|10 ans|6 mois|2 ans|300ms|99,5%|200 techniciens|8 heures|30 secondes|10 secondes
+
+# Seuils minimaux d'identifiants dans le SPEC.md
+# Extraits du CDC MaintiX : ~15 UC, ~15 RG, ~15 CA, ~6 ENF
+MIN_UC  := 10
+MIN_RG  := 10
+MIN_CA  := 10
+MIN_ENF := 4
 
 # Vérifie les dépendances
 check-deps:
@@ -236,7 +227,7 @@ test-setup: check-deps
 	@echo "  ✓ $(TEST_OUT)/.claude/ prêt (skills, commands, rules)"
 	@echo "  ✓ $(TEST_OUT)/docs/CDC-maintenance.md copié"
 
-# Lance tous les tests dans l'ordre
+# Lance tous les tests (génération + check)
 test: test-setup
 	$(TEST_DIR)/run-tests.sh all
 
@@ -248,62 +239,55 @@ test-init: test-setup
 test-uc-spec: test-setup
 	$(TEST_DIR)/run-tests.sh uc-spec
 
-# Vérifie les fichiers générés contre les références
+# Évaluation du SPEC.md par Claude (complétude, cohérence vs CDC)
+test-review: test-setup
+	$(TEST_DIR)/run-tests.sh review
+
+# Contrôles déterministes : sections, seuils d'identifiants, valeurs métier
 test-check:
 	@echo ""
-	@echo "Vérification contre les références..."
+	@echo "=== Contrôles déterministes ==="
 	@fail=0; \
 	echo ""; \
-	echo "=== CLAUDE.md ==="; \
+	echo "--- CLAUDE.md ---"; \
 	out="$(TEST_OUT)/CLAUDE.md"; \
-	ref="$(TEST_DIR)/reference/CLAUDE.md"; \
 	if [ ! -f "$$out" ]; then \
-		echo "  SKIP — pas de fichier (lancer 'make test' d'abord)"; \
-	elif [ ! -f "$$ref" ]; then \
-		echo "  SKIP — pas de référence (lancer 'make test-accept' pour créer)"; \
+		echo "  SKIP — fichier absent (lancer 'make test' d'abord)"; \
 	else \
-		echo "  Sections attendues du template SDD :"; \
 		for section in "Processus global" "Vue d'ensemble" "Méthode de travail" "Règles pour Claude Code" "Workflow de développement" "Commits"; do \
 			if grep -qi "$$section" "$$out"; then \
-				echo "    \"$$section\" : OK"; \
+				echo "  ✓ \"$$section\""; \
 			else \
-				echo "    \"$$section\" : ABSENT"; \
+				echo "  ✗ \"$$section\" ABSENT"; \
 				fail=1; \
 			fi; \
 		done; \
 	fi; \
 	echo ""; \
-	echo "=== docs/SPEC.md ==="; \
+	echo "--- docs/SPEC.md ---"; \
 	out="$(TEST_OUT)/docs/SPEC.md"; \
-	ref="$(TEST_DIR)/reference/SPEC.md"; \
 	if [ ! -f "$$out" ]; then \
-		echo "  SKIP — pas de fichier (lancer 'make test' d'abord)"; \
-	elif [ ! -f "$$ref" ]; then \
-		echo "  SKIP — pas de référence (lancer 'make test-accept' pour créer)"; \
+		echo "  SKIP — fichier absent (lancer 'make test' d'abord)"; \
 	else \
-		echo "  Structure :"; \
-		out_sections=$$(grep -c '^#' "$$out" || true); \
-		ref_sections=$$(grep -c '^#' "$$ref" || true); \
-		echo "    Sections : sortie=$$out_sections référence=$$ref_sections"; \
-		echo "  Identifiants :"; \
-		for prefix in ENF CA UC RG IHM; do \
-			out_count=$$(grep -oE "$$prefix-[0-9]+" "$$out" 2>/dev/null | sort -u | wc -l); \
-			ref_count=$$(grep -oE "$$prefix-[0-9]+" "$$ref" 2>/dev/null | sort -u | wc -l); \
-			if [ "$$ref_count" -gt 0 ] || [ "$$out_count" -gt 0 ]; then \
-				status="OK"; \
-				if [ "$$out_count" -ne "$$ref_count" ]; then status="DIFF"; fail=1; fi; \
-				echo "    $$prefix : sortie=$$out_count référence=$$ref_count [$$status]"; \
+		echo "  Identifiants (seuils minimaux) :"; \
+		for pair in "UC:$(MIN_UC)" "RG:$(MIN_RG)" "CA:$(MIN_CA)" "ENF:$(MIN_ENF)"; do \
+			prefix=$${pair%%:*}; \
+			min=$${pair##*:}; \
+			count=$$(grep -oE "$$prefix-[0-9]+" "$$out" 2>/dev/null | sort -u | wc -l); \
+			if [ "$$count" -ge "$$min" ]; then \
+				echo "    ✓ $$prefix : $$count (min $$min)"; \
+			else \
+				echo "    ✗ $$prefix : $$count < $$min"; \
+				fail=1; \
 			fi; \
 		done; \
 		echo "  Valeurs métier :"; \
 		echo "$(EXPECTED_VALUES)" | tr '|' '\n' | while IFS= read -r val; do \
-			if grep -q "$$val" "$$ref"; then \
-				if grep -q "$$val" "$$out"; then \
-					echo "    \"$$val\" : OK"; \
-				else \
-					echo "    \"$$val\" : ABSENT dans la sortie"; \
-					fail=1; \
-				fi; \
+			if grep -q "$$val" "$$out"; then \
+				echo "    ✓ \"$$val\""; \
+			else \
+				echo "    ✗ \"$$val\" ABSENT"; \
+				fail=1; \
 			fi; \
 		done; \
 	fi; \
@@ -312,21 +296,6 @@ test-check:
 		echo "Tous les contrôles passent."; \
 	else \
 		echo "Des écarts ont été détectés."; \
-	fi
-
-# Accepte les fichiers générés comme nouvelles références
-test-accept:
-	@if [ -f "$(TEST_OUT)/CLAUDE.md" ]; then \
-		cp "$(TEST_OUT)/CLAUDE.md" "$(TEST_DIR)/reference/CLAUDE.md"; \
-		echo "  ✓ tests/reference/CLAUDE.md mis à jour"; \
-	else \
-		echo "  SKIP — $(TEST_OUT)/CLAUDE.md absent"; \
-	fi
-	@if [ -f "$(TEST_OUT)/docs/SPEC.md" ]; then \
-		cp "$(TEST_OUT)/docs/SPEC.md" "$(TEST_DIR)/reference/SPEC.md"; \
-		echo "  ✓ tests/reference/SPEC.md mis à jour"; \
-	else \
-		echo "  SKIP — $(TEST_OUT)/docs/SPEC.md absent"; \
 	fi
 
 # Supprime le projet simulé et les logs (conserve le CDC, les prompts et les références)

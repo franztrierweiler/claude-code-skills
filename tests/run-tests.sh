@@ -1,7 +1,7 @@
 #!/bin/bash
 # =============================================================================
 # Exécution des tests de régression des skills SDD
-# Usage: ./tests/run-tests.sh [init|uc-spec|all]
+# Usage: ./tests/run-tests.sh [init|uc-spec|review|all]
 # Appelé par le Makefile — ne pas exécuter directement avant test-setup.
 # Requiert: claude, python3
 # =============================================================================
@@ -78,6 +78,24 @@ run_uc_spec() {
     fi
 }
 
+run_review() {
+    echo ""
+    echo "=== Review — Évaluation du SPEC.md par Claude ==="
+    echo ""
+
+    if [ ! -f "$TEST_OUT/docs/SPEC.md" ]; then
+        echo "  ÉCHEC — docs/SPEC.md absent. Lancer 'make test-uc-spec' d'abord."
+        exit 1
+    fi
+
+    mkdir -p "$TEST_LOG"
+    cd "$TEST_OUT"
+
+    run_claude \
+        "Lis le fichier $PROMPTS/prompt-review-spec.md et exécute les instructions qu'il contient." \
+        "$TEST_LOG/review.log"
+}
+
 # --- Main --------------------------------------------------------------------
 
 ACTION="${1:-all}"
@@ -89,15 +107,18 @@ case "$ACTION" in
     uc-spec)
         run_uc_spec
         ;;
+    review)
+        run_review
+        ;;
     all)
         run_init
         run_uc_spec
+        run_review
         echo ""
         echo "Tous les tests ont été exécutés."
-        echo "Lancer 'make test-check' pour comparer avec les références."
         ;;
     *)
-        echo "Usage: $0 [init|uc-spec|all]"
+        echo "Usage: $0 [init|uc-spec|review|all]"
         exit 1
         ;;
 esac
