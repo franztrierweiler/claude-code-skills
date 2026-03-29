@@ -160,4 +160,4 @@ Les revues et améliorations sont documentées dans `to-do/` :
 ## Fichiers CLAUDE.md
 
 - **`CLAUDE.md` (racine)** — Guide Claude Code pour travailler sur ce dépôt.
-- **`claude-file/CLAUDE.md`** — Template à copier dans les projets cibles. Décrit le processus SDD et les règles de collaboration avec Claude Code.
+- **`claude-file/CLAUDE.md`** — Template à copier dans les projets cibles. Décrit le processus SDD et les règles de collaboration avec Claude Code. **Attention :** ne jamais écraser un CLAUDE.md existant dans un projet en cours. Pour un nouveau projet, copier le template puis le compléter. Pour un projet existant, fusionner manuellement les sections du template avec le contenu déjà en place.
