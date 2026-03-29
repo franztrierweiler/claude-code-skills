@@ -134,10 +134,13 @@ Le CDC MaintiX couvre largement les capacités du skill : machine à états, niv
 
 Les skills sans UC (`sdd-spec-write`, `sdd-system-design`) ne sont pas testés : ils sont destinés à être rendus obsolètes au profit des variantes UC.
 
-Le flux de test complet simule un projet réel :
-1. `make test-init` — génère le CLAUDE.md du projet via `/init` puis le complète avec le template SDD
-2. `make test-uc-spec` — produit un SPEC.md avec le skill `sdd-uc-spec-write`
-3. `make test-check` — compare toutes les sorties (CLAUDE.md + SPEC.md) contre les références
+Le flux de test simule un vrai projet SDD dans `tests/output/` :
+1. `make test-setup` — prépare le projet simulé (copie skills/commands/rules dans `.claude/`, copie le CDC dans `docs/`)
+2. `make test-init` — Claude analyse le projet et génère `CLAUDE.md` en fusionnant avec le template SDD
+3. `make test-uc-spec` — Claude produit `docs/SPEC.md` à partir du CDC via le skill `sdd-uc-spec-write`
+4. `make test-check` — compare les fichiers générés contre les références
+
+Les tests appellent `claude -p --output-format stream-json` via le script `tests/run-tests.sh`. La sortie est affichée en temps réel par `tests/stream_filter.py` (filtre Python unbuffered) et sauvegardée dans `tests/log/`. Prérequis : `claude`, `python3`.
 
 | Commande | Rôle |
 |---|---|

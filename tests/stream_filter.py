@@ -21,10 +21,24 @@ for line in sys.stdin:
             for c in obj.get("message", {}).get("content", []):
                 ct = c.get("type")
                 if ct == "text":
-                    print(f"{ORANGE}{c['text']}{RESET}", end="", flush=True)
+                    print(f"{RESET}{c['text']}{RESET}", end="", flush=True)
                 elif ct == "tool_use":
                     name = c.get("name", "?")
-                    print(f"  {REVERSE_ORANGE} {name} {RESET}", flush=True)
+                    inp = c.get("input", {})
+                    detail = ""
+                    if name in ("Read", "Write"):
+                        detail = inp.get("file_path", "")
+                    elif name == "Bash":
+                        detail = inp.get("command", "")
+                    elif name == "Edit":
+                        detail = inp.get("file_path", "")
+                    elif name in ("Glob", "Grep"):
+                        detail = inp.get("pattern", "")
+                    elif name == "Agent":
+                        detail = inp.get("description", "")
+                    if len(detail) > 80:
+                        detail = detail[:77] + "..."
+                    print(f"  {REVERSE_ORANGE} {name} {RESET} {ORANGE}{detail}{RESET}", flush=True)
 
         elif msg_type == "system":
             subtype = obj.get("subtype", "")
@@ -41,7 +55,7 @@ for line in sys.stdin:
         elif msg_type == "result":
             result = obj.get("result", "")
             if result:
-                print(f"{ORANGE}{result}{RESET}", flush=True)
+                print(f"{RESET}{result}{RESET}", flush=True)
 
     except (json.JSONDecodeError, KeyError):
         pass
