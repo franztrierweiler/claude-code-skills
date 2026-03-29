@@ -1,6 +1,4 @@
 targets.txt
 dist/
 tests/output/
-tests/.claude/
-tests/CLAUDE.md
-tests/docs/SPEC.md
+tests/log/

@@ -1,0 +1,3 @@
+Analyse ce projet et crée un fichier CLAUDE.md à la racine. Ce fichier doit guider les futures instances de Claude Code. Inclus : 1) les commandes courantes (build, test, lint) si un Makefile existe, 2) l'architecture et la structure du code, 3) les conventions du projet.
+
+Lis ensuite le template SDD dans ../../claude-file/CLAUDE.md et fusionne-le avec le CLAUDE.md que tu viens de créer : garde la structure et les sections du template SDD, complète-les avec les informations spécifiques au projet générées par l'analyse. Le résultat final doit être un CLAUDE.md complet qui suit la méthodologie SDD. Écris le résultat dans CLAUDE.md.

@@ -31,6 +31,7 @@ SKILLS       := $(wildcard skills/*)
 
 TEST_DIR     := tests
 TEST_OUT     := $(TEST_DIR)/output
+TEST_LOG     := $(TEST_DIR)/log
 
 .PHONY: help copy copy-dry diff status zip zip-all zip-check clean-dist \
         test test-init test-uc-spec test-setup test-check test-accept \
@@ -194,11 +195,17 @@ clean-dist:
 # Seul le skill sdd-uc-spec-write est testé. Les skills sans UC
 # (sdd-spec-write, sdd-system-design) ne sont pas testés.
 #
+# Le répertoire tests/output/ est le projet simulé (répertoire de travail
+# de Claude). Il contient la même structure qu'un vrai projet SDD :
+#   output/.claude/     skills/commands/rules
+#   output/CLAUDE.md    généré par test-init
+#   output/docs/        CDC (copié) + SPEC.md (généré par test-uc-spec)
+#
 # Flux de test complet :
-#   1. test-setup       Copie skills/commands/rules dans tests/.claude/
-#   2. test-init        Génère CLAUDE.md via /init + template SDD
-#   3. test-uc-spec     Produit un SPEC.md (variante UC, MaintiX)
-#   4. test-check       Compare toutes les sorties contre les références
+#   1. test-setup       Prépare output/ (skills + CDC)
+#   2. test-init        Génère output/CLAUDE.md
+#   3. test-uc-spec     Génère output/docs/SPEC.md
+#   4. test-check       Compare output/ contre reference/
 #
 # Première exécution :
 #   make test               Génère toutes les sorties
@@ -213,71 +220,45 @@ clean-dist:
 # Valeurs métier attendues dans le SPEC.md (séparées par |)
 EXPECTED_VALUES := 15 min|4h|24h|10 ans|6 mois|2 ans|300ms|99,5%|200 techniciens|8 heures|30 secondes|10 secondes
 
-# Prépare l'environnement de test : copie skills/commands/rules dans tests/.claude/
-test-setup:
-	@echo "Préparation de l'environnement de test..."
-	@mkdir -p $(TEST_DIR)/.claude
+# Vérifie les dépendances
+check-deps:
+	@command -v python3 >/dev/null 2>&1 || { echo "Erreur : python3 est requis."; exit 1; }
+	@command -v claude >/dev/null 2>&1 || { echo "Erreur : claude est requis."; exit 1; }
+
+# Prépare le projet simulé dans output/ : skills + CDC
+test-setup: check-deps
+	@echo "Préparation du projet de test dans $(TEST_OUT)/..."
+	@mkdir -p $(TEST_OUT)/.claude $(TEST_OUT)/docs $(TEST_LOG)
 	@for dir in $(DIRS); do \
-		rsync -a --delete $$dir/ $(TEST_DIR)/.claude/$$dir/; \
+		rsync -a --delete $$dir/ $(TEST_OUT)/.claude/$$dir/; \
 	done
-	@echo "  -> $(TEST_DIR)/.claude/ prêt"
+	@cp $(TEST_DIR)/docs/CDC-maintenance.md $(TEST_OUT)/docs/CDC-maintenance.md
+	@echo "  ✓ $(TEST_OUT)/.claude/ prêt (skills, commands, rules)"
+	@echo "  ✓ $(TEST_OUT)/docs/CDC-maintenance.md copié"
 
 # Lance tous les tests dans l'ordre
-test: test-init test-uc-spec
-	@echo ""
-	@echo "Tous les tests ont été exécutés."
-	@echo "Lancer 'make test-check' pour comparer avec les références."
+test: test-setup
+	$(TEST_DIR)/run-tests.sh all
 
-# Génère le CLAUDE.md via claude /init puis complète avec le template SDD
+# Génère le CLAUDE.md dans output/
 test-init: test-setup
-	@echo ""
-	@echo "=== Test init ==="
-	@mkdir -p $(TEST_OUT)/init
-	@rm -f $(TEST_DIR)/CLAUDE.md
-	@echo "  Génération du CLAUDE.md via /init..."
-	cd $(TEST_DIR) && claude --print \
-		"/init" \
-		> $(abspath $(TEST_OUT))/init/init.log 2>&1
-	@if [ ! -f $(TEST_DIR)/CLAUDE.md ]; then \
-		echo "  ÉCHEC — CLAUDE.md non produit par /init"; \
-		echo "  Consulter $(TEST_OUT)/init/init.log"; \
-		exit 1; \
-	fi
-	@echo "  Complétion avec le template SDD (claude-file/CLAUDE.md)..."
-	cd $(TEST_DIR) && claude --print \
-		"Lis le fichier CLAUDE.md existant à la racine. Lis le template SDD dans ../claude-file/CLAUDE.md. Fusionne les deux : garde la structure et les sections du template SDD, complète-les avec les informations spécifiques au projet générées par /init. Le résultat doit être un CLAUDE.md complet qui suit la méthodologie SDD tout en décrivant ce projet. Écris le résultat dans CLAUDE.md." \
-		> $(abspath $(TEST_OUT))/init/merge.log 2>&1
-	@cp $(TEST_DIR)/CLAUDE.md $(TEST_OUT)/init/CLAUDE.md
-	@echo "  -> $(TEST_OUT)/init/CLAUDE.md généré"
+	$(TEST_DIR)/run-tests.sh init
 
-# Teste sdd-uc-spec-write sur MaintiX
-test-uc-spec: test-init
-	@echo ""
-	@echo "=== Test sdd-uc-spec-write (MaintiX) ==="
-	@mkdir -p $(TEST_OUT)/uc-spec
-	@rm -f $(TEST_DIR)/docs/SPEC.md
-	cd $(TEST_DIR) && claude --print \
-		"$$(cat prompts/prompt-uc-spec-write.md)" \
-		> $(abspath $(TEST_OUT))/uc-spec/session.log 2>&1
-	@if [ -f $(TEST_DIR)/docs/SPEC.md ]; then \
-		cp $(TEST_DIR)/docs/SPEC.md $(TEST_OUT)/uc-spec/SPEC.md; \
-		echo "  -> $(TEST_OUT)/uc-spec/SPEC.md généré"; \
-	else \
-		echo "  ÉCHEC — docs/SPEC.md non produit"; \
-		echo "  Consulter $(TEST_OUT)/uc-spec/session.log"; \
-		exit 1; \
-	fi
+# Produit le SPEC.md dans output/docs/
+test-uc-spec: test-setup
+	$(TEST_DIR)/run-tests.sh uc-spec
 
-# Vérifie toutes les sorties contre les références
+# Vérifie les fichiers générés contre les références
 test-check:
-	@echo "Vérification des sorties contre les références..."
+	@echo ""
+	@echo "Vérification contre les références..."
 	@fail=0; \
 	echo ""; \
-	echo "=== CLAUDE.md (init) ==="; \
-	out="$(TEST_OUT)/init/CLAUDE.md"; \
-	ref="$(TEST_DIR)/reference/init-CLAUDE.md"; \
+	echo "=== CLAUDE.md ==="; \
+	out="$(TEST_OUT)/CLAUDE.md"; \
+	ref="$(TEST_DIR)/reference/CLAUDE.md"; \
 	if [ ! -f "$$out" ]; then \
-		echo "  SKIP — pas de sortie (lancer 'make test' d'abord)"; \
+		echo "  SKIP — pas de fichier (lancer 'make test' d'abord)"; \
 	elif [ ! -f "$$ref" ]; then \
 		echo "  SKIP — pas de référence (lancer 'make test-accept' pour créer)"; \
 	else \
@@ -292,11 +273,11 @@ test-check:
 		done; \
 	fi; \
 	echo ""; \
-	echo "=== SPEC.md (uc-spec) ==="; \
-	out="$(TEST_OUT)/uc-spec/SPEC.md"; \
-	ref="$(TEST_DIR)/reference/uc-spec-SPEC.md"; \
+	echo "=== docs/SPEC.md ==="; \
+	out="$(TEST_OUT)/docs/SPEC.md"; \
+	ref="$(TEST_DIR)/reference/SPEC.md"; \
 	if [ ! -f "$$out" ]; then \
-		echo "  SKIP — pas de sortie (lancer 'make test' d'abord)"; \
+		echo "  SKIP — pas de fichier (lancer 'make test' d'abord)"; \
 	elif [ ! -f "$$ref" ]; then \
 		echo "  SKIP — pas de référence (lancer 'make test-accept' pour créer)"; \
 	else \
@@ -330,28 +311,26 @@ test-check:
 	if [ "$$fail" -eq 0 ]; then \
 		echo "Tous les contrôles passent."; \
 	else \
-		echo "Des écarts ont été détectés. Vérifier les sorties dans $(TEST_OUT)/."; \
+		echo "Des écarts ont été détectés."; \
 	fi
 
-# Accepte les sorties courantes comme nouvelles références
+# Accepte les fichiers générés comme nouvelles références
 test-accept:
-	@if [ -f "$(TEST_OUT)/init/CLAUDE.md" ]; then \
-		cp "$(TEST_OUT)/init/CLAUDE.md" "$(TEST_DIR)/reference/init-CLAUDE.md"; \
-		echo "  -> $(TEST_DIR)/reference/init-CLAUDE.md mis à jour"; \
+	@if [ -f "$(TEST_OUT)/CLAUDE.md" ]; then \
+		cp "$(TEST_OUT)/CLAUDE.md" "$(TEST_DIR)/reference/CLAUDE.md"; \
+		echo "  ✓ tests/reference/CLAUDE.md mis à jour"; \
 	else \
-		echo "  SKIP init — pas de sortie"; \
+		echo "  SKIP — $(TEST_OUT)/CLAUDE.md absent"; \
 	fi
-	@if [ -f "$(TEST_OUT)/uc-spec/SPEC.md" ]; then \
-		cp "$(TEST_OUT)/uc-spec/SPEC.md" "$(TEST_DIR)/reference/uc-spec-SPEC.md"; \
-		echo "  -> $(TEST_DIR)/reference/uc-spec-SPEC.md mis à jour"; \
+	@if [ -f "$(TEST_OUT)/docs/SPEC.md" ]; then \
+		cp "$(TEST_OUT)/docs/SPEC.md" "$(TEST_DIR)/reference/SPEC.md"; \
+		echo "  ✓ tests/reference/SPEC.md mis à jour"; \
 	else \
-		echo "  SKIP uc-spec — pas de sortie"; \
+		echo "  SKIP — $(TEST_OUT)/docs/SPEC.md absent"; \
 	fi
 
-# Supprime les sorties de test et les fichiers générés
+# Supprime le projet simulé et les logs (conserve le CDC, les prompts et les références)
 clean-test:
 	@rm -rf $(TEST_OUT)
-	@rm -rf $(TEST_DIR)/.claude
-	@rm -f $(TEST_DIR)/CLAUDE.md
-	@rm -f $(TEST_DIR)/docs/SPEC.md
-	@echo "Sorties de test supprimées."
+	@rm -rf $(TEST_LOG)
+	@echo "Projet de test et logs supprimés."
