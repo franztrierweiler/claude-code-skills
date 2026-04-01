@@ -269,11 +269,28 @@ test-check:
 	if [ ! -f "$$out" ]; then \
 		echo "  SKIP — fichier absent (lancer 'make test' d'abord)"; \
 	else \
+		echo "  Sections obligatoires du template :"; \
+		for section in "Contexte et objectifs" "Hors périmètre" "Arborescence des cas d'utilisation" "Cas d'utilisation détaillés" "Exigences non fonctionnelles" "Glossaire projet" "Glossaire SDD"; do \
+			if grep -qi "$$section" "$$out"; then \
+				echo "    ✓ \"$$section\""; \
+			else \
+				echo "    ✗ \"$$section\" ABSENT"; \
+				fail=1; \
+			fi; \
+		done; \
+		echo "  Champs structurels par UC :"; \
+		if ! python3 $(TEST_DIR)/check_uc_fields.py "$$out"; then \
+			fail=1; \
+		fi; \
 		echo "  Identifiants (seuils minimaux) :"; \
 		for pair in "UC:$(MIN_UC)" "RG:$(MIN_RG)" "CA:$(MIN_CA)" "ENF:$(MIN_ENF)"; do \
 			prefix=$${pair%%:*}; \
 			min=$${pair##*:}; \
-			count=$$(grep -oE "$$prefix-[0-9]+" "$$out" 2>/dev/null | sort -u | wc -l); \
+			if [ "$$prefix" = "CA" ]; then \
+					count=$$(grep -oE "CA-(UC|ENF)-[0-9]+-[0-9]+" "$$out" 2>/dev/null | sort -u | wc -l); \
+				else \
+					count=$$(grep -oP "(?<!CA-)$$prefix-[0-9]+" "$$out" 2>/dev/null | sort -u | wc -l); \
+				fi; \
 			if [ "$$count" -ge "$$min" ]; then \
 				echo "    ✓ $$prefix : $$count (min $$min)"; \
 			else \
