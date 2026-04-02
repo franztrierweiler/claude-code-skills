@@ -2,6 +2,10 @@
 # claude-code-skills — Makefile
 # =============================================================================
 #
+# Installation globale :
+#   make install    — Installe tous les skills dans ~/.claude/skills/
+#   make install-uc — Installe uniquement les skills UC dans ~/.claude/skills/
+#
 # Distribution locale :
 #   make copy       — Copie skills/commands/rules vers les projets cibles
 #   make copy-dry   — Simule la copie sans rien modifier
@@ -36,7 +40,8 @@ TEST_DIR     := tests
 TEST_OUT     := $(TEST_DIR)/output
 TEST_LOG     := $(TEST_DIR)/log
 
-.PHONY: help copy copy-dry diff status zip zip-all zip-check clean-dist \
+.PHONY: help install install-uc copy copy-dry diff status \
+        zip zip-all zip-check clean-dist \
         test test-init test-uc-spec test-uc-system-design test-review \
         test-check test-system-design test-system-design-check \
         test-setup clean-test
@@ -50,11 +55,15 @@ TEST_LOG     := $(TEST_DIR)/log
 help:
 	@echo "Commandes disponibles :"
 	@echo ""
-	@echo "  Distribution locale (Claude Code) :"
-	@echo "    make copy       Copie skills/commands/rules vers les projets cibles"
-	@echo "    make copy-dry   Simule la copie sans rien modifier"
-	@echo "    make diff       Compare le repo avec les copies installées"
-	@echo "    make status     Liste les projets cibles et leur état"
+	@echo "  Installation globale (~/.claude/) :"
+	@echo "    make install     Installe tous les skills dans ~/.claude/skills/"
+	@echo "    make install-uc  Installe uniquement les skills UC"
+	@echo ""
+	@echo "  Distribution locale (projets cibles) :"
+	@echo "    make copy        Copie skills/commands/rules vers les projets cibles"
+	@echo "    make copy-dry    Simule la copie sans rien modifier"
+	@echo "    make diff        Compare le repo avec les copies installées"
+	@echo "    make status      Liste les projets cibles et leur état"
 	@echo ""
 	@echo "  Distribution enterprise (claude.ai) :"
 	@echo "    make zip        Produit un ZIP par skill dans dist/"
@@ -94,6 +103,33 @@ endef
 
 # Lecture de targets.txt en ignorant les commentaires et lignes vides
 READ_TARGETS = grep -v '^\s*\#' $(TARGETS_FILE) | grep -v '^\s*$$'
+
+# -----------------------------------------------------------------------------
+# Installation globale — copie vers ~/.claude/
+# -----------------------------------------------------------------------------
+
+install:
+	@echo "Installation des skills dans ~/.claude/skills/..."
+	@mkdir -p $(HOME)/.claude/skills
+	@for skill in $(SKILLS); do \
+		name=$$(basename $$skill); \
+		rsync -a --delete $$skill/ $(HOME)/.claude/skills/$$name/; \
+		echo "  ✓ $$name"; \
+	done
+	@echo ""
+	@echo "Skills installés globalement dans ~/.claude/skills/"
+	@echo "Ces skills seront disponibles dans tous les projets."
+
+install-uc:
+	@echo "Installation des skills UC dans ~/.claude/skills/..."
+	@mkdir -p $(HOME)/.claude/skills
+	@for skill in $(TEST_SKILLS); do \
+		name=$$(basename $$skill); \
+		rsync -a --delete $$skill/ $(HOME)/.claude/skills/$$name/; \
+		echo "  ✓ $$name"; \
+	done
+	@echo ""
+	@echo "Skills UC installés globalement dans ~/.claude/skills/"
 
 # -----------------------------------------------------------------------------
 # Distribution locale — copie vers les projets cibles
