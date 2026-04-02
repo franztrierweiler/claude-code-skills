@@ -107,6 +107,13 @@ READ_TARGETS = grep -v '^\s*\#' $(TARGETS_FILE) | grep -v '^\s*$$'
 # -----------------------------------------------------------------------------
 
 install:
+	@if [ -d "$(HOME)/.claude/skills" ] && [ "$$(ls -A $(HOME)/.claude/skills 2>/dev/null)" ]; then \
+		backup="$(HOME)/.claude/skills-backup-$$(date +%Y%m%d-%H%M%S).tar.gz"; \
+		echo "Sauvegarde des skills existants..."; \
+		tar -czf "$$backup" -C "$(HOME)/.claude" skills/; \
+		echo "  ✓ $$backup"; \
+		echo ""; \
+	fi
 	@echo "Installation des skills dans ~/.claude/skills/..."
 	@mkdir -p $(HOME)/.claude/skills
 	@for skill in $(SKILLS); do \
@@ -117,6 +124,7 @@ install:
 	@echo ""
 	@echo "Skills installés globalement dans ~/.claude/skills/"
 	@echo "Ces skills seront disponibles dans tous les projets."
+	@echo "Pour restaurer : tar -xzf ~/.claude/skills-backup-XXXXXXXX-XXXXXX.tar.gz -C ~/.claude/"
 
 # -----------------------------------------------------------------------------
 # Distribution locale — copie vers les projets cibles
