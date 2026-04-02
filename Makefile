@@ -242,14 +242,21 @@ check-deps:
 # avec les variantes non-UC (descriptions proches, versions différentes).
 TEST_SKILLS := skills/sdd-uc-spec-write skills/sdd-uc-system-design
 
+# Sauvegarde des skills globaux (~/.claude/skills/ est prioritaire sur
+# les skills projet). On remplace temporairement par les skills UC du
+# repo pour que les tests utilisent les bonnes versions.
+GLOBAL_SKILLS     := $(HOME)/.claude/skills
+GLOBAL_SKILLS_BAK := $(HOME)/.claude/skills.bak
+
 # Prépare le projet simulé dans output/ : skills UC + commands + rules + CDC
+# Remplace aussi ~/.claude/skills/ pour éviter les conflits de priorité.
 test-setup: check-deps
 	@echo "Préparation du projet de test dans $(TEST_OUT)/..."
 	@mkdir -p $(TEST_OUT)/.claude/skills $(TEST_OUT)/docs $(TEST_LOG)
 	@rm -rf $(TEST_OUT)/.claude/skills/*
 	@for skill in $(TEST_SKILLS); do \
 		rsync -a $$skill/ $(TEST_OUT)/.claude/$$skill/; \
-		echo "  ✓ $$skill"; \
+		echo "  ✓ $$skill (projet)"; \
 	done
 	@for dir in commands rules; do \
 		rsync -a --delete $$dir/ $(TEST_OUT)/.claude/$$dir/; \
@@ -257,6 +264,17 @@ test-setup: check-deps
 	done
 	@cp $(TEST_DIR)/docs/CDC-maintenance.md $(TEST_OUT)/docs/CDC-maintenance.md
 	@echo "  ✓ $(TEST_OUT)/docs/CDC-maintenance.md copié"
+	@if [ -d "$(GLOBAL_SKILLS)" ]; then \
+		if [ ! -d "$(GLOBAL_SKILLS_BAK)" ]; then \
+			mv "$(GLOBAL_SKILLS)" "$(GLOBAL_SKILLS_BAK)"; \
+			echo "  ✓ ~/.claude/skills/ sauvegardé dans skills.bak"; \
+		fi; \
+		mkdir -p "$(GLOBAL_SKILLS)"; \
+		for skill in $(TEST_SKILLS); do \
+			rsync -a $$skill/ $(GLOBAL_SKILLS)/$$(basename $$skill)/; \
+		done; \
+		echo "  ✓ ~/.claude/skills/ remplacé par les skills UC du repo"; \
+	fi
 
 # Lance tous les tests
 test: test-system-design test-setup
@@ -364,7 +382,13 @@ test-check:
 	fi
 
 # Supprime le projet simulé et les logs (conserve le CDC, les prompts et les références)
+# Supprime le projet simulé et restaure les skills globaux
 clean-test:
 	@rm -rf $(TEST_OUT)
 	@rm -rf $(TEST_LOG)
+	@if [ -d "$(GLOBAL_SKILLS_BAK)" ]; then \
+		rm -rf "$(GLOBAL_SKILLS)"; \
+		mv "$(GLOBAL_SKILLS_BAK)" "$(GLOBAL_SKILLS)"; \
+		echo "~/.claude/skills/ restauré depuis skills.bak"; \
+	fi
 	@echo "Projet de test et logs supprimés."

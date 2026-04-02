@@ -45,16 +45,10 @@ run_claude() {
         echo ""
     fi
 
-    # HOME redirigé vers un répertoire temporaire pour isoler les skills.
-    # Sans cela, Claude charge les skills globaux de ~/.claude/skills/
-    # qui sont prioritaires sur ceux du projet (.claude/skills/).
-    local FAKE_HOME
-    FAKE_HOME=$(mktemp -d)
-    HOME="$FAKE_HOME" claude -p --verbose --permission-mode bypassPermissions \
+    claude -p --verbose --permission-mode bypassPermissions \
         --output-format stream-json \
         "$prompt" \
         2>/dev/null | tee "$logfile" | python3 -u "$STREAM_FILTER"
-    rm -rf "$FAKE_HOME"
 }
 
 run_init() {
