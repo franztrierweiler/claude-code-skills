@@ -1,19 +1,53 @@
 ---
 name: sdd-uc-system-design
-description:
+description: >
   Produit les documents de conception technique (architecture, déploiement,
   sécurité, conformité) à partir d'un SPEC.md structuré par cas d'utilisation
-  (UC) selon la méthodologie SDD. Se déclenche quand l'utilisateur demande de
-  concevoir l'architecture, le déploiement, la sécurité ou la conformité d'un
-  projet SDD, ou quand il fournit un SPEC.md et demande la phase de conception.
-  Ne se déclenche pas pour rédiger un SPEC.md (utiliser sdd-uc-spec-write),
-  écrire du code, faire une revue de code, ou planifier des EPICs.
+  (UC) selon la méthodologie SDD. Gère les architectures SaaS, client lourd
+  (desktop), driver et logiciel embarqué (mobile, TPE, terminal
+  professionnel, système embarqué, dev board), avec des sous-templates
+  de déploiement adaptés à chaque type. Se déclenche quand l'utilisateur demande de concevoir l'architecture,
+  le déploiement, la sécurité ou la conformité d'un projet SDD, ou quand il
+  fournit un SPEC.md et demande la phase de conception. Ne se déclenche pas
+  pour rédiger un SPEC.md (utiliser sdd-uc-spec-write), écrire du code, faire
+  une revue de code, ou planifier des EPICs.
+metadata:
+  version: "3.0.0"
+  author: "Franz TRIERWEILER"
+license: "MIT"
 ---
 
 # SDD UC System Design — Conception technique
 
-Version : 2.0.0
-Date : 2026-03-12
+Version : 3.0.0
+Date : 2026-04-02
+
+## Prérequis — vérification au démarrage
+
+Avant toute autre action, vérifie que les fichiers suivants existent dans le
+répertoire `references/` du skill :
+
+| Fichier | Rôle |
+|---|---|
+| `references/TEMPLATE-ARCHITECTURE.md` | Template de référence pour ARCHITECTURE.md |
+| `references/TEMPLATE-DEPLOYMENT.md` | Template tronc commun pour DEPLOYMENT.md |
+| `references/TEMPLATE-DEPLOYMENT-SAAS.md` | Sections spécifiques SaaS (sous-template) |
+| `references/TEMPLATE-DEPLOYMENT-DESKTOP.md` | Sections spécifiques client lourd (sous-template) |
+| `references/TEMPLATE-DEPLOYMENT-DRIVER.md` | Sections spécifiques driver (sous-template) |
+| `references/TEMPLATE-DEPLOYMENT-EMBEDDED.md` | Sections spécifiques logiciel embarqué : mobile, TPE, terminal pro, système embarqué, dev board (sous-template) |
+| `references/TEMPLATE-SECURITY.md` | Template de référence pour SECURITY.md |
+| `references/TEMPLATE-COMPLIANCE-MATRIX.md` | Template de référence pour COMPLIANCE_MATRIX.md |
+
+Si un ou plusieurs fichiers sont absents, **arrête immédiatement** et affiche :
+
+```
+⚠️ Fichier(s) manquant(s) dans references/ : [liste].
+Le skill ne peut pas fonctionner sans ces fichiers. Vérifie que le skill
+a été installé avec son répertoire references/ complet.
+```
+
+Ne tente pas de générer les documents de conception de mémoire si un fichier
+de référence manque.
 
 ## Déclenchement
 
@@ -64,6 +98,30 @@ user stories, cahier des charges classique), Claude informe l'utilisateur :
 > Veux-tu convertir la spec en format UC d'abord (via sdd-uc-spec-write),
 > ou continuer avec le format actuel en mode dégradé ?
 
+## Message d'accueil
+
+Quand le skill est activé et que le SPEC.md est validé, Claude affiche :
+
+```
+Ce skill produit les documents de conception technique à partir de ton
+SPEC.md, selon la méthodologie SDD. Je vais produire jusqu'à 4 documents :
+
+1. ARCHITECTURE.md — Comment le système est construit (composants, stack,
+   flux, données, décisions).
+2. DEPLOYMENT.md — Comment le système est déployé et opéré (prérequis,
+   procédures, CI/CD, monitoring, disaster recovery).
+3. SECURITY.md — Comment le système est sécurisé (menaces, exigences,
+   code sécurisé, réponse à incident).
+4. COMPLIANCE_MATRIX.md — Comment le système est conforme à son cadre
+   réglementaire (seulement si applicable).
+
+On commence par l'architecture, qui conditionne tous les autres documents.
+La réflexion se fait en 7 étapes avant toute rédaction. Je te poserai des
+questions par petits groupes (3-5 max) à chaque étape.
+
+On y va ?
+```
+
 ## Philosophie
 
 Les documents de conception sont le pont entre la spécification (ce que le
@@ -113,19 +171,26 @@ exploite systématiquement :
 
 | Élément du SPEC.md | Exploitation architecturale |
 |---|---|
+| **Diagramme de contexte** | Vue d'ensemble du périmètre, acteurs, systèmes adjacents — base pour la vue d'ensemble (§ 1) |
+| **Section Architecture** | Contraintes techniques imposées — entrée directe pour le cadrage macro (A.1) |
 | **Packages niveau 2** | Pistes pour le découpage en composants ou modules |
 | **Packages niveau 1** | Pistes pour le découpage en sous-modules ou services |
 | **Étapes Na/Nb** | Source directe pour les flux métier (flowcharts) |
+| **État initial / État final** | Source pour les diagrammes de transition d'état (state diagrams) |
 | **Exceptions** | Source directe pour les flux d'erreur et de rattrapage |
 | **Relations include** | Dépendances obligatoires entre composants |
 | **Relations extend** | Points d'extension optionnels de l'architecture |
 | **Objets participants** | Base du modèle de données |
 | **Règles de gestion (RG)** | Contraintes métier à implémenter dans le bon composant |
 | **Acteurs** | Points d'entrée du système (interfaces utilisateur, APIs) |
+| **Fréquence d'utilisation** | Données de dimensionnement (performance, scalabilité, coûts) |
+| **Priorité** (Critique/Important/Souhaité) | Priorisation des arbitrages architecturaux |
 | **IHM-xxx** | Contraintes d'interface et de couche présentation |
 | **ENF-xxx** | Propriétés non-fonctionnelles transverses |
 | **CA-UC-xxx-yy** | Critères de validation de l'architecture |
 | **Niveaux de support** | Frontières du système (ce qui est émulé, ignoré, rejeté) |
+| **Hors périmètre** | Délimitation de ce que l'architecture ne doit PAS couvrir |
+| **Glossaire projet** | Source pour le glossaire technique de l'ARCHITECTURE.md (§ 6) |
 
 ## Sorties produites
 
@@ -154,19 +219,21 @@ où `vX.Y.Z` est la version indiquée dans l'en-tête de ce skill.
 
 - Caractère plein : `█` — Caractère vide : `░`
 - Largeur fixe : 7 caractères pour les phases A (7 étapes + rédaction),
-  5 caractères pour les phases B/C/D.
+  5 caractères pour les phases B/D, 3 caractères pour la phase C.
 - La barre reflète l'étape en cours (incluse).
 
 **Exemples par phase :**
 
 ```
-🏗️ skill:sdd-uc-system-design v2.0.0 · Architecture [█░░░░░░] étape 1/7 — Cadrage macro
-🏗️ skill:sdd-uc-system-design v2.0.0 · Architecture [███░░░░] étape 3/7 — Modèle de données
-🏗️ skill:sdd-uc-system-design v2.0.0 · Architecture [███████] étape 7/7 — Synthèse et arbitrages
-🏗️ skill:sdd-uc-system-design v2.0.0 · Architecture [████████] rédaction
-🏗️ skill:sdd-uc-system-design v2.0.0 · Déploiement [██░░░] étape 2/5 — Questions
-🏗️ skill:sdd-uc-system-design v2.0.0 · Sécurité [███░░] étape 3/5 — Stack technique
-🏗️ skill:sdd-uc-system-design v2.0.0 · Conformité [█████] étape 5/5 — Rédaction
+🏗️ skill:sdd-uc-system-design vX.Y.Z · Architecture [█░░░░░░] étape 1/7 — Cadrage macro
+🏗️ skill:sdd-uc-system-design vX.Y.Z · Architecture [███░░░░] étape 3/7 — Modèle de données
+🏗️ skill:sdd-uc-system-design vX.Y.Z · Architecture [███████] étape 7/7 — Synthèse et arbitrages
+🏗️ skill:sdd-uc-system-design vX.Y.Z · Architecture [████████] rédaction
+🏗️ skill:sdd-uc-system-design vX.Y.Z · Déploiement [██░░░] étape 2/5 — Questions
+🏗️ skill:sdd-uc-system-design vX.Y.Z · Sécurité [█░░] étape 1/3 — Modèle de menaces
+🏗️ skill:sdd-uc-system-design vX.Y.Z · Sécurité [██░] étape 2/3 — Questions de cadrage
+🏗️ skill:sdd-uc-system-design vX.Y.Z · Sécurité [███] étape 3/3 — Rédaction
+🏗️ skill:sdd-uc-system-design vX.Y.Z · Conformité [█████] étape 5/5 — Rédaction
 ```
 
 Si plusieurs messages se succèdent au sein de la même étape (ex : questions
@@ -226,10 +293,30 @@ et devra être repris plus tard. »).
 **Objectif :** Comprendre la nature du système et ses contraintes structurantes
 avant toute réflexion technique.
 
+**Exploitation préalable du SPEC.md :**
+
+Avant de poser les questions, Claude exploite les sections du SPEC.md qui
+fournissent déjà du contexte architectural :
+
+- **Diagramme de contexte** (si présent) — Identifier les acteurs, systèmes
+  adjacents, éléments géographiques et organisationnels. Ce schéma donne une
+  vue d'ensemble du périmètre qui alimente directement la § 1 (Vue d'ensemble)
+  de l'ARCHITECTURE.md.
+- **Section Architecture** (si présente) — Contraintes techniques imposées
+  (langage, plateforme, composants). Ces contraintes sont non négociables et
+  réduisent l'espace des questions à poser.
+- **Section Hors périmètre** — Délimite ce que l'architecture ne doit PAS
+  couvrir. Évite de concevoir des composants pour des fonctionnalités exclues.
+
+Claude synthétise ce qu'il a trouvé dans le SPEC.md et adapte ses questions
+en conséquence (ne pas redemander ce qui est déjà documenté).
+
 **Questions obligatoires :**
 
 1. Quel type de solution développez-vous ? (SaaS, client lourd, driver,
-   bibliothèque, CLI, API, microservices, monolithe, autre)
+   logiciel embarqué — mobile, TPE, terminal professionnel, système
+   embarqué, dev board —, bibliothèque, CLI, API, microservices,
+   monolithe, autre)
 2. Le système est-il autonome ou s'insère-t-il dans un écosystème existant ?
    Si oui, lequel ? (décrire les systèmes adjacents)
 3. Quelles sont les contraintes **imposées** et non négociables ? (langage,
@@ -245,6 +332,12 @@ avant toute réflexion technique.
   Quelles régions ? Budget infrastructure mensuel ?
 - Si driver ou client lourd → Quels OS cibles ? Quelles versions ?
   Architecture processeur ? Privilèges requis (kernel, admin) ?
+- Si logiciel embarqué → Quelle catégorie de cible (téléphone mobile,
+  TPE, terminal professionnel, système embarqué, dev board) ? Quels
+  modèles / plateformes ? Quel OS / runtime (Android, iOS, FreeRTOS,
+  bare metal) ? Connectivité (Wi-Fi, 4G, intermittente, filaire) ?
+  Mode hors-ligne requis ? Y a-t-il une HAL pour abstraire le matériel ?
+  Gestionnaire de terminaux / MDM (TOMS, SOTI, autre) ?
 - Si intégration hardware → Quels protocoles matériels ? Quels équipements ?
   Firmwares à supporter ?
 - Si système distribué → Combien de nœuds ? Réseau fiable ou intermittent ?
@@ -406,6 +499,12 @@ les exceptions sont les flux d'erreur.
    exception documentée dans le SPEC.md correspond à un chemin d'erreur
    que l'architecture doit supporter.
 
+5. **Cycles de vie des entités** — Les champs **État initial** et **État
+   final** de chaque UC révèlent les transitions d'état des entités métier.
+   En chaînant les UC qui partagent les mêmes entités, Claude reconstitue
+   les diagrammes de transition d'état complets (source pour § 4.3 de
+   l'ARCHITECTURE.md).
+
 Pour chaque flux, Claude note : UC source, déclencheur (étape Na), étapes,
 composants impliqués, données transportées, cas d'erreur (exceptions).
 
@@ -449,7 +548,11 @@ propose une stack technique en respectant ces principes :
    bien ensemble (ex : ne pas mixer 4 langages sans raison).
 3. **Maturité et support** — Préférer des technologies stables, bien
    documentées, avec une communauté active.
-4. **Coût total** — Inclure les coûts de licence, d'hébergement, de formation,
+4. **Pérennité** — Évaluer le risque d'obsolescence de chaque brique
+   (mainteneur, fréquence des releases, taille de la communauté). Si le
+   risque est modéré ou plus, documenter un plan de mitigation (migration,
+   fork, remplacement).
+5. **Coût total** — Inclure les coûts de licence, d'hébergement, de formation,
    de maintenance.
 
 **Présentation à l'utilisateur :**
@@ -477,6 +580,13 @@ Pour chaque brique, Claude présente :
 et les contraintes non fonctionnelles rattachées aux UC en décisions
 architecturales concrètes. Couvrir aussi les propriétés non explicitement
 demandées mais nécessaires.
+
+**Exploitation préalable du SPEC.md :**
+
+Claude exploite le champ **Fréquence d'utilisation** de chaque UC pour
+alimenter le dimensionnement. Les UC à haute fréquence (ex : « 500 fois/jour »)
+orientent les choix de performance, cache et scalabilité. Les UC à faible
+fréquence (ex : « mensuel ») peuvent tolérer des traitements plus lourds.
 
 **Axes d'analyse systématique :**
 
@@ -518,6 +628,10 @@ Claude produit un document de synthèse structuré :
    composants, ou plusieurs packages fusionnés dans un composant).
 3. **Matrice de traçabilité UC → Composants** — Tableau montrant quel
    composant implémente quel UC. Cela garantit la couverture complète.
+   La **priorité** de chaque UC (Critique/Important/Souhaité) est reportée
+   dans la matrice pour guider les arbitrages : un UC Critique impose des
+   choix architecturaux non négociables, un UC Souhaité peut accepter des
+   compromis.
 4. **Trade-offs explicites** — Pour chaque compromis fait, documenter ce qui
    a été sacrifié et pourquoi (ex : « On choisit la cohérence éventuelle
    plutôt que la cohérence forte pour gagner en disponibilité »).
@@ -549,21 +663,27 @@ l'étape concernée.
 
 **Prérequis :** La synthèse A.7 est validée par l'utilisateur.
 
-Rédige le ARCHITECTURE.md section par section en suivant le template en
-annexe. La rédaction s'appuie intégralement sur les livrables intermédiaires
+Rédige le ARCHITECTURE.md section par section en suivant le template
+`references/TEMPLATE-ARCHITECTURE.md`. La rédaction s'appuie intégralement sur les livrables intermédiaires
 validés aux étapes A.1 à A.7 :
 
-- § 1 (Vue d'ensemble) ← A.1 cadrage + A.7 vision
+- § 1 (Vue d'ensemble) ← A.1 cadrage + A.7 vision + diagramme de contexte du SPEC.md
 - § 2 (Principes) ← A.7 trade-offs + A.6 propriétés
-- § 3 (Stack technique) ← A.5 choix technologiques
-- § 4.1 (Composants) ← A.7 composants identifiés + matrice UC → Composants
-- § 4.2 (Flowcharts) ← A.4 flux métier (issus des étapes Na/Nb des UC)
-- § 4.3 (State diagrams) ← A.4 cycles de vie identifiés
-- § 4.4 (Inventaire données) ← A.3 modèle de données (basé sur objets participants)
-- § 4.5 (Initialisation) ← A.3 données initiales
-- § 5 (Structure répertoire) ← A.7 composants + A.5 stack
-- § 6 (Glossaire) ← termes accumulés + glossaire projet du SPEC.md
-- § 7 (Documents de référence) ← documents utilisés et produits
+- § 3.1 (Choix technologiques) ← A.5 choix avec alternatives écartées
+- § 3.2 (Pérennité) ← A.5 évaluation du risque d'obsolescence par technologie
+- § 3.3 (Coûts) ← A.5 estimation des coûts de fonctionnement
+- § 4.1 (Diagramme d'architecture) ← A.7 composants + A.4 flux principaux
+- § 4.2 (Composants) ← A.7 composants identifiés + matrice UC → Composants
+- § 4.3 (Flowcharts) ← A.4 flux métier (issus des étapes Na/Nb des UC)
+- § 4.4 (Séquences intégrations) ← A.4 flux d'intégration et d'événements
+- § 4.5 (State diagrams) ← A.4 cycles de vie (états initiaux/finaux des UC)
+- § 4.6 (Inventaire données) ← A.3 modèle de données (basé sur objets participants)
+- § 4.7 (Initialisation) ← A.3 données initiales
+- § 5 (Propriétés non-fonctionnelles) ← A.6 seuils chiffrés + décisions
+- § 6 (Décisions d'architecture) ← A.7 trade-offs + décisions ouvertes tranchées
+- § 7 (Structure répertoire) ← A.7 composants + A.5 stack
+- § 8 (Glossaire) ← termes accumulés + glossaire projet du SPEC.md
+- § 9 (Documents de référence) ← documents utilisés et produits
 
 Présente chaque section majeure à l'utilisateur pour validation avant de
 passer à la suivante. Les diagrammes Mermaid doivent être syntaxiquement
@@ -596,39 +716,94 @@ Les références au SPEC.md utilisent les identifiants suivants :
 - Si SaaS → Multi-tenant ? Isolation des données ? CDN ?
 - Si client lourd → Mécanisme de mise à jour automatique ? Signature du code ?
 - Si driver → Processus de certification ? Signature noyau ?
+- Si logiciel embarqué → Quel mécanisme de distribution (TMS/MDM, app
+  store, flashage firmware) ? Parc homogène ou hétérogène ? Si parc
+  hétérogène, y a-t-il une HAL ? Mode hors-ligne requis ? Contraintes
+  de certification (PCI-PTS, EMVCo, App Store Review) ?
 - Si on-premise → Prérequis réseau ? Proxy ? Pare-feu ?
 
 #### Rédaction
 
-Le chapitrage du DEPLOYMENT.md s'adapte au type de solution. Utilise le
-template en annexe et sélectionne les sections appropriées.
+Le DEPLOYMENT.md est construit à partir du tronc commun
+(`references/TEMPLATE-DEPLOYMENT.md`) complété par le sous-template
+correspondant au type de solution identifié en A.1 :
+
+| Type de solution | Sous-template |
+|---|---|
+| SaaS | `references/TEMPLATE-DEPLOYMENT-SAAS.md` |
+| Client lourd / Desktop | `references/TEMPLATE-DEPLOYMENT-DESKTOP.md` |
+| Driver / Firmware | `references/TEMPLATE-DEPLOYMENT-DRIVER.md` |
+| Logiciel embarqué (mobile, TPE, terminal pro, dev board) | `references/TEMPLATE-DEPLOYMENT-EMBEDDED.md` |
+| Bibliothèque / CLI / Autre | Pas de sous-template — tronc commun uniquement |
+
+Les sections du sous-template sont insérées après le tronc commun,
+numérotées à la suite. Si le type de solution ne correspond à aucun
+sous-template, le tronc commun suffit.
 
 ### Phase C — Sécurité (SECURITY.md)
 
-#### Questions obligatoires
+#### C.1 — Modèle de menaces
+
+**Travail d'analyse (Claude, en autonomie) :**
+
+Claude exploite le SPEC.md (acteurs, interfaces, points d'entrée) et
+l'ARCHITECTURE.md (composants, flux, exposition réseau) pour produire :
+
+1. **Surface d'attaque** — Points d'entrée du système, exposition, données
+   accessibles.
+2. **Acteurs malveillants** — Profils d'attaquants, motivations, capacités.
+3. **Frontières de confiance** — Zones de confiance et contrôles requis à
+   chaque franchissement.
+
+Claude présente ce modèle à l'utilisateur pour validation avant de
+poursuivre.
+
+#### C.2 — Questions de cadrage
+
+**Questions obligatoires :**
 
 1. Quels sont les actifs à protéger ? (données, accès, disponibilité)
 2. Qui sont les utilisateurs et quels rôles ont-ils ? (exploiter la section
    Acteurs du SPEC.md)
 3. Y a-t-il des politiques de sécurité internes à respecter ?
 4. Le système est-il exposé sur Internet ?
-5. Quels référentiels de sécurité appliquer ? (ANSSI, OWASP, CIS, ISO 27001,
-   interne)
+5. Quels référentiels de sécurité appliquer ? (ANSSI, OWASP ASVS, CIS,
+   ISO 27001, interne)
+6. Existe-t-il un plan de réponse à incident ? Si non, qui serait
+   responsable en cas d'incident ?
 
-#### Questions conditionnelles
+**Questions conditionnelles :**
 
 - Si données de santé → Exigences HDS ? Pseudonymisation ?
-- Si données personnelles → Traitements RGPD identifiés ?
+- Si données personnelles → Traitements RGPD identifiés ? DPO nommé ?
 - Si API publique → Rate limiting ? Authentification ? CORS ?
+- Si upload de fichiers → Types autorisés ? Taille max ? Scan antimalware ?
 - Si driver/client lourd → Signature du binaire ? Analyse statique ?
   Protection mémoire ?
 
-#### Rédaction
+#### C.3 — Rédaction
 
-Le SECURITY.md comporte trois niveaux d'exigences :
-1. **Organisationnelles** : politiques de l'organisation de développement.
-2. **Bonnes pratiques** : issues de référentiels reconnus (ANSSI, OWASP, etc.).
-3. **Technologiques** : spécifiques aux technologies de la stack.
+Le SECURITY.md suit le template `references/TEMPLATE-SECURITY.md` et
+couvre les axes suivants :
+
+1. **Modèle de menaces** (§ 2) : surface d'attaque, acteurs malveillants,
+   frontières de confiance.
+2. **Exigences organisationnelles** (§ 3) : politiques internes.
+3. **Bonnes pratiques** (§ 4) : authentification, sessions, cryptographie,
+   protection applicative, gestion des erreurs, sécurité API, upload,
+   journalisation, segmentation réseau, continuité.
+4. **Référentiels sectoriels** (§ 5) : exigences de sécurité induites par
+   les référentiels du marché (PGSSI-S, PCI-DSS, DORA, NIS2, etc.)
+   identifiés dans le SPEC.md. Supprimer si non applicable.
+5. **Principes de développement sécurisé** (§ 6) : règles de codage
+   sécurisé (effacement mémoire, fail securely, encodage contextuel, etc.).
+6. **SDLC sécurisé et supply chain** (§ 7) : SAST, DAST, audit dépendances,
+   SBOM, hardening, signature.
+7. **Stack technique** (§ 8) : exigences spécifiques par technologie.
+8. **Réponse à incident** (§ 9) : rôles, procédure, notification.
+9. **Conformité et privacy** (§ 10) : renvoi vers COMPLIANCE_MATRIX.md,
+   obligations RGPD liées à la sécurité.
+10. **Spécificités** (§ 11) : exigences propres au contexte du projet.
 
 Chaque exigence est numérotée selon la convention définie dans le template.
 
@@ -651,6 +826,10 @@ Avant de rédiger, Claude évalue si un fichier de conformité est pertinent :
    (identifier les UC-xxx / ENF-xxx « mères »)
 3. Qui est responsable de la conformité ? (rôle, équipe)
 4. Y a-t-il des certifications à obtenir ?
+5. Pour chaque exigence, qui en porte l'implémentation ? (responsable par
+   exigence ou par lot d'exigences)
+6. Y a-t-il des échéances réglementaires ou contractuelles ? (dates butoirs
+   de mise en conformité)
 
 #### Rédaction
 
@@ -696,803 +875,85 @@ croisés pour éviter la redondance :
 - COMPLIANCE_MATRIX.md → référence les UC / ENF « mères » du SPEC.md et les
   exigences de SECURITY.md quand elles se recoupent
 
-Format de renvoi : `Voir ARCHITECTURE.md § 4.1` ou `Réf. UC-007`.
+Format de renvoi : `Voir ARCHITECTURE.md § 4.2` ou `Réf. UC-007`.
 
 ## Checklist de validation
 
 Avant de remettre chaque document à l'utilisateur, vérifie :
 
 ### ARCHITECTURE.md
-- [ ] Chaque composant a une responsabilité unique et claire.
-- [ ] La matrice de traçabilité UC → Composants couvre tous les UC du SPEC.md.
-- [ ] Les diagrammes Mermaid sont syntaxiquement corrects.
-- [ ] La stack technique est justifiée (pas de technologie sans raison).
-- [ ] L'inventaire des données couvre les objets participants du SPEC.md.
-- [ ] La structure du répertoire est cohérente avec l'architecture.
-- [ ] Le glossaire technique couvre tous les termes spécifiques.
-- [ ] Les coûts de fonctionnement sont estimés.
+- [ ] Le diagramme d'architecture haut niveau (§ 4.1) est présent et lisible.
+- [ ] Chaque composant (§ 4.2) a une responsabilité unique et claire.
+- [ ] La matrice de traçabilité UC → Composants couvre tous les UC du SPEC.md avec leur priorité.
+- [ ] Les diagrammes Mermaid (flowcharts § 4.3, séquences § 4.4, states § 4.5) sont syntaxiquement corrects.
+- [ ] La stack technique (§ 3.1) est justifiée (chaque choix avec alternative écartée).
+- [ ] La pérennité des choix (§ 3.2) est évaluée (risque d'obsolescence, plan de mitigation si risque modéré+).
+- [ ] Les propriétés non-fonctionnelles (§ 5) ont des seuils chiffrés et des décisions associées.
+- [ ] Les décisions d'architecture (§ 6) documentent les trade-offs et leurs conséquences.
+- [ ] L'inventaire des données (§ 4.6) couvre les objets participants du SPEC.md.
+- [ ] La structure du répertoire (§ 7) est cohérente avec l'architecture.
+- [ ] Le glossaire technique (§ 8) couvre les termes spécifiques sans dupliquer le glossaire projet.
+- [ ] Les coûts de fonctionnement (§ 3.2) sont estimés.
 
 ### DEPLOYMENT.md
-- [ ] Les prérequis sont listés exhaustivement.
+- [ ] Les prérequis sont listés exhaustivement (infra, logiciels, réseau, secrets).
+- [ ] La configuration par environnement (§ 4) est documentée.
 - [ ] La procédure de déploiement est reproductible par un agent IA.
 - [ ] La stratégie de rollback est documentée.
-- [ ] Le monitoring est défini.
-- [ ] Les sections spécifiques au type de solution sont pertinentes.
+- [ ] Les health checks et critères de readiness (§ 8) sont définis.
+- [ ] Le monitoring et les alertes sont définis.
+- [ ] Le disaster recovery (§ 11) documente RPO/RTO et les scénarios de sinistre.
+- [ ] Le sous-template spécifique au type de solution est intégré (si applicable).
 
 ### SECURITY.md
-- [ ] Les trois niveaux d'exigences sont couverts (org, bonnes pratiques, tech).
+- [ ] Le modèle de menaces est documenté (surface d'attaque, acteurs, frontières de confiance).
 - [ ] Chaque exigence a un ID unique, une description et un statut.
-- [ ] Les exigences ANSSI/OWASP pertinentes sont présentes.
+- [ ] Les exigences organisationnelles sont couvertes.
+- [ ] Les bonnes pratiques couvrent : auth, sessions, crypto, protection applicative, gestion des erreurs, API, upload (si applicable), journalisation, segmentation réseau, continuité.
+- [ ] Le SDLC sécurisé est documenté (SAST, DAST, dépendances, SBOM, hardening).
 - [ ] Les exigences spécifiques à la stack sont documentées.
+- [ ] Le plan de réponse à incident est renseigné (rôles, procédure, notification).
+- [ ] Les obligations de conformité/privacy sont résumées (avec renvoi vers COMPLIANCE_MATRIX.md si applicable).
 
 ### COMPLIANCE_MATRIX.md
 - [ ] Chaque exigence est rattachée à son référentiel source.
 - [ ] Les UC / ENF « mères » du SPEC.md sont identifiés.
+- [ ] Chaque exigence a un responsable et une échéance.
 - [ ] La numérotation est indépendante du SPEC.md.
 - [ ] La légende des statuts est présente.
 
+## Passage de relais
+
+Quand les documents de conception sont produits et validés, Claude informe
+l'utilisateur de la suite du flux SDD :
+
+```
+Les documents de conception sont prêts :
+- ARCHITECTURE.md v1.0
+- DEPLOYMENT.md v1.0
+- SECURITY.md v1.0
+- COMPLIANCE_MATRIX.md v1.0 (si applicable)
+
+La prochaine étape du flux SDD est la planification : découper le travail
+en EPICs et plans d'implémentation à partir de l'architecture et de la
+spec. Tu peux le faire manuellement ou avec un skill de planification.
+
+Ces documents sont vivants — ils seront mis à jour au fil du développement
+si des décisions d'architecture évoluent.
+```
+
 ## Utilisation des templates
 
-Utilise les templates définis en annexe comme point de départ. Ne génère
+Les templates sont définis dans le répertoire `references/` du skill. Ne génère
 jamais la structure d'un document de mémoire — les templates sont la
 référence. Remplis les sections au fil du dialogue, supprime les sections
 marquées comme optionnelles si elles ne s'appliquent pas, et retire les
 commentaires HTML avant livraison.
 
----
+| Document | Template |
+|---|---|
+| ARCHITECTURE.md | `references/TEMPLATE-ARCHITECTURE.md` |
+| DEPLOYMENT.md | `references/TEMPLATE-DEPLOYMENT.md` + sous-template selon le type de solution |
+| SECURITY.md | `references/TEMPLATE-SECURITY.md` |
+| COMPLIANCE_MATRIX.md | `references/TEMPLATE-COMPLIANCE-MATRIX.md` |
 
-## Annexe A — Template ARCHITECTURE.md
-
-````markdown
-# [Nom du projet] — Architecture
-
-Version : 1.0
-Date : [YYYY-MM-DD]
-Auteur : [Nom]
-Statut : Brouillon
-Spec de référence : SPEC.md v[X.Y]
-
-## 1. Vue d'ensemble
-
-<!-- Résumé en 3-5 phrases : ce que le système fait, son type (SaaS, client
-lourd, driver, etc.), ses caractéristiques architecturales principales
-(monolithe, microservices, event-driven, etc.) et ses contraintes structurantes.
-Ce paragraphe doit permettre à un lecteur de comprendre le système en 30 secondes. -->
-
-[Description]
-
-## 2. Principes d'architecture
-
-<!-- Lister les principes directeurs qui gouvernent les choix techniques.
-Chaque principe est nommé, décrit en une phrase, et justifié par un UC, une RG,
-une ENF du SPEC.md ou un besoin métier. 5 à 10 principes maximum.
-Exemples : séparation des responsabilités, immutabilité des données,
-fail-fast, idempotence, etc. -->
-
-| # | Principe | Description | Justification |
-|---|----------|-------------|---------------|
-| 1 | [Nom du principe] | [Description en une phrase] | [Réf. UC-xxx / RG-xxxx / ENF-xxx ou raison métier] |
-
-## 3. Stack technique
-
-### 3.1 Synthèse
-
-<!-- Tableau récapitulatif de toutes les technologies utilisées.
-Chaque ligne doit justifier le choix (pourquoi cette techno et pas une autre).
-Inclure les versions ciblées. -->
-
-| Catégorie | Technologie | Version | Rôle | Justification | Fournisseur / Licence |
-|-----------|-------------|---------|------|---------------|-----------------------|
-| Langage | [ex: Python] | [ex: 3.12+] | [ex: Langage principal] | [ex: Imposé par SPEC.md, écosystème data science] | [ex: PSF / MIT] |
-| Framework | [ex: FastAPI] | [ex: 0.110+] | [ex: API REST] | [ex: Performance async, typage natif] | [ex: Tiangolo / MIT] |
-| Base de données | [ex: PostgreSQL] | [ex: 16+] | [ex: Stockage principal] | [ex: ACID, JSON natif, extensibilité] | [ex: PostgreSQL GDG / PostgreSQL License] |
-| <!-- Ajouter : cache, message broker, monitoring, CI/CD, IaC, etc. --> | | | | | |
-
-### 3.2 Coût de fonctionnement induit
-
-<!-- Estimer les coûts récurrents mensuels de la stack en production.
-Distinguer les coûts fixes (licences, instances réservées) des coûts
-variables (compute, stockage, bande passante).
-Si l'estimation est impossible à ce stade, noter les métriques à surveiller. -->
-
-| Poste | Service | Estimation mensuelle | Type | Hypothèses |
-|-------|---------|---------------------|------|------------|
-| Compute | [ex: Azure App Service P1v3] | [ex: ~120€] | Fixe | [ex: 1 instance, région France Central] |
-| Base de données | [ex: Azure PostgreSQL Flexible] | [ex: ~80€] | Fixe | [ex: 2 vCores, 32 Go stockage] |
-| Stockage | [ex: Azure Blob Storage] | [ex: ~5-20€] | Variable | [ex: 50-200 Go, LRS, accès occasionnel] |
-| <!-- Ajouter : CDN, DNS, monitoring, secrets, backup, etc. --> | | | | |
-
-**Coût total estimé :** [fourchette mensuelle]
-
-**Remarques :**
-<!-- Préciser les hypothèses de dimensionnement, les seuils de passage au
-palier supérieur, les offres gratuites utilisées (free tier), etc. -->
-
-## 4. Architecture détaillée
-
-### 4.1 Composants
-
-<!-- Chaque composant est un module autonome avec une responsabilité unique.
-Si un composant a deux responsabilités reliées par "et", le découper en deux.
-Référencer les UC et RG du SPEC.md que chaque composant adresse. -->
-
-| Composant | Responsabilité | Interfaces exposées | Dépendances | UC couverts | RG implémentées |
-|-----------|---------------|---------------------|-------------|-------------|-----------------|
-| [Nom] | [Responsabilité en 1-2 phrases] | [Noms et type : REST, gRPC, événement, fichier] | [Composants ou services externes] | [UC-xxx, UC-yyy] | [RG-xxxx] |
-
-#### Matrice de traçabilité UC → Composants
-
-<!-- Matrice montrant quel composant implémente quel UC.
-Garantit la couverture complète de la spec. -->
-
-| UC | Intitulé | Composant(s) |
-|---|---|---|
-| UC-001 | [Intitulé] | [Composant principal + composants impliqués] |
-
-### 4.2 Diagrammes de flux (flowchart)
-
-<!-- Un diagramme par flux métier principal, issu des étapes Na/Nb des UC.
-Utiliser la syntaxe Mermaid. Chaque nœud correspond à un composant ou
-une action. Nommer le flux et référencer les UC couverts. -->
-
-#### Flux : [Nom du flux] (réf. UC-xxx, UC-yyy)
-
-```mermaid
-flowchart TD
-    A[Étape 1a — Acteur] --> B{Étape 1b — Système}
-    B -->|Nominal| C[Étape 2a — Acteur]
-    B -->|Exception| D[Traitement erreur]
-    C --> E[Étape 2b — Système]
-    D --> E
-```
-
-**Description :** [Explication textuelle du flux, cas nominaux et exceptions]
-
-### 4.3 Diagrammes de transition d'état
-
-<!-- Un diagramme par entité ayant un cycle de vie (statuts, états).
-Utiliser la syntaxe Mermaid stateDiagram-v2. -->
-
-#### Entité : [Nom de l'entité]
-
-```mermaid
-stateDiagram-v2
-    [*] --> État1
-    État1 --> État2 : événement
-    État2 --> État3 : événement
-    État3 --> [*]
-```
-
-**Description :** [Explication des transitions, conditions de garde, actions déclenchées]
-
-### 4.4 Inventaire des données
-
-<!-- Basé sur les objets participants du SPEC.md, enrichi lors de l'étape A.3.
-Pour chaque entité, décrire les attributs principaux, le volume attendu,
-la sensibilité et la durée de rétention. -->
-
-| Entité | Description | Attributs clés | Volume estimé | Sensibilité | Rétention | Stockage |
-|--------|-------------|---------------|---------------|-------------|-----------|----------|
-| [Nom — issu des objets participants] | [Description] | [Liste des attributs principaux] | [ex: ~10k enregistrements/an] | [Public / Interne / Confidentiel / Secret] | [ex: 5 ans] | [ex: PostgreSQL, table `xxx`] |
-
-### 4.5 Initialisation des données
-
-<!-- Décrire les données nécessaires avant le premier démarrage du système :
-données de référence, configuration initiale, migrations, seeds.
-Préciser la source, le format, et la procédure de chargement. -->
-
-| Donnée | Source | Format | Procédure de chargement | Fréquence de mise à jour |
-|--------|--------|--------|------------------------|-------------------------|
-| [ex: Référentiel codes postaux] | [ex: data.gouv.fr] | [ex: CSV] | [ex: Script `scripts/seed_postal_codes.py`] | [ex: Annuelle] |
-
-## 5. Structure du répertoire projet
-
-<!-- Arborescence du projet reflétant l'architecture.
-Chaque répertoire de premier niveau a un commentaire expliquant son rôle.
-Cette structure est la référence pour l'implémentation. -->
-
-```
-project-root/
-├── docs/                    # Documents de conception (ce fichier, DEPLOYMENT.md, etc.)
-│   ├── ARCHITECTURE.md
-│   ├── DEPLOYMENT.md
-│   ├── SECURITY.md
-│   └── COMPLIANCE_MATRIX.md
-├── src/                     # Code source
-│   ├── [composant_1]/       # [Responsabilité du composant 1]
-│   ├── [composant_2]/       # [Responsabilité du composant 2]
-│   └── ...
-├── tests/                   # Tests automatisés
-│   ├── unit/
-│   ├── integration/
-│   └── e2e/
-├── scripts/                 # Scripts utilitaires (seed, migration, etc.)
-├── config/                  # Configuration par environnement
-├── infra/                   # Infrastructure as Code (Terraform, Docker, etc.)
-├── SPEC.md                  # Spécification SDD (cas d'utilisation)
-├── README.md                # Guide de démarrage rapide
-└── ...
-```
-
-## 6. Glossaire technique
-
-<!-- Termes techniques spécifiques au projet et à son architecture.
-Ne pas répéter le glossaire projet du SPEC.md — y renvoyer si besoin.
-Couvrir : acronymes, noms de composants, termes d'architecture. -->
-
-| Terme | Définition |
-|-------|-----------|
-| [Terme] | [Définition] |
-
-## 7. Documents de référence
-
-<!-- Lister tous les documents liés à l'architecture.
-Inclure les documents du SPEC.md et les documents produits par ce skill. -->
-
-| Document | Description | Relation |
-|----------|-------------|----------|
-| SPEC.md | Spécification fonctionnelle SDD (cas d'utilisation) | Source des exigences |
-| DEPLOYMENT.md | Procédures de déploiement | Consomme l'architecture |
-| SECURITY.md | Exigences de sécurité | Contraint l'architecture |
-| COMPLIANCE_MATRIX.md | Matrice de conformité | Contraint l'architecture (si applicable) |
-
----
-
-## Changelog
-
-<!-- Ne pas inclure en v1.0. Décommenter à partir de la v1.1.
-
-| Version | Date | Auteur | Modifications |
-|---------|------|--------|---------------|
-| 1.1 | YYYY-MM-DD | [Auteur] | [Description des modifications] |
-| 1.0 | YYYY-MM-DD | [Auteur] | Version initiale |
--->
-````
-
----
-
-## Annexe B — Template DEPLOYMENT.md
-
-````markdown
-# [Nom du projet] — Déploiement
-
-Version : 1.0
-Date : [YYYY-MM-DD]
-Auteur : [Nom]
-Statut : Brouillon
-Spec de référence : SPEC.md v[X.Y]
-Architecture de référence : ARCHITECTURE.md v[X.Y]
-
-## 1. Vue d'ensemble du déploiement
-
-<!-- Résumé en 3-5 phrases : type de déploiement, environnements cibles,
-fréquence de déploiement visée, responsabilités. -->
-
-[Description]
-
-**Type de solution :** [SaaS | Client lourd | Driver | Bibliothèque | CLI | Autre]
-
-## 2. Prérequis
-
-### 2.1 Prérequis infrastructure
-
-<!-- Matériel, réseau, OS, services cloud nécessaires.
-Être exhaustif : un ingénieur doit pouvoir partir de zéro. -->
-
-| Prérequis | Spécification | Obligatoire | Notes |
-|-----------|--------------|-------------|-------|
-| [ex: Serveur Linux] | [ex: Ubuntu 22.04+, 4 vCPU, 8 Go RAM] | Oui | [ex: Production uniquement] |
-
-### 2.2 Prérequis logiciels
-
-| Logiciel | Version minimale | Rôle | Installation |
-|----------|-----------------|------|-------------|
-| [ex: Docker] | [ex: 24.0+] | [ex: Conteneurisation] | [ex: `apt install docker-ce`] |
-
-### 2.3 Prérequis réseau
-
-<!-- Ports, protocoles, domaines, certificats nécessaires. -->
-
-| Port / Protocole | Direction | Usage | Obligatoire |
-|-----------------|-----------|-------|-------------|
-| [ex: 443/TCP] | [ex: Entrant] | [ex: HTTPS API] | [ex: Oui] |
-
-### 2.4 Prérequis secrets et credentials
-
-<!-- Lister tous les secrets nécessaires au déploiement SANS révéler de valeurs.
-Indiquer où et comment les provisionner. -->
-
-| Secret | Usage | Source | Rotation |
-|--------|-------|--------|----------|
-| [ex: DATABASE_URL] | [ex: Connexion PostgreSQL] | [ex: Vault / Variable d'env] | [ex: 90 jours] |
-
-## 3. Environnements
-
-<!-- Décrire chaque environnement, ses spécificités et ses différences
-avec la production. -->
-
-| Environnement | Usage | Infra | Données | Accès |
-|--------------|-------|-------|---------|-------|
-| dev | Développement local | [ex: Docker Compose] | [ex: Seeds, données fictives] | [ex: Développeurs] |
-| staging | Pré-production | [ex: Identique prod, taille réduite] | [ex: Copie anonymisée] | [ex: Équipe QA] |
-| production | Production | [ex: Voir ARCHITECTURE.md § 3] | [ex: Données réelles] | [ex: Ops uniquement] |
-
-## 4. Procédure de build
-
-<!-- Étapes pour construire les artefacts déployables.
-Reproductible par un agent IA ou un pipeline CI/CD. -->
-
-### 4.1 Build applicatif
-
-```bash
-# Commandes de build
-```
-
-### 4.2 Artefacts produits
-
-| Artefact | Type | Destination | Taille estimée |
-|----------|------|-------------|---------------|
-| [ex: app:latest] | [ex: Image Docker] | [ex: Container Registry] | [ex: ~200 Mo] |
-
-## 5. Procédure de déploiement
-
-### 5.1 Premier déploiement (installation initiale)
-
-<!-- Procédure pas à pas pour un déploiement from scratch.
-Inclure l'initialisation des données (voir ARCHITECTURE.md § 4.5). -->
-
-1. [Étape 1]
-2. [Étape 2]
-3. ...
-
-### 5.2 Mise à jour (déploiement courant)
-
-<!-- Procédure pour une mise à jour standard. -->
-
-**Stratégie :** [Rolling | Blue-Green | Canary | Manuelle]
-
-1. [Étape 1]
-2. [Étape 2]
-3. ...
-
-### 5.3 Rollback
-
-<!-- Procédure pour revenir à la version précédente.
-Doit être testée et documentée. -->
-
-1. [Étape 1]
-2. [Étape 2]
-3. ...
-
-**Temps estimé de rollback :** [durée]
-
-## 6. Pipeline CI/CD
-
-<!-- Décrire le pipeline d'intégration et de déploiement continu.
-Outil, étapes, déclencheurs, environnements cibles. -->
-
-```mermaid
-flowchart LR
-    A[Push / PR] --> B[Lint & Tests]
-    B --> C[Build]
-    C --> D[Deploy Staging]
-    D --> E[Tests E2E]
-    E --> F[Deploy Production]
-```
-
-| Étape | Outil | Déclencheur | Actions | Durée estimée |
-|-------|-------|-------------|---------|---------------|
-| [ex: Lint & Tests] | [ex: GitHub Actions] | [ex: Push sur main] | [ex: ruff, pytest] | [ex: ~3 min] |
-
-## 7. Monitoring et observabilité
-
-### 7.1 Métriques
-
-| Métrique | Source | Seuil d'alerte | Action |
-|----------|--------|---------------|--------|
-| [ex: CPU %] | [ex: Azure Monitor] | [ex: > 80% pendant 5 min] | [ex: Scale-up automatique] |
-
-### 7.2 Logs
-
-| Source | Destination | Rétention | Format |
-|--------|-------------|-----------|--------|
-| [ex: Application] | [ex: Azure Log Analytics] | [ex: 30 jours] | [ex: JSON structuré] |
-
-### 7.3 Alertes
-
-| Alerte | Condition | Canal | Destinataire |
-|--------|-----------|-------|-------------|
-| [ex: Service down] | [ex: Health check KO > 2 min] | [ex: Slack #ops] | [ex: Équipe ops] |
-
-## 8. Sauvegarde et restauration
-
-| Donnée | Méthode | Fréquence | Rétention | Test de restauration |
-|--------|---------|-----------|-----------|---------------------|
-| [ex: Base PostgreSQL] | [ex: pg_dump automatisé] | [ex: Quotidien] | [ex: 30 jours] | [ex: Mensuel] |
-
-**Procédure de restauration :**
-
-1. [Étape 1]
-2. [Étape 2]
-3. ...
-
-<!-- ================================================================
-     SECTIONS SPÉCIFIQUES PAR TYPE DE SOLUTION
-     Inclure uniquement les sections pertinentes pour le type de solution.
-     Supprimer les sections non applicables et retirer ce commentaire.
-     ================================================================ -->
-
-## 9. Spécificités SaaS
-
-<!-- Inclure cette section UNIQUEMENT pour les solutions SaaS. -->
-
-### 9.1 Multi-tenancy
-
-<!-- Stratégie d'isolation : base partagée, schéma par tenant, base par tenant.
-Impact sur les performances, la sécurité, les migrations. -->
-
-| Aspect | Stratégie | Détails |
-|--------|-----------|---------|
-| Isolation données | [ex: Schéma par tenant] | [ex: Colonne `tenant_id` sur chaque table] |
-| Isolation compute | [ex: Partagé] | [ex: Rate limiting par tenant] |
-
-### 9.2 Scalabilité
-
-<!-- Stratégie de scaling horizontal/vertical.
-Auto-scaling rules, limites, coûts associés. -->
-
-### 9.3 Haute disponibilité
-
-<!-- SLA cible, répartition géographique, failover. -->
-
-| Métrique | Cible | Mécanisme |
-|----------|-------|-----------|
-| Disponibilité | [ex: 99.9%] | [ex: Multi-AZ, load balancer] |
-| RPO | [ex: 1 heure] | [ex: Réplication async] |
-| RTO | [ex: 15 minutes] | [ex: Failover automatique] |
-
-### 9.4 CDN et assets statiques
-
-<!-- Si applicable : CDN, cache, compression, invalidation. -->
-
-## 10. Spécificités Client lourd
-
-<!-- Inclure cette section UNIQUEMENT pour les clients lourds / desktop. -->
-
-### 10.1 Distribution
-
-<!-- Canaux de distribution : site web, store, entreprise (MSI/GPO).
-Installeurs, formats de package. -->
-
-| Plateforme | Format | Canal | Signature |
-|-----------|--------|-------|-----------|
-| [ex: Windows] | [ex: MSI / MSIX] | [ex: Site web + entreprise] | [ex: Certificat EV] |
-
-### 10.2 Mise à jour automatique
-
-<!-- Mécanisme de vérification et d'application des mises à jour.
-Fréquence de vérification, téléchargement en arrière-plan,
-mises à jour obligatoires vs optionnelles. -->
-
-### 10.3 Compatibilité
-
-<!-- Matrice de compatibilité OS / versions.
-Gestion de la rétrocompatibilité des données locales. -->
-
-| OS | Versions supportées | Fin de support prévue |
-|-----|---------------------|----------------------|
-| [ex: Windows] | [ex: 10 22H2+, 11] | [ex: Aligné sur Microsoft] |
-
-### 10.4 Mode hors-ligne
-
-<!-- Si applicable : fonctionnalités disponibles hors-ligne,
-synchronisation au retour en ligne, gestion des conflits. -->
-
-## 11. Spécificités Driver
-
-<!-- Inclure cette section UNIQUEMENT pour les drivers / firmware. -->
-
-### 11.1 Certification
-
-<!-- Processus de certification par les vendeurs OS.
-WHQL (Windows), kext signing (macOS), etc. -->
-
-| OS | Certification | Processus | Délai estimé |
-|-----|--------------|-----------|-------------|
-| [ex: Windows] | [ex: WHQL] | [ex: Soumission Microsoft Hardware Lab] | [ex: 2-4 semaines] |
-
-### 11.2 Installation silencieuse
-
-<!-- Procédure d'installation sans interaction utilisateur.
-Paramètres de ligne de commande, codes de retour. -->
-
-### 11.3 Gestion des versions du matériel
-
-<!-- Comment gérer plusieurs révisions hardware avec un seul driver.
-Détection du matériel, fonctionnalités conditionnelles. -->
-
-### 11.4 Cohabitation
-
-<!-- Comportement en présence d'autres drivers concurrents ou de
-versions antérieures. Désinstallation propre. -->
-
----
-
-## Changelog
-
-<!-- Ne pas inclure en v1.0. Décommenter à partir de la v1.1.
-
-| Version | Date | Auteur | Modifications |
-|---------|------|--------|---------------|
-| 1.1 | YYYY-MM-DD | [Auteur] | [Description des modifications] |
-| 1.0 | YYYY-MM-DD | [Auteur] | Version initiale |
--->
-````
-
----
-
-## Annexe C — Template SECURITY.md
-
-````markdown
-# [Nom du projet] — Sécurité
-
-Version : 1.0
-Date : [YYYY-MM-DD]
-Auteur : [Nom]
-Statut : Brouillon
-Spec de référence : SPEC.md v[X.Y]
-Architecture de référence : ARCHITECTURE.md v[X.Y]
-
-## 1. Vue d'ensemble sécurité
-
-<!-- Résumé en 3-5 phrases : périmètre de sécurité, niveau de sensibilité
-des données traitées, principaux vecteurs de menace identifiés,
-référentiels applicables. -->
-
-[Description]
-
-**Classification des données :** [Public | Interne | Confidentiel | Secret]
-**Exposition réseau :** [Internet | Réseau interne | Isolé]
-**Référentiels appliqués :** [ex: ANSSI (Guide d'hygiène), OWASP Top 10, CIS Benchmarks]
-
-## 2. Exigences de sécurité organisationnelles
-
-<!-- Exigences issues des politiques internes de l'organisation de
-développement. Couvrir : gestion des accès développeurs, revue de code,
-gestion des secrets, politique de branches, formation sécurité. -->
-
-| ID | Exigence | Description | Implémentation | Preuve de conformité | Statut |
-|----|----------|-------------|----------------|----------------------|--------|
-| SEC-ORG-01 | [ex: Gestion des secrets] | [ex: Aucun secret dans le code source] | [ex: Vault + variables d'environnement] | [ex: Scan pre-commit, audit git history] | ⏳ |
-| SEC-ORG-02 | [ex: Revue de code obligatoire] | [ex: Toute PR requiert une approbation] | [ex: Branch protection rules GitHub] | [ex: Paramètres du dépôt, historique PR] | ⏳ |
-| SEC-ORG-03 | [ex: Principe du moindre privilège] | [ex: Accès limités au strict nécessaire] | [ex: RBAC, comptes de service dédiés] | [ex: Matrice des droits, audit IAM] | ⏳ |
-
-## 3. Exigences de sécurité — Bonnes pratiques
-
-<!-- Exigences issues de référentiels reconnus : ANSSI Guide d'hygiène
-informatique, OWASP Top 10, CIS Benchmarks, NIST, etc.
-Sélectionner les exigences pertinentes pour le type de solution.
-Citer la source (référentiel, numéro de recommandation). -->
-
-### 3.1 Authentification et contrôle d'accès
-
-| ID | Exigence | Description | Implémentation | Preuve de conformité | Statut |
-|----|----------|-------------|----------------|----------------------|--------|
-| SEC-BP-01 | [ex: Authentification forte] | [ex: MFA pour les accès administratifs (ANSSI R28)] | [ex: TOTP via authenticator] | [ex: Configuration IAM, tests d'accès] | ⏳ |
-| SEC-BP-02 | [ex: Politique de mots de passe] | [ex: Longueur min. 12 car., complexité (ANSSI R19)] | [ex: Validation côté API] | [ex: Tests unitaires, configuration] | ⏳ |
-
-### 3.2 Protection des données
-
-| ID | Exigence | Description | Implémentation | Preuve de conformité | Statut |
-|----|----------|-------------|----------------|----------------------|--------|
-| SEC-BP-10 | [ex: Chiffrement en transit] | [ex: TLS 1.2+ pour toutes les communications (ANSSI R1)] | [ex: Certificats Let's Encrypt, HSTS] | [ex: Scan SSL Labs, config nginx] | ⏳ |
-| SEC-BP-11 | [ex: Chiffrement au repos] | [ex: AES-256 pour les données sensibles] | [ex: Chiffrement natif PostgreSQL/Azure] | [ex: Configuration stockage, audit] | ⏳ |
-
-### 3.3 Protection applicative
-
-| ID | Exigence | Description | Implémentation | Preuve de conformité | Statut |
-|----|----------|-------------|----------------|----------------------|--------|
-| SEC-BP-20 | [ex: Injection SQL] | [ex: Prévention des injections (OWASP A03)] | [ex: ORM, requêtes paramétrées] | [ex: Revue de code, SAST] | ⏳ |
-| SEC-BP-21 | [ex: Validation des entrées] | [ex: Validation et sanitisation côté serveur] | [ex: Pydantic, schémas de validation] | [ex: Tests unitaires, fuzzing] | ⏳ |
-
-### 3.4 Journalisation et détection
-
-| ID | Exigence | Description | Implémentation | Preuve de conformité | Statut |
-|----|----------|-------------|----------------|----------------------|--------|
-| SEC-BP-30 | [ex: Journalisation des accès] | [ex: Traçabilité des actions sensibles (ANSSI R33)] | [ex: Middleware d'audit, table audit_logs] | [ex: Requêtes de vérification, dashboards] | ⏳ |
-
-### 3.5 Continuité et résilience
-
-| ID | Exigence | Description | Implémentation | Preuve de conformité | Statut |
-|----|----------|-------------|----------------|----------------------|--------|
-| SEC-BP-40 | [ex: Plan de sauvegarde] | [ex: Sauvegardes testées et restaurables] | [ex: Voir DEPLOYMENT.md § 8] | [ex: Rapports de test de restauration] | ⏳ |
-
-## 4. Exigences de sécurité — Stack technique
-
-<!-- Exigences spécifiques aux technologies choisies dans ARCHITECTURE.md § 3.
-Pour chaque composant de la stack, identifier les risques et les
-contre-mesures propres à cette technologie. -->
-
-### 4.1 [Technologie 1 — ex: Python / FastAPI]
-
-| ID | Exigence | Description | Implémentation | Preuve de conformité | Statut |
-|----|----------|-------------|----------------|----------------------|--------|
-| SEC-TECH-01 | [ex: Dépendances sécurisées] | [ex: Audit régulier des dépendances Python] | [ex: pip-audit en CI, Dependabot] | [ex: Rapport pip-audit, alertes GitHub] | ⏳ |
-| SEC-TECH-02 | [ex: Sérialisation sûre] | [ex: Pas de pickle/eval sur des données non fiables] | [ex: JSON uniquement, Pydantic] | [ex: Règle ruff, revue de code] | ⏳ |
-
-### 4.2 [Technologie 2 — ex: PostgreSQL]
-
-| ID | Exigence | Description | Implémentation | Preuve de conformité | Statut |
-|----|----------|-------------|----------------|----------------------|--------|
-| SEC-TECH-10 | [ex: Accès restreint] | [ex: Connexion via SSL, utilisateurs dédiés] | [ex: pg_hba.conf, rôles PostgreSQL] | [ex: Configuration serveur, audit] | ⏳ |
-
-### 4.3 [Technologie N]
-
-<!-- Ajouter une sous-section par technologie significative de la stack.
-Supprimer les sous-sections vides. -->
-
-## 5. Spécificités de sécurité
-
-<!-- Section réservée aux exigences de sécurité propres au contexte
-spécifique du projet, qui ne rentrent dans aucune des catégories
-précédentes. Exemples : contraintes client, exigences contractuelles,
-environnement d'exécution particulier, hardware dédié.
-
-Si le projet est de type Driver ou Client lourd, inclure ici les
-exigences spécifiques :
-- Driver : signature du binaire, protection mémoire kernel, surface
-  d'attaque réduite, isolation des privilèges.
-- Client lourd : stockage local sécurisé, communication sécurisée
-  avec le serveur, protection contre le reverse engineering,
-  mise à jour sécurisée.
-
-Supprimer cette section si elle est vide. -->
-
-| ID | Exigence | Description | Implémentation | Preuve de conformité | Statut |
-|----|----------|-------------|----------------|----------------------|--------|
-| SEC-SPE-01 | [Titre] | [Description] | [Implémentation] | [Preuve] | ⏳ |
-
-## 6. Légende des statuts
-
-| Statut | Signification |
-|--------|---------------|
-| ✅ | Implémenté et vérifié |
-| 🔄 | En cours d'implémentation |
-| ⏳ | Planifié (non démarré) |
-| ❌ | Non applicable |
-
----
-
-## Changelog
-
-<!-- Ne pas inclure en v1.0. Décommenter à partir de la v1.1.
-
-| Version | Date | Auteur | Modifications |
-|---------|------|--------|---------------|
-| 1.1 | YYYY-MM-DD | [Auteur] | [Description des modifications] |
-| 1.0 | YYYY-MM-DD | [Auteur] | Version initiale |
--->
-````
-
----
-
-## Annexe D — Template COMPLIANCE_MATRIX.md
-
-````markdown
-# [Nom du projet] — Matrice de conformité
-
-Version : 1.0
-Date : [YYYY-MM-DD]
-Auteur : [Nom]
-Statut : Brouillon
-Spec de référence : SPEC.md v[X.Y]
-Architecture de référence : ARCHITECTURE.md v[X.Y]
-Sécurité de référence : SECURITY.md v[X.Y]
-
-## 1. Contexte réglementaire
-
-<!-- Identifier le secteur d'activité, les réglementations applicables,
-et les UC / ENF du SPEC.md qui déclenchent des obligations de conformité.
-Chaque référentiel doit être justifié par un UC ou ENF « mère » du SPEC.md. -->
-
-| Référentiel | Secteur | Exigence mère (SPEC.md) | Obligation |
-|-------------|---------|------------------------|------------|
-| [ex: HDS] | [ex: Santé] | [ex: UC-007] | [ex: Hébergement certifié pour données de santé] |
-| [ex: RGPD] | [ex: Transversal] | [ex: UC-003, ENF-002] | [ex: Protection des données personnelles] |
-
-## 2. Périmètre de conformité
-
-<!-- Décrire ce qui est couvert et ce qui ne l'est pas.
-Si certains référentiels ne s'appliquent que partiellement, le préciser. -->
-
-[Description du périmètre]
-
-## 3. Légende des statuts
-
-| Statut | Signification |
-|--------|---------------|
-| ✅ | Implémenté et vérifié |
-| 🔄 | En cours d'implémentation |
-| ⏳ | Planifié (non démarré) |
-| ❌ | Non applicable |
-
-<!-- ================================================================
-     SECTIONS PAR RÉFÉRENTIEL
-     Ajouter une section par référentiel réglementaire identifié.
-     Les exemples ci-dessous (HDS, RGPD, PGSSI-S) sont fournis à titre
-     indicatif pour le secteur de la santé. Les remplacer par les
-     référentiels effectivement applicables au projet.
-
-     Convention de numérotation :
-     - Préfixe = acronyme du référentiel (HDS, RGPD, PGSSI, PCI, SOC, etc.)
-     - Numéro séquentiel à deux chiffres : HDS-01, HDS-02, ...
-     - Cette numérotation est INDÉPENDANTE de celle du SPEC.md (UC-xxx, ENF-xxx).
-     - Le lien vers le SPEC.md est assuré par la colonne "Exigence mère"
-       dans le tableau § 1.
-     ================================================================ -->
-
-## 4. [Référentiel 1 — ex: HDS (Hébergement de Données de Santé)]
-
-Référentiel : [ex: Décret n°2018-137, Article L.1111-8 du Code de la santé publique]
-
-| ID | Exigence | Description | Implémentation | Preuve de conformité | Statut |
-|----|----------|-------------|----------------|----------------------|--------|
-| [ex: HDS-01] | [ex: Hébergeur certifié] | [ex: Hébergement chez un prestataire certifié HDS] | [ex: Azure France Central] | [ex: Certificat HDS Microsoft Azure] | ⏳ |
-| [ex: HDS-02] | [ex: Localisation France] | [ex: Données stockées exclusivement en France] | [ex: Région `francecentral`] | [ex: `terraform/main.tf` - `location = "francecentral"`] | ⏳ |
-
----
-
-## 5. [Référentiel 2 — ex: RGPD]
-
-Référentiel : [ex: Règlement (UE) 2016/679]
-
-| ID | Exigence | Description | Implémentation | Preuve de conformité | Statut |
-|----|----------|-------------|----------------|----------------------|--------|
-| [ex: RGPD-01] | [ex: Base légale] | [ex: Chaque traitement a une base légale identifiée] | [ex: Registre des traitements] | [ex: Document DPO] | ⏳ |
-
----
-
-## 6. [Référentiel N]
-
-<!-- Ajouter une section par référentiel supplémentaire.
-Supprimer les sections non applicables. -->
-
-Référentiel : [Source normative]
-
-| ID | Exigence | Description | Implémentation | Preuve de conformité | Statut |
-|----|----------|-------------|----------------|----------------------|--------|
-| [PREFIXE-01] | [Titre] | [Description] | [Implémentation] | [Preuve] | ⏳ |
-
----
-
-## 7. Synthèse de conformité
-
-<!-- Tableau de synthèse avec le taux de couverture par référentiel.
-Mis à jour à chaque changement de statut. -->
-
-| Référentiel | Total exigences | ✅ | 🔄 | ⏳ | ❌ | Couverture |
-|-------------|----------------|----|----|----|----|------------|
-| [ex: HDS] | [ex: 10] | [0] | [0] | [10] | [0] | [0%] |
-| [ex: RGPD] | [ex: 8] | [0] | [0] | [8] | [0] | [0%] |
-
----
-
-## Changelog
-
-<!-- Ne pas inclure en v1.0. Décommenter à partir de la v1.1.
-
-| Version | Date | Auteur | Modifications |
-|---------|------|--------|---------------|
-| 1.1 | YYYY-MM-DD | [Auteur] | [Description des modifications] |
-| 1.0 | YYYY-MM-DD | [Auteur] | Version initiale |
--->
-````
-
----
-
-## Changelog du skill
-
-| Version | Date | Modifications |
-|---------|------|---------------|
-| 2.0.0 | 2026-03-12 | Renommage sdd-system-design → sdd-uc-system-design. Adaptation au format UC (sdd-uc-spec-write). Remplacement des références EXG-xxx par UC-xxx/RG-xxxx/CA-UC-xxx-yy. Réécriture de la Phase A.2 (exploitation des packages, étapes Na/Nb, exceptions, relations include/extend, objets participants). Phase A.3 basée sur les objets participants du SPEC.md. Phase A.4 exploite directement les étapes des UC comme source de flux. Ajout matrice de traçabilité UC → Composants en A.7 et template. Validation du format d'entrée (détection SPEC.md non-UC). Mise à jour des templates ARCHITECTURE.md et COMPLIANCE_MATRIX.md. |
-| 1.0.0 | 2026-02-18 | Version initiale. Architecture, déploiement, sécurité, conformité. Phase A avec réflexion profonde en 7 étapes et mode plan. Barre de progression avec versioning. |
