@@ -3,14 +3,7 @@ name: sdd-uc-system-design
 description: >
   Produit les documents de conception technique (architecture, déploiement,
   sécurité, conformité) à partir d'un SPEC.md structuré par cas d'utilisation
-  (UC) selon la méthodologie SDD. Gère les architectures SaaS, client lourd
-  (desktop), driver et logiciel embarqué (mobile, TPE, terminal
-  professionnel, système embarqué, dev board), avec des sous-templates
-  de déploiement adaptés à chaque type. Se déclenche quand l'utilisateur demande de concevoir l'architecture,
-  le déploiement, la sécurité ou la conformité d'un projet SDD, ou quand il
-  fournit un SPEC.md et demande la phase de conception. Ne se déclenche pas
-  pour rédiger un SPEC.md (utiliser sdd-uc-spec-write), écrire du code, faire
-  une revue de code, ou planifier des EPICs.
+  (UC) selon la méthodologie SDD.
 metadata:
   version: "3.0.0"
   author: "Franz TRIERWEILER"
