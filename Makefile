@@ -218,10 +218,24 @@ MIN_RG  := 10
 MIN_CA  := 10
 MIN_ENF := 4
 
-# Vérifie les dépendances
+# Vérifie les dépendances requises
 check-deps:
-	@command -v python3 >/dev/null 2>&1 || { echo "Erreur : python3 est requis."; exit 1; }
-	@command -v claude >/dev/null 2>&1 || { echo "Erreur : claude est requis."; exit 1; }
+	@echo "Vérification des dépendances..."
+	@fail=0; \
+	for cmd in python3 claude rsync grep sed zip unzip; do \
+		if command -v $$cmd >/dev/null 2>&1; then \
+			echo "  ✓ $$cmd"; \
+		else \
+			echo "  ✗ $$cmd MANQUANT"; \
+			fail=1; \
+		fi; \
+	done; \
+	if [ "$$fail" -eq 1 ]; then \
+		echo ""; \
+		echo "Installer les dépendances manquantes avant de continuer."; \
+		exit 1; \
+	fi; \
+	echo ""
 
 # Prépare le projet simulé dans output/ : skills + CDC
 test-setup: check-deps
