@@ -237,15 +237,25 @@ check-deps:
 	fi; \
 	echo ""
 
-# Prépare le projet simulé dans output/ : skills + CDC
+# Skills UC à installer dans l'environnement de test
+# Seules les variantes UC sont copiées pour éviter que Claude confonde
+# avec les variantes non-UC (descriptions proches, versions différentes).
+TEST_SKILLS := skills/sdd-uc-spec-write skills/sdd-uc-system-design
+
+# Prépare le projet simulé dans output/ : skills UC + commands + rules + CDC
 test-setup: check-deps
 	@echo "Préparation du projet de test dans $(TEST_OUT)/..."
-	@mkdir -p $(TEST_OUT)/.claude $(TEST_OUT)/docs $(TEST_LOG)
-	@for dir in $(DIRS); do \
+	@mkdir -p $(TEST_OUT)/.claude/skills $(TEST_OUT)/docs $(TEST_LOG)
+	@rm -rf $(TEST_OUT)/.claude/skills/*
+	@for skill in $(TEST_SKILLS); do \
+		rsync -a $$skill/ $(TEST_OUT)/.claude/$$skill/; \
+		echo "  ✓ $$skill"; \
+	done
+	@for dir in commands rules; do \
 		rsync -a --delete $$dir/ $(TEST_OUT)/.claude/$$dir/; \
+		echo "  ✓ $$dir/"; \
 	done
 	@cp $(TEST_DIR)/docs/CDC-maintenance.md $(TEST_OUT)/docs/CDC-maintenance.md
-	@echo "  ✓ $(TEST_OUT)/.claude/ prêt (skills, commands, rules)"
 	@echo "  ✓ $(TEST_OUT)/docs/CDC-maintenance.md copié"
 
 # Lance tous les tests
