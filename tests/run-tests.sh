@@ -21,14 +21,29 @@ PROMPTS="$SCRIPT_DIR/prompts"
 STREAM_FILTER="$SCRIPT_DIR/stream_filter.py"
 
 CYAN="\033[36m"
+DIM="\033[2m"
 RESET="\033[0m"
 
 run_claude() {
     local prompt="$1"
     local logfile="$2"
 
+    # Afficher le prompt complet avant d'invoquer Claude
+    # Extraire le chemin du fichier prompt s'il est référencé
+    local prompt_file
+    prompt_file=$(echo "$prompt" | grep -oE '/[^ ]+\.md' | head -1 || true)
+
     echo -e "${CYAN}  \$ claude -p \"${prompt:0:80}...\"${RESET}"
     echo ""
+
+    if [ -n "$prompt_file" ] && [ -f "$prompt_file" ]; then
+        echo -e "${DIM}  ┌── Contenu du prompt : $prompt_file${RESET}"
+        sed 's/^/  │ /' "$prompt_file" | while IFS= read -r line; do
+            echo -e "${DIM}$line${RESET}"
+        done
+        echo -e "${DIM}  └──${RESET}"
+        echo ""
+    fi
 
     claude -p --verbose --permission-mode bypassPermissions \
         --output-format stream-json \
