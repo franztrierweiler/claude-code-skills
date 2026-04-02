@@ -20,6 +20,7 @@
 #   make test-uc-spec      — Teste sdd-uc-spec-write sur MaintiX
 #   make test-review       — Claude évalue la complétude du SPEC.md
 #   make test-check        — Contrôles déterministes (seuils, valeurs métier)
+#   make test-system-design — Contrôles structurels du skill sdd-uc-system-design
 #   make test-setup        — Prépare l'environnement de test
 #   make clean-test        — Supprime les sorties de test
 # =============================================================================
@@ -34,8 +35,8 @@ TEST_OUT     := $(TEST_DIR)/output
 TEST_LOG     := $(TEST_DIR)/log
 
 .PHONY: help copy copy-dry diff status zip zip-all zip-check clean-dist \
-        test test-init test-uc-spec test-review test-check test-setup \
-        clean-test
+        test test-init test-uc-spec test-review test-check test-system-design \
+        test-setup clean-test
 
 .DEFAULT_GOAL := help
 
@@ -59,12 +60,13 @@ help:
 	@echo "    make clean-dist Supprime le répertoire dist/"
 	@echo ""
 	@echo "  Tests :"
-	@echo "    make test            Lance tous les tests"
-	@echo "    make test-init       Génère le CLAUDE.md"
-	@echo "    make test-uc-spec    Produit le SPEC.md (sdd-uc-spec-write)"
-	@echo "    make test-review     Claude évalue la complétude du SPEC.md"
-	@echo "    make test-check      Contrôles déterministes (seuils, valeurs)"
-	@echo "    make clean-test      Supprime les sorties de test"
+	@echo "    make test                Lance tous les tests"
+	@echo "    make test-init           Génère le CLAUDE.md"
+	@echo "    make test-uc-spec        Produit le SPEC.md (sdd-uc-spec-write)"
+	@echo "    make test-review         Claude évalue la complétude du SPEC.md"
+	@echo "    make test-check          Contrôles déterministes (seuils, valeurs)"
+	@echo "    make test-system-design  Contrôles structurels (sdd-uc-system-design)"
+	@echo "    make clean-test          Supprime les sorties de test"
 	@echo ""
 	@echo "  Configuration :"
 	@echo "    Créer un fichier targets.txt avec un chemin absolu par ligne."
@@ -242,6 +244,10 @@ test-uc-spec: test-setup
 # Évaluation du SPEC.md par Claude (complétude, cohérence vs CDC)
 test-review: test-setup
 	$(TEST_DIR)/run-tests.sh review
+
+# Contrôles structurels du skill sdd-uc-system-design
+test-system-design:
+	@$(TEST_DIR)/check_system_design.sh
 
 # Contrôles déterministes : sections, seuils d'identifiants, valeurs métier
 test-check:
