@@ -264,17 +264,31 @@ test-setup: check-deps
 	done
 	@cp $(TEST_DIR)/docs/CDC-maintenance.md $(TEST_OUT)/docs/CDC-maintenance.md
 	@echo "  ✓ $(TEST_OUT)/docs/CDC-maintenance.md copié"
+	@echo ""
+	@echo "⚠️  Isolation des skills globaux pour les tests"
+	@echo "    Claude Code charge les skills de ~/.claude/skills/ en priorité"
+	@echo "    sur ceux du projet. Pour garantir que les tests utilisent les"
+	@echo "    bonnes versions, les skills globaux sont temporairement remplacés."
+	@echo ""
 	@if [ -d "$(GLOBAL_SKILLS)" ]; then \
 		if [ ! -d "$(GLOBAL_SKILLS_BAK)" ]; then \
+			echo "    1. Sauvegarde : ~/.claude/skills/ → ~/.claude/skills.bak/"; \
 			mv "$(GLOBAL_SKILLS)" "$(GLOBAL_SKILLS_BAK)"; \
-			echo "  ✓ ~/.claude/skills/ sauvegardé dans skills.bak"; \
+		else \
+			echo "    1. Sauvegarde : déjà présente (skills.bak/)"; \
 		fi; \
+		echo "    2. Remplacement : ~/.claude/skills/ ← skills UC du repo"; \
 		mkdir -p "$(GLOBAL_SKILLS)"; \
 		for skill in $(TEST_SKILLS); do \
 			rsync -a $$skill/ $(GLOBAL_SKILLS)/$$(basename $$skill)/; \
+			echo "       ✓ $$(basename $$skill)"; \
 		done; \
-		echo "  ✓ ~/.claude/skills/ remplacé par les skills UC du repo"; \
+		echo ""; \
+		echo "    → Lancer 'make clean-test' pour restaurer les skills originaux."; \
+	else \
+		echo "    ~/.claude/skills/ absent — rien à sauvegarder."; \
 	fi
+	@echo ""
 
 # Lance tous les tests
 test: test-system-design test-setup
@@ -386,9 +400,14 @@ test-check:
 clean-test:
 	@rm -rf $(TEST_OUT)
 	@rm -rf $(TEST_LOG)
+	@echo "Projet de test et logs supprimés."
 	@if [ -d "$(GLOBAL_SKILLS_BAK)" ]; then \
 		rm -rf "$(GLOBAL_SKILLS)"; \
 		mv "$(GLOBAL_SKILLS_BAK)" "$(GLOBAL_SKILLS)"; \
-		echo "~/.claude/skills/ restauré depuis skills.bak"; \
+		echo ""; \
+		echo "✓ ~/.claude/skills/ restauré depuis skills.bak :"; \
+		ls "$(GLOBAL_SKILLS)" | sed 's/^/    /'; \
+	else \
+		echo ""; \
+		echo "Pas de sauvegarde skills.bak à restaurer."; \
 	fi
-	@echo "Projet de test et logs supprimés."
