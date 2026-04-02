@@ -15,19 +15,12 @@ All content is written in French.
 - `rules/` — Claude Code rules that auto-trigger on file path patterns
 - `claude-file/CLAUDE.md` — **Template** CLAUDE.md for target SDD projects (not for this repo). Describes the SDD feedback loop and is meant to be copied into projects using the methodology.
 
-## Two SDD Variants
-
-- **UC (Use Case) variant** — `sdd-uc-*` files: structured around use cases (cas d'utilisation). This is the more detailed approach.
-- **Standard variant** — `sdd-*` files (without `uc`): simpler, not structured by use cases.
-
-Both variants share the same workflow phases: Spec -> System Design -> Planning -> Dev -> QA -> Delivery.
-
 ## SDD Workflow Chain
 
-The skills and commands form a pipeline for target projects:
+The skills and commands form a pipeline for target projects. All skills use the UC (Use Case) approach — structured around use cases (cas d'utilisation).
 
-1. **Spec writing** (`sdd-spec-write` / `sdd-uc-spec-write` skill) — produces `docs/SPEC.md`
-2. **System design** (`sdd-system-design` / `sdd-uc-system-design` skill) — produces `docs/ARCHITECTURE.md`, `DEPLOYMENT.md`, `SECURITY.md`, `COMPLIANCE_MATRIX.md`
+1. **Spec writing** (`sdd-uc-spec-write` skill) — produces `docs/SPEC.md`
+2. **System design** (`sdd-uc-system-design` skill) — produces `docs/ARCHITECTURE.md`, `DEPLOYMENT.md`, `SECURITY.md`, `COMPLIANCE_MATRIX.md`
 3. **Planning** — manual, produces `plan/<epic>.md` files
 4. **Dev workflow** (`/sdd-dev-workflow <epic>` command) — implementation loop with AC verification
 5. **QA workflow** (`/sdd-qa-workflow <epic>` command) — test plans, execution, code review, reports
