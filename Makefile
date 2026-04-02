@@ -253,7 +253,7 @@ MIN_ENF := 4
 check-deps:
 	@echo "Vérification des dépendances..."
 	@fail=0; \
-	for cmd in python3 claude rsync grep sed zip unzip; do \
+	for cmd in python3 claude rsync grep sed zip unzip tar; do \
 		if command -v $$cmd >/dev/null 2>&1; then \
 			echo "  ✓ $$cmd"; \
 		else \
