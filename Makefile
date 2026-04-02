@@ -15,11 +15,12 @@
 #   make clean-dist — Supprime le répertoire dist/
 #
 # Tests :
-#   make test              — Lance tous les tests (init + uc-spec + review)
+#   make test              — Lance tous les tests (init + uc-spec + review + system-design)
 #   make test-init         — Génère le CLAUDE.md via /init + template SDD
 #   make test-uc-spec      — Teste sdd-uc-spec-write sur MaintiX
 #   make test-review       — Claude évalue la complétude du SPEC.md
 #   make test-check        — Contrôles déterministes (seuils, valeurs métier)
+#   make test-uc-system-design    — Teste sdd-uc-system-design sur MaintiX
 #   make test-system-design       — Contrôles structurels du skill sdd-uc-system-design
 #   make test-system-design-check — Contrôles des documents produits par le skill
 #   make test-setup               — Prépare l'environnement de test
@@ -36,8 +37,9 @@ TEST_OUT     := $(TEST_DIR)/output
 TEST_LOG     := $(TEST_DIR)/log
 
 .PHONY: help copy copy-dry diff status zip zip-all zip-check clean-dist \
-        test test-init test-uc-spec test-review test-check test-system-design \
-        test-system-design-check test-setup clean-test
+        test test-init test-uc-spec test-uc-system-design test-review \
+        test-check test-system-design test-system-design-check \
+        test-setup clean-test
 
 .DEFAULT_GOAL := help
 
@@ -61,14 +63,15 @@ help:
 	@echo "    make clean-dist Supprime le répertoire dist/"
 	@echo ""
 	@echo "  Tests :"
-	@echo "    make test                Lance tous les tests"
-	@echo "    make test-init           Génère le CLAUDE.md"
-	@echo "    make test-uc-spec        Produit le SPEC.md (sdd-uc-spec-write)"
-	@echo "    make test-review         Claude évalue la complétude du SPEC.md"
-	@echo "    make test-check          Contrôles déterministes (seuils, valeurs)"
-	@echo "    make test-system-design        Contrôles structurels (sdd-uc-system-design)"
-	@echo "    make test-system-design-check  Contrôles des documents produits"
-	@echo "    make clean-test                Supprime les sorties de test"
+	@echo "    make test                       Lance tous les tests"
+	@echo "    make test-init                  Génère le CLAUDE.md"
+	@echo "    make test-uc-spec               Produit le SPEC.md (sdd-uc-spec-write)"
+	@echo "    make test-uc-system-design      Produit les docs de conception (sdd-uc-system-design)"
+	@echo "    make test-review                Claude évalue la complétude du SPEC.md"
+	@echo "    make test-check                 Contrôles déterministes (seuils, valeurs)"
+	@echo "    make test-system-design         Contrôles structurels du skill"
+	@echo "    make test-system-design-check   Contrôles des documents produits"
+	@echo "    make clean-test                 Supprime les sorties de test"
 	@echo ""
 	@echo "  Configuration :"
 	@echo "    Créer un fichier targets.txt avec un chemin absolu par ligne."
@@ -244,6 +247,10 @@ test-init: test-setup
 # Produit le SPEC.md dans output/docs/
 test-uc-spec: test-setup
 	$(TEST_DIR)/run-tests.sh uc-spec
+
+# Produit les documents de conception (ARCHITECTURE, DEPLOYMENT, SECURITY, COMPLIANCE)
+test-uc-system-design: test-setup
+	$(TEST_DIR)/run-tests.sh uc-system-design
 
 # Évaluation du SPEC.md par Claude (complétude, cohérence vs CDC)
 test-review: test-setup

@@ -96,6 +96,46 @@ run_review() {
         "$TEST_LOG/review.log"
 }
 
+run_uc_system_design() {
+    echo ""
+    echo "=== Test sdd-uc-system-design — Documents de conception MaintiX ==="
+    echo ""
+
+    if [ ! -f "$TEST_OUT/docs/SPEC.md" ]; then
+        echo "  ÉCHEC — docs/SPEC.md absent. Lancer 'make test-uc-spec' d'abord."
+        exit 1
+    fi
+
+    mkdir -p "$TEST_LOG"
+    cd "$TEST_OUT"
+
+    run_claude \
+        "Lis le fichier $PROMPTS/prompt-uc-system-design.md et exécute les instructions qu'il contient." \
+        "$TEST_LOG/uc-system-design.log"
+
+    echo ""
+    local fail=0
+    for doc in ARCHITECTURE.md DEPLOYMENT.md SECURITY.md; do
+        if [ -f "$TEST_OUT/docs/$doc" ]; then
+            echo "  ✓ $TEST_OUT/docs/$doc généré"
+        else
+            echo "  ÉCHEC — docs/$doc non produit"
+            fail=1
+        fi
+    done
+    # COMPLIANCE_MATRIX.md est optionnel mais attendu pour MaintiX (RGPD)
+    if [ -f "$TEST_OUT/docs/COMPLIANCE_MATRIX.md" ]; then
+        echo "  ✓ $TEST_OUT/docs/COMPLIANCE_MATRIX.md généré"
+    else
+        echo "  ⚠ docs/COMPLIANCE_MATRIX.md absent (optionnel)"
+    fi
+    if [ "$fail" -eq 1 ]; then
+        echo ""
+        echo "  Voir $TEST_LOG/uc-system-design.log"
+        exit 1
+    fi
+}
+
 # --- Main --------------------------------------------------------------------
 
 ACTION="${1:-all}"
@@ -107,6 +147,9 @@ case "$ACTION" in
     uc-spec)
         run_uc_spec
         ;;
+    uc-system-design)
+        run_uc_system_design
+        ;;
     review)
         run_review
         ;;
@@ -114,11 +157,12 @@ case "$ACTION" in
         run_init
         run_uc_spec
         run_review
+        run_uc_system_design
         echo ""
         echo "Tous les tests ont été exécutés."
         ;;
     *)
-        echo "Usage: $0 [init|uc-spec|review|all]"
+        echo "Usage: $0 [init|uc-spec|uc-system-design|review|all]"
         exit 1
         ;;
 esac
