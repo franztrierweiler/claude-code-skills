@@ -11,6 +11,9 @@ license: "MIT"
 
 # Spec Driven Development (SDD) — Rédaction par cas d'utilisation
 
+Version : 2.0.0
+Date : 2026-04-02
+
 ## Prérequis — vérification au démarrage
 
 Avant toute autre action, vérifie que les fichiers suivants existent dans le
