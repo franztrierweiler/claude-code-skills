@@ -236,6 +236,9 @@ test-setup: check-deps
 
 # Lance tous les tests
 test: test-system-design test-setup
+	@echo ""
+	@echo "=== Répertoire cible des tests : $(TEST_OUT) ==="
+	@echo ""
 	$(TEST_DIR)/run-tests.sh all
 	$(MAKE) test-check
 	$(MAKE) test-system-design-check
