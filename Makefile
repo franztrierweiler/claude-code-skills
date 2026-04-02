@@ -231,9 +231,11 @@ test-setup: check-deps
 	@echo "  ✓ $(TEST_OUT)/.claude/ prêt (skills, commands, rules)"
 	@echo "  ✓ $(TEST_OUT)/docs/CDC-maintenance.md copié"
 
-# Lance tous les tests (génération + check)
-test: test-setup
+# Lance tous les tests
+test: test-system-design test-setup
 	$(TEST_DIR)/run-tests.sh all
+	$(MAKE) test-check
+	$(MAKE) test-system-design-check
 
 # Génère le CLAUDE.md dans output/
 test-init: test-setup
