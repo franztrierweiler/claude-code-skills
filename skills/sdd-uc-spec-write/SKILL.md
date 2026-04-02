@@ -221,10 +221,10 @@ obligatoire, sans exception.
 **Format :**
 
 ```
-🏗️ skill:sdd-uc-spec-write vX.Y.Z · [Étape] [barre] sous-étape N/T — [Nom]
+🏗️ skill:sdd-uc-spec-write v2.0.0 · [Étape] [barre] sous-étape N/T — [Nom]
 ```
 
-où `vX.Y.Z` est la version indiquée dans l'en-tête du skill.
+La version affichée est celle indiquée dans l'en-tête du skill (actuellement v2.0.0).
 
 **Règles de la barre de progression :**
 
@@ -244,17 +244,17 @@ où `vX.Y.Z` est la version indiquée dans l'en-tête du skill.
 **Exemples :**
 
 ```
-🏗️ skill:sdd-uc-spec-write vX.Y.Z · Cadrage [█░░░] 1/4 — Questions obligatoires
-🏗️ skill:sdd-uc-spec-write vX.Y.Z · Cadrage [████] 4/4 — Rédaction & validation
-🏗️ skill:sdd-uc-spec-write vX.Y.Z · Cas d'utilisation [█░░░░] arborescence — Structure des packages
-🏗️ skill:sdd-uc-spec-write vX.Y.Z · Cas d'utilisation [████░] package 3/4 — Export
-🏗️ skill:sdd-uc-spec-write vX.Y.Z · Compléments [███] 3/3 — Rédaction finale & passage de relais
+🏗️ skill:sdd-uc-spec-write v2.0.0 · Cadrage [█░░░] 1/4 — Questions obligatoires
+🏗️ skill:sdd-uc-spec-write v2.0.0 · Cadrage [████] 4/4 — Rédaction & validation
+🏗️ skill:sdd-uc-spec-write v2.0.0 · Cas d'utilisation [█░░░░] arborescence — Structure des packages
+🏗️ skill:sdd-uc-spec-write v2.0.0 · Cas d'utilisation [████░] package 3/4 — Export
+🏗️ skill:sdd-uc-spec-write v2.0.0 · Compléments [███] 3/3 — Rédaction finale & passage de relais
 ```
 
 **Cas particulier — Mise à jour d'une spec existante :**
 
 ```
-🏗️ skill:sdd-uc-spec-write vX.Y.Z · Mise à jour [██░] 2/3 — Application des modifications
+🏗️ skill:sdd-uc-spec-write v2.0.0 · Mise à jour [██░] 2/3 — Application des modifications
 ```
 
 Sous-étapes de mise à jour : 1. Lecture & périmètre · 2. Application ·

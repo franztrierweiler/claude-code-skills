@@ -146,11 +146,11 @@ fi
 echo ""
 echo "--- 4. Références obsolètes ---"
 
-# v2.0.0 en dur (devrait être vX.Y.Z dans les exemples)
+# v2.0.0 est l'ancienne version — ne doit plus apparaître
 if grep -q 'v2\.0\.0' "$SKILL_MD"; then
-    ko "SKILL.md contient encore 'v2.0.0' en dur"
+    ko "SKILL.md contient encore 'v2.0.0' (ancienne version)"
 else
-    ok "Pas de v2.0.0 en dur dans SKILL.md"
+    ok "Pas de v2.0.0 dans SKILL.md"
 fi
 
 # "annexe" ou "en annexe" (les templates ont été extraits)
