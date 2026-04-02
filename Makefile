@@ -20,9 +20,10 @@
 #   make test-uc-spec      — Teste sdd-uc-spec-write sur MaintiX
 #   make test-review       — Claude évalue la complétude du SPEC.md
 #   make test-check        — Contrôles déterministes (seuils, valeurs métier)
-#   make test-system-design — Contrôles structurels du skill sdd-uc-system-design
-#   make test-setup        — Prépare l'environnement de test
-#   make clean-test        — Supprime les sorties de test
+#   make test-system-design       — Contrôles structurels du skill sdd-uc-system-design
+#   make test-system-design-check — Contrôles des documents produits par le skill
+#   make test-setup               — Prépare l'environnement de test
+#   make clean-test               — Supprime les sorties de test
 # =============================================================================
 
 TARGETS_FILE := targets.txt
@@ -36,7 +37,7 @@ TEST_LOG     := $(TEST_DIR)/log
 
 .PHONY: help copy copy-dry diff status zip zip-all zip-check clean-dist \
         test test-init test-uc-spec test-review test-check test-system-design \
-        test-setup clean-test
+        test-system-design-check test-setup clean-test
 
 .DEFAULT_GOAL := help
 
@@ -65,8 +66,9 @@ help:
 	@echo "    make test-uc-spec        Produit le SPEC.md (sdd-uc-spec-write)"
 	@echo "    make test-review         Claude évalue la complétude du SPEC.md"
 	@echo "    make test-check          Contrôles déterministes (seuils, valeurs)"
-	@echo "    make test-system-design  Contrôles structurels (sdd-uc-system-design)"
-	@echo "    make clean-test          Supprime les sorties de test"
+	@echo "    make test-system-design        Contrôles structurels (sdd-uc-system-design)"
+	@echo "    make test-system-design-check  Contrôles des documents produits"
+	@echo "    make clean-test                Supprime les sorties de test"
 	@echo ""
 	@echo "  Configuration :"
 	@echo "    Créer un fichier targets.txt avec un chemin absolu par ligne."
@@ -248,6 +250,10 @@ test-review: test-setup
 # Contrôles structurels du skill sdd-uc-system-design
 test-system-design:
 	@$(TEST_DIR)/check_system_design.sh
+
+# Contrôles des documents produits par sdd-uc-system-design
+test-system-design-check:
+	@$(TEST_DIR)/check_system_design_output.sh $(TEST_OUT)
 
 # Contrôles déterministes : sections, seuils d'identifiants, valeurs métier
 test-check:
