@@ -3,8 +3,7 @@
 # =============================================================================
 #
 # Installation globale :
-#   make install-all    — Installe tous les skills dans ~/.claude/skills/
-#   make install-uc-only — Installe uniquement les skills UC dans ~/.claude/skills/
+#   make install    — Installe les skills dans ~/.claude/skills/
 #
 # Distribution locale :
 #   make copy       — Copie skills/commands/rules vers les projets cibles
@@ -40,7 +39,7 @@ TEST_DIR     := tests
 TEST_OUT     := $(TEST_DIR)/output
 TEST_LOG     := $(TEST_DIR)/log
 
-.PHONY: help install-all install-uc-only copy copy-dry diff status \
+.PHONY: help install copy copy-dry diff status \
         zip zip-all zip-check clean-dist \
         test test-init test-uc-spec test-uc-system-design test-review \
         test-check test-system-design test-system-design-check \
@@ -56,8 +55,7 @@ help:
 	@echo "Commandes disponibles :"
 	@echo ""
 	@echo "  Installation globale (~/.claude/) :"
-	@echo "    make install-all      Installe tous les skills dans ~/.claude/skills/"
-	@echo "    make install-uc-only  Installe uniquement les skills UC"
+	@echo "    make install      Installe les skills dans ~/.claude/skills/"
 	@echo ""
 	@echo "  Distribution locale (projets cibles) :"
 	@echo "    make copy        Copie skills/commands/rules vers les projets cibles"
@@ -108,7 +106,7 @@ READ_TARGETS = grep -v '^\s*\#' $(TARGETS_FILE) | grep -v '^\s*$$'
 # Installation globale — copie vers ~/.claude/
 # -----------------------------------------------------------------------------
 
-install-all:
+install:
 	@echo "Installation des skills dans ~/.claude/skills/..."
 	@mkdir -p $(HOME)/.claude/skills
 	@for skill in $(SKILLS); do \
@@ -119,17 +117,6 @@ install-all:
 	@echo ""
 	@echo "Skills installés globalement dans ~/.claude/skills/"
 	@echo "Ces skills seront disponibles dans tous les projets."
-
-install-uc-only:
-	@echo "Installation des skills UC dans ~/.claude/skills/..."
-	@mkdir -p $(HOME)/.claude/skills
-	@for skill in $(TEST_SKILLS); do \
-		name=$$(basename $$skill); \
-		rsync -a --delete $$skill/ $(HOME)/.claude/skills/$$name/; \
-		echo "  ✓ $$name"; \
-	done
-	@echo ""
-	@echo "Skills UC installés globalement dans ~/.claude/skills/"
 
 # -----------------------------------------------------------------------------
 # Distribution locale — copie vers les projets cibles
@@ -273,10 +260,8 @@ check-deps:
 	fi; \
 	echo ""
 
-# Skills UC à installer dans l'environnement de test
-# Seules les variantes UC sont copiées pour éviter que Claude confonde
-# avec les variantes non-UC (descriptions proches, versions différentes).
-TEST_SKILLS := skills/sdd-uc-spec-write skills/sdd-uc-system-design
+# Skills à installer dans l'environnement de test
+TEST_SKILLS := $(SKILLS)
 
 # Sauvegarde des skills globaux (~/.claude/skills/ est prioritaire sur
 # les skills projet). On remplace temporairement par les skills UC du

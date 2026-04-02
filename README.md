@@ -15,17 +15,11 @@ Les skills sont conformes au standard [agentskills.io](https://agentskills.io/ho
 | `tests/` | Tests de régression des skills (CDC de référence, prompts, sorties) | Interne |
 | `to-do/` | Revues et améliorations planifiées | Interne |
 
-## Deux variantes SDD
-
-- **`sdd-uc-*`** — Structuration par cas d'utilisation (Use Case). Variante détaillée, adaptée aux projets avec interactions utilisateur complexes.
-- **`sdd-*`** (sans `uc`) — Structuration par exigences fonctionnelles. Variante plus légère.
-
-Les deux variantes suivent le même pipeline : Spécification → Conception → Planification → Développement → QA → Livraison.
-
 ## Distribution
 
 Ce projet se clone à côté des projets de travail. Les fichiers sont distribués de deux façons :
 
+- **`make install`** — Installe les skills dans `~/.claude/skills/` (disponibles dans tous les projets).
 - **`make copy`** — Copie `skills/`, `commands/`, `rules/` dans le `.claude/` des projets locaux listés dans `targets.txt`.
 - **`make zip`** — Produit un ZIP par skill dans `dist/` pour upload dans claude.ai enterprise.
 
@@ -45,6 +39,7 @@ Commandes disponibles :
 
 | Commande | Rôle |
 |---|---|
+| `make install` | Installe les skills dans `~/.claude/skills/` |
 | `make copy` | Copie les fichiers vers les projets cibles |
 | `make copy-dry` | Affiche ce qui serait copié sans rien modifier |
 | `make diff` | Compare le repo source avec les copies installées |
@@ -56,16 +51,6 @@ Commandes disponibles :
 
 Les skills sont activées automatiquement par Claude lorsque la demande de l'utilisateur correspond aux critères de déclenchement.
 
-### sdd-spec-write
-
-Rédige des spécifications SDD structurées par exigences fonctionnelles. Produit un `docs/SPEC.md` exploitable par un agent IA pour l'implémentation.
-
-**Déclenchement :** demander une spec SDD, un SPEC.md, ou transformer des notes en spécification structurée.
-
-**Processus :** dialogue en 3 étapes — Cadrage (questions contexte, contraintes) → Exigences (par domaine fonctionnel, avec critères d'acceptation Soit/Quand/Alors et cas limites) → Limites (niveaux de support, hors périmètre). Chaque étape demande validation avant de poursuivre.
-
-**Produit :** `docs/SPEC.md`, et si applicable `GRAMMAR.md`, `DATA-MODEL.md`.
-
 ### sdd-uc-spec-write
 
 Rédige des spécifications SDD structurées par cas d'utilisation (UC). Variante plus détaillée de `sdd-spec-write`, adaptée aux projets avec des interactions utilisateur complexes.
@@ -76,25 +61,15 @@ Rédige des spécifications SDD structurées par cas d'utilisation (UC). Variant
 
 **Produit :** `docs/SPEC.md` structuré par UC, avec diagrammes Mermaid des relations entre UC.
 
-### sdd-system-design
+### sdd-uc-system-design
 
-Produit les documents de conception technique à partir d'un SPEC.md existant (variante exigences).
+Produit les documents de conception technique à partir d'un SPEC.md structuré par cas d'utilisation. Gère les architectures SaaS, client lourd (desktop), driver et logiciel embarqué (mobile, TPE, terminal professionnel, système embarqué, dev board).
 
 **Déclenchement :** demander l'architecture, le déploiement, la sécurité ou la conformité d'un projet SDD.
 
-**Processus :** dialogue en 4 phases — Architecture (cadrage macro, analyse du SPEC.md, modèle de données, flux, choix technologiques, propriétés non fonctionnelles, synthèse et arbitrages) → Déploiement → Sécurité → Conformité (si cadre réglementaire).
+**Processus :** dialogue en 4 phases — Architecture (cadrage macro, analyse du SPEC.md, modèle de données, flux, choix technologiques avec alternatives et pérennité, propriétés non fonctionnelles, synthèse et arbitrages ADR) → Déploiement (tronc commun + sous-template par type de solution) → Sécurité (modèle de menaces, 12 axes de sécurité, principes de développement sécurisé, réponse à incident) → Conformité (si cadre réglementaire).
 
 **Produit :** `docs/ARCHITECTURE.md`, `docs/DEPLOYMENT.md`, `docs/SECURITY.md`, `docs/COMPLIANCE_MATRIX.md` (si applicable).
-
-### sdd-uc-system-design
-
-Produit les documents de conception technique à partir d'un SPEC.md structuré par cas d'utilisation. Variante de `sdd-system-design` adaptée au format UC.
-
-**Déclenchement :** identique à `sdd-system-design`. Détecte automatiquement le format UC du SPEC.md fourni (identifiants `UC-xxx`, packages, étapes Na/Nb).
-
-**Processus :** identique à `sdd-system-design`, avec traçabilité vers les UC, RG et CA-UC du SPEC.md.
-
-**Produit :** identique à `sdd-system-design`.
 
 ## Commandes
 
@@ -128,35 +103,37 @@ Pilote la recette de test d'un EPIC : plan de test, exécution, revue de code, r
 
 ## Tests
 
-Le skill `sdd-uc-spec-write` est testé avec un cahier des charges fixe (CDC MaintiX — coordination d'interventions de maintenance industrielle) qui produit un SPEC.md quasi-déterministe. Cela permet de détecter les régressions lors des modifications du skill.
-
-Le CDC MaintiX couvre largement les capacités du skill : machine à états, niveaux de support GMAO (système existant), mode offline, capteurs IoT, phases de livraison, permis de travail réglementaire, 5 acteurs dont 2 systèmes.
-
-Les skills sans UC (`sdd-spec-write`, `sdd-system-design`) ne sont pas testés : ils sont destinés à être rendus obsolètes au profit des variantes UC.
+Les deux skills sont testés avec un cahier des charges fixe (CDC MaintiX — coordination d'interventions de maintenance industrielle). Le CDC couvre largement les capacités des skills : machine à états, niveaux de support GMAO, mode offline, capteurs IoT, phases de livraison, permis de travail réglementaire, 5 acteurs dont 2 systèmes.
 
 Le flux de test simule un vrai projet SDD dans `tests/output/` :
-1. `make test-init` — Claude analyse le projet et génère `CLAUDE.md` en fusionnant avec le template SDD
-2. `make test-uc-spec` — Claude produit `docs/SPEC.md` à partir du CDC via le skill `sdd-uc-spec-write`
-3. `make test-review` — Claude évalue la complétude du SPEC.md par rapport au CDC
-4. `make test-check` — contrôles déterministes : seuils minimaux d'identifiants (UC, RG, CA, ENF) et présence des valeurs métier clés
+1. `make test-system-design` — contrôles structurels du skill (fichiers, numérotation, cohérence)
+2. `make test-init` — Claude génère `CLAUDE.md`
+3. `make test-uc-spec` — Claude produit `docs/SPEC.md` via `sdd-uc-spec-write`
+4. `make test-review` — Claude évalue la complétude du SPEC.md
+5. `make test-uc-system-design` — Claude produit les documents de conception via `sdd-uc-system-design`
+6. `make test-check` — contrôles déterministes sur le SPEC.md (seuils UC/RG/CA/ENF, valeurs métier)
+7. `make test-system-design-check` — contrôles déterministes sur les documents de conception
 
-Les tests appellent `claude -p --output-format stream-json` via le script `tests/run-tests.sh`. La sortie est affichée en temps réel par `tests/stream_filter.py` (filtre Python unbuffered) et sauvegardée dans `tests/log/`. Prérequis : `claude`, `python3`.
+Les tests appellent `claude -p --output-format stream-json` via le script `tests/run-tests.sh`. La sortie est affichée en temps réel par `tests/stream_filter.py` et sauvegardée dans `tests/log/`. Prérequis : `python3`, `claude`, `rsync` (vérifiés par `make check-deps`).
+
+**Note :** `test-setup` sauvegarde `~/.claude/skills/` et le remplace temporairement par les skills UC du repo. `make clean-test` restaure les skills originaux.
 
 | Commande | Rôle |
 |---|---|
 | `make test` | Lance tous les tests dans l'ordre |
-| `make test-check` | Contrôles déterministes (seuils, valeurs métier) |
+| `make test-system-design` | Contrôles structurels du skill system-design |
+| `make test-check` | Contrôles déterministes sur le SPEC.md |
+| `make test-system-design-check` | Contrôles déterministes sur les docs de conception |
 | `make test-review` | Évaluation de complétude par Claude |
-| `make clean-test` | Supprime les sorties de test |
+| `make clean-test` | Supprime les sorties de test et restaure `~/.claude/skills/` |
 
 ## Améliorations planifiées
 
 Les revues et améliorations sont documentées dans `to-do/` :
 
-- **Skills** — Réduire la taille des SKILL.md (2-3x au-dessus de la limite agentskills.io), extraire les templates et glossaires dans des fichiers `references/`, harmoniser les frontmatter YAML entre les 4 skills.
 - **Commandes** — Ajouter le frontmatter YAML (description, argument-hint, allowed-tools), aligner les identifiants AC/CA entre commandes et skills, ajouter des gardes sur les fichiers manquants.
 - **Rules** — À supprimer ou repurposer : le contenu actuel est redondant avec les commandes et le CLAUDE.md.
-- **Distribution** — Le Makefile de distribution (`make copy`, `make zip`) est opérationnel. Reste à valider le format de ZIP attendu par claude.ai enterprise.
+- **Distribution** — Valider le format de ZIP attendu par claude.ai enterprise.
 
 ## Fichiers CLAUDE.md
 
