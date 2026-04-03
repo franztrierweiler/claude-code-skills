@@ -80,6 +80,12 @@ Charge le contexte complet d'un projet SDD en début de session : état des livr
 
 **Usage :** `/sdd-brief`
 
+#### /sdd-plan
+
+Planifie le développement en lots à partir du SPEC.md et de l'ARCHITECTURE.md. Propose un découpage, le soumet au pilote pour validation, puis produit les fichiers `plan/<lot>.md`.
+
+**Usage :** `/sdd-plan`
+
 #### /sdd-dev-workflow
 
 Pilote le développement d'un lot : implémentation itérative, écriture des tests, vérification des AC. Supporte la reprise après échec QA.

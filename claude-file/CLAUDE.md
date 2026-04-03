@@ -18,7 +18,8 @@ docs/SPEC.md + fichiers annexes
        |                            └─> docs/COMPLIANCE_MATRIX.md (si réglementaire)
        |
        v
-[3. Planification]────────────> plan/<lot>.md
+[3. Planification]────────────> 📦 /sdd-plan
+       |                            └─> plan/<lot>.md
        |
        v
 [4. Développement par lot]────> 🏗️ /sdd-dev-workflow <lot>

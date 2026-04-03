@@ -20,7 +20,7 @@ The skills form a pipeline for target projects. All skills use the UC (Use Case)
 
 1. **Spec writing** (`sdd-uc-spec-write`) — produces `docs/SPEC.md`
 2. **System design** (`sdd-uc-system-design`) — produces `docs/ARCHITECTURE.md`, `DEPLOYMENT.md`, `SECURITY.md`, `COMPLIANCE_MATRIX.md`
-3. **Planning** — manual, produces `plan/<lot>.md` files
+3. **Planning** (`/sdd-plan`) — produces `plan/<lot>.md` files (user-invocable)
 4. **Dev workflow** (`/sdd-dev-workflow <lot>`) — implementation loop with AC verification (user-invocable)
 5. **QA workflow** (`/sdd-qa-workflow <lot>`) — test plans, execution, code review, reports (user-invocable)
 6. **Brief** (`/sdd-brief`) — loads project context at session start (user-invocable)
