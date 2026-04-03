@@ -67,7 +67,7 @@ de référence manque.
 ### Ne pas déclencher (anti-triggers)
 
 - L'utilisateur veut rédiger ou modifier un SPEC.md → Utiliser sdd-uc-spec-write.
-- L'utilisateur demande de planifier des EPICs ou des User Stories → Phase 2.
+- L'utilisateur demande de planifier des lots ou des User Stories → Phase 2.
 - L'utilisateur demande d'implémenter du code → Phase 3.
 - L'utilisateur demande une revue de code → Phase 4.
 - L'utilisateur pose une question technique ponctuelle sans contexte de projet.
@@ -928,7 +928,7 @@ Les documents de conception sont prêts :
 - COMPLIANCE_MATRIX.md v1.0 (si applicable)
 
 La prochaine étape du flux SDD est la planification : découper le travail
-en EPICs et plans d'implémentation à partir de l'architecture et de la
+en lots et plans d'implémentation à partir de l'architecture et de la
 spec. Tu peux le faire manuellement ou avec un skill de planification.
 
 Ces documents sont vivants — ils seront mis à jour au fil du développement

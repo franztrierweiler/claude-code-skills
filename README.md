@@ -76,23 +76,23 @@ Produit les documents de conception technique. Gère les architectures SaaS, cli
 
 #### /sdd-brief
 
-Charge le contexte complet d'un projet SDD en début de session : état des livrables, phase courante, progression des EPICs, outils disponibles.
+Charge le contexte complet d'un projet SDD en début de session : état des livrables, phase courante, progression des lots, outils disponibles.
 
 **Usage :** `/sdd-brief`
 
 #### /sdd-dev-workflow
 
-Pilote le développement d'un EPIC : implémentation itérative, vérification des AC, mise à jour du plan.
+Pilote le développement d'un lot : implémentation itérative, écriture des tests, vérification des AC. Supporte la reprise après échec QA.
 
-**Usage :** `/sdd-dev-workflow <nom-epic>`
+**Usage :** `/sdd-dev-workflow <nom-lot>`
 
 #### /sdd-qa-workflow
 
-Pilote la recette de test d'un EPIC : plan de test, exécution, revue de code, rapport QA.
+Pilote la recette de test d'un lot : plan de test, exécution, revue de code, rapport QA.
 
-**Usage :** `/sdd-qa-workflow <nom-epic>`
+**Usage :** `/sdd-qa-workflow <nom-lot>`
 
-**Prérequis :** l'EPIC doit être complet avec des AC à 100%.
+**Prérequis :** le lot doit être complet avec des AC à 100%.
 
 ## Tests
 

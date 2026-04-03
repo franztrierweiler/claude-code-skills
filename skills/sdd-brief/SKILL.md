@@ -3,7 +3,7 @@ name: sdd-brief
 description: >
   Charge le contexte complet d'un projet SDD en début de session.
   Affiche l'état des livrables, la phase courante du pipeline, la
-  progression des EPICs, et les outils disponibles.
+  progression des lots, et les outils disponibles.
 argument-hint: (sans argument)
 disable-model-invocation: true
 metadata:
@@ -52,16 +52,16 @@ Logique de détection :
 
 1. **Pas de `docs/SPEC.md`** → `1. Spécification` — "Le SPEC.md n'existe pas encore. Lancer le skill sdd-uc-spec-write pour le produire."
 2. **`docs/SPEC.md` présent mais pas de `docs/ARCHITECTURE.md`** → `2. Conception technique` — "La spec est prête. Lancer le skill sdd-uc-system-design pour produire les documents de conception."
-3. **Documents de conception présents mais pas de `plan/*.md`** → `3. Planification` — "La conception est prête. Créer les fichiers plan/<epic>.md pour planifier les EPICs."
-4. **`plan/*.md` présents avec des EPICs non terminés** → `4. Développement` — "EPICs en cours. Utiliser /sdd-dev-workflow <epic> pour continuer."
-5. **EPICs terminés (AC 100%) mais pas de rapports QA** → `5. QA` — "Développement terminé. Utiliser /sdd-qa-workflow <epic> pour la recette."
+3. **Documents de conception présents mais pas de `plan/*.md`** → `3. Planification` — "La conception est prête. Créer les fichiers plan/<lot>.md pour planifier les lots."
+4. **`plan/*.md` présents avec des lots non terminés** → `4. Développement` — "lots en cours. Utiliser /sdd-dev-workflow <lot> pour continuer."
+5. **lots terminés (AC 100%) mais pas de rapports QA** → `5. QA` — "Développement terminé. Utiliser /sdd-qa-workflow <lot> pour la recette."
 6. **Rapports QA présents** → `6. Livraison` — "QA terminée. Le projet est prêt pour la livraison."
 
-### 4. Progression des EPICs
+### 4. Progression des lots
 
 Si des fichiers `plan/*.md` existent, afficher :
 
-| EPIC | Fichier | AC complétés | Statut |
+| lot | Fichier | AC complétés | Statut |
 |------|---------|-------------|--------|
 | [Nom] | `plan/xxx.md` | N/M (X%) | En cours / Terminé / Non démarré |
 

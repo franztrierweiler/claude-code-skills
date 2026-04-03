@@ -7,7 +7,7 @@ paths:
 
 # Rappel — Workflow de développement SDD
 
-Lors d'un travail structuré sur un EPIC complet (implémentation de fonctionnalités, vérification systématique des AC), suggérer au pilote du projet de lancer `/sdd-dev-workflow <nom-epic>` si ce n'est pas déjà fait.
+Lors d'un travail structuré sur un lot complet (implémentation de fonctionnalités, vérification systématique des AC), suggérer au pilote du projet de lancer `/sdd-dev-workflow <nom-lot>` si ce n'est pas déjà fait.
 
 Ne pas suggérer la commande pour des interventions ponctuelles (correction de bug, refactoring ciblé, ajustement rapide).
 

@@ -1,9 +1,9 @@
 ---
 name: sdd-qa-workflow
 description: >
-  Pilote la recette de test d'un EPIC SDD : plan de test, exécution,
+  Pilote la recette de test d'un lot SDD : plan de test, exécution,
   revue de code, rapport QA.
-argument-hint: <nom-epic>
+argument-hint: <nom-lot>
 disable-model-invocation: true
 metadata:
   version: "1.0.0"
@@ -11,18 +11,18 @@ metadata:
 license: "MIT"
 ---
 
-# Recette de test (QA) d'un EPIC
+# Recette de test (QA) d'un lot
 
 Version : 1.0.0
 Date : 2026-04-03
 
 ## Argument
 
-$ARGUMENTS — nom de l'EPIC (ex: `epic-01-lexer`)
+$ARGUMENTS — nom du lot (ex: `lot-01-auth`)
 
 ## Prérequis
 
-- L'EPIC doit être complet, testé unitairement et avec des AC à 100%
+- L'lot doit être complet, testé unitairement et avec des AC à 100%
 - Si ce n'est pas le cas, indiquer les AC manquants et suggérer `/sdd-dev-workflow $ARGUMENTS`
 
 ## Instructions
@@ -31,7 +31,7 @@ $ARGUMENTS — nom de l'EPIC (ex: `epic-01-lexer`)
 
 1. Lire le fichier `plan/$ARGUMENTS.md`
 2. Lire les AC et leurs justifications de satisfaction
-3. Lire les fichiers source implémentés pour cet EPIC
+3. Lire les fichiers source implémentés pour cet lot
 4. Lire les tests unitaires existants
 
 ### 2. Élaboration du plan de test
@@ -57,7 +57,7 @@ Après validation du plan par le pilote :
 
 ### 4. Revue de code
 
-1. Effectuer une revue de code de l'EPIC
+1. Effectuer une revue de code de l'lot
 2. Vérifier : lisibilité, sécurité, performance, conformité aux conventions
 3. Produire le rapport de revue dans `qa/code-review/$ARGUMENTS-review.md`
 
@@ -66,10 +66,10 @@ Après validation du plan par le pilote :
 Produire le rapport final dans `qa/qa-results/rapport-$ARGUMENTS.md` avec le contenu suivant :
 
 ```markdown
-# Rapport QA — EPIC [numéro] [nom]
+# Rapport QA — lot [numéro] [nom]
 
 **Date :** [YYYY-MM-DD]
-**EPIC :** $ARGUMENTS
+**lot :** $ARGUMENTS
 **Verdict :** ✅ VALIDÉ / ❌ À CORRIGER
 
 ## Résultats

@@ -1,76 +1,208 @@
 ---
 name: sdd-dev-workflow
 description: >
-  Pilote le développement d'un EPIC SDD : implémentation itérative,
-  vérification des critères d'acceptation, mise à jour du plan.
-argument-hint: <nom-epic>
+  Pilote le développement d'un lot SDD : implémentation itérative,
+  écriture des tests unitaires, vérification des critères d'acceptation,
+  mise à jour du plan. Supporte la reprise après un échec QA.
+argument-hint: <nom-lot>
 disable-model-invocation: true
 metadata:
-  version: "1.0.0"
+  version: "2.0.0"
   author: "Franz TRIERWEILER"
 license: "MIT"
 ---
 
-# Workflow de développement d'un EPIC
+# Workflow de développement d'un lot
 
-Version : 1.0.0
+Version : 2.0.0
 Date : 2026-04-03
 
 ## Argument
 
-$ARGUMENTS — nom de l'EPIC (ex: `epic-01-lexer`)
+$ARGUMENTS — nom du lot (ex: `lot-01-auth`, `lot-02-interventions`)
 
-## Instructions
+## 1. Garde à l'entrée
 
-### 1. Chargement du contexte
+Vérifier que les fichiers requis existent :
 
-1. Lire le fichier `plan/$ARGUMENTS.md`
-2. Lire les critères d'acceptation (AC) listés dans le plan
-3. Lire les contraintes techniques mentionnées
-4. Lire les exigences, règles et bonnes pratiques de sécurité dans `docs/SPEC.md`
-5. Afficher un résumé : nom de l'EPIC, nombre de fonctionnalités, nombre d'AC
+1. **`plan/$ARGUMENTS.md`** — obligatoire. Si absent :
+   ```
+   ❌ Fichier plan/$ARGUMENTS.md introuvable.
+   Vérifier le nom du lot. Fichiers disponibles dans plan/ :
+   [lister les fichiers plan/*.md]
+   ```
+   Arrêter.
 
-### 2. Boucle d'implémentation
+2. **`docs/SPEC.md`** — obligatoire. Si absent :
+   ```
+   ❌ docs/SPEC.md introuvable. Lancer sdd-uc-spec-write d'abord.
+   ```
+   Arrêter.
 
-Pour chaque fonctionnalité de l'EPIC :
+3. **`docs/ARCHITECTURE.md`** — obligatoire. Si absent :
+   ```
+   ❌ docs/ARCHITECTURE.md introuvable. Lancer sdd-uc-system-design d'abord.
+   ```
+   Arrêter.
 
-1. Implémenter une première version minimale
-2. Expliquer ce qu'a fait l'itération en quelques lignes, en indiquant "Fin d'itération, voici le résultat"
-3. Vérifier chaque critère d'acceptation (AC) un par un
-4. Lister explicitement : ✅ AC satisfait / ❌ AC non satisfait
-5. Si des AC ne sont pas satisfaits, itérer jusqu'à ce que tous soient validés
+## 2. Détection du mode
 
-### 3. Vérification globale
+Chercher le fichier `qa/qa-results/rapport-$ARGUMENTS.md`.
 
-Après chaque implémentation significative :
+**Si le rapport existe ET contient "❌ À CORRIGER" :**
 
-1. Exécuter les tests unitaires associés (via Makefile)
-2. Exécuter les tests d'intégration si pertinents
-3. Revoir le code avec pour référence les AC de l'EPIC
-4. Revoir le code avec pour référence les règles de sécurité et les règles de codage
-5. Remplir la matrice de conformité si pertinent
-6. Pour chaque AC, démontrer concrètement qu'il est satisfait (test, exemple, preuve)
-7. Si un AC n'est pas vérifiable automatiquement, expliquer comment le valider manuellement
-8. Indiquer "Fin d'implémentation significative, voici le résultat"
+→ **Mode reprise QA.** Lire en complément :
+- `qa/qa-results/rapport-$ARGUMENTS.md` (scénarios en échec, verdict)
+- `qa/plan-test-$ARGUMENTS.md` (détail des scénarios)
+- `qa/code-review/$ARGUMENTS-review.md` (points de revue de code)
 
-### 4. Rapport
-
-Produire un rapport au format suivant :
-
+Afficher :
 ```
-### Statut des critères d'acceptation — $ARGUMENTS
-- [ ] AC-XXX-XX: Description — Statut + justification
-- [ ] AC-XXX-XX: Description — Statut + justification
-### Prochaines actions
+🔁 sdd-dev-workflow v2.0.0 · Lot: $ARGUMENTS · Mode: REPRISE QA
+
+Rapport QA : N scénarios en échec, M points de revue de code à corriger.
+
+Scénarios en échec :
+- [T01-03] Description — problème identifié
+- [T04-01] Description — problème identifié
+
+Points de revue de code :
+- [fichier:ligne] Description du problème
+
+Je cible ces corrections uniquement.
 ```
 
-### 5. Mise à jour du plan
+**Sinon :**
 
-1. Mettre à jour la progression dans `plan/$ARGUMENTS.md`
-2. Mettre à jour les tableaux d'AC dans `plan/$ARGUMENTS.md`
+→ **Mode développement initial.**
 
-### 6. Clôture
+Afficher :
+```
+🔧 sdd-dev-workflow v2.0.0 · Lot: $ARGUMENTS · Mode: développement initial
+```
 
-Si tous les AC sont à 100% :
-1. Indiquer "EPIC $ARGUMENTS — tous les AC sont satisfaits"
-2. Demander au pilote du projet s'il souhaite lancer la QA : `/sdd-qa-workflow $ARGUMENTS`
+## 3. Chargement du contexte
+
+Lire les fichiers suivants :
+
+| Fichier | Ce qu'on en extrait |
+|---|---|
+| `plan/$ARGUMENTS.md` | Fonctionnalités du lot, critères d'acceptation (AC), dépendances |
+| `docs/SPEC.md` | UC concernés, règles de gestion (RG), critères d'acceptation (CA-UC) |
+| `docs/ARCHITECTURE.md` | Stack technique (§ 3), composants concernés (§ 4.2), structure du répertoire (§ 7), principes d'architecture (§ 2) |
+| `docs/SECURITY.md` | Principes de développement sécurisé (§ 6), exigences pertinentes |
+| `docs/DEPLOYMENT.md` | Configuration par environnement (§ 4) si pertinent |
+
+Afficher un résumé :
+```
+Lot : $ARGUMENTS
+Fonctionnalités : N
+Critères d'acceptation : M
+UC concernés : UC-001, UC-002, ...
+Composants impactés : [composant_1], [composant_2]
+```
+
+En mode reprise QA, afficher en plus :
+```
+Corrections ciblées : P scénarios + Q points de revue
+```
+
+## 4. Boucle d'implémentation
+
+### Mode développement initial
+
+Pour chaque fonctionnalité du lot :
+
+1. **Écrire les tests unitaires d'abord** — Traduire les AC en tests.
+   Les CA-UC du SPEC.md sont directement convertibles en assertions.
+   Nommer les tests de manière traçable (ex: `test_ca_uc_001_01_...`).
+2. **Implémenter** — Coder la fonctionnalité en respectant :
+   - La structure du répertoire de ARCHITECTURE.md § 7
+   - Les composants et interfaces de ARCHITECTURE.md § 4.2
+   - Les principes de développement sécurisé de SECURITY.md § 6
+3. **Exécuter les tests** — Via Makefile (`make test` ou équivalent).
+4. **Vérifier chaque AC** — Lister explicitement :
+   - ✅ AC satisfait (test passant + justification)
+   - ❌ AC non satisfait (raison + action corrective)
+5. **Itérer** si des AC ne sont pas satisfaits.
+6. **Signaler la fin de la fonctionnalité :**
+   ```
+   Fonctionnalité N/M terminée — AC : X/Y satisfaits
+   ```
+
+### Mode reprise QA
+
+Pour chaque correction identifiée :
+
+1. **Lire le scénario QA en échec** — Comprendre le problème exact.
+2. **Corriger le code** — Appliquer la correction ciblée.
+3. **Mettre à jour ou ajouter le test unitaire** — Le test doit couvrir
+   le scénario qui a échoué.
+4. **Exécuter les tests** — Vérifier que la correction n'introduit pas
+   de régression.
+5. **Signaler la correction :**
+   ```
+   Correction N/M — [T01-03] corrigé — test ajouté/modifié
+   ```
+
+Pour les points de revue de code : appliquer les corrections et signaler.
+
+## 5. Vérification globale
+
+Quand toutes les fonctionnalités (ou corrections) sont implémentées :
+
+1. **Exécuter la suite de tests complète** — `make test`
+2. **Vérifier que tous les tests passent** — 0 échec.
+3. **Revoir le code** avec pour référence :
+   - Les AC du lot
+   - Les principes de développement sécurisé (SECURITY.md § 6)
+   - Les conventions du projet (CLAUDE.md)
+4. **Pour chaque AC**, démontrer concrètement qu'il est satisfait :
+   - Test passant → citer le nom du test
+   - Si non vérifiable automatiquement → expliquer la procédure manuelle
+
+Afficher :
+```
+Vérification globale — $ARGUMENTS
+Tests : X/Y passent
+AC : M/M satisfaits (ou N non satisfaits)
+```
+
+## 6. Rapport et mise à jour du plan
+
+Mettre à jour le fichier `plan/$ARGUMENTS.md` :
+
+1. **Progression** — Marquer les fonctionnalités terminées.
+2. **Tableau des AC** — Mettre à jour le statut de chaque AC avec :
+   - Statut (✅ / ❌)
+   - Justification (nom du test, preuve)
+   - Date de validation
+
+Format du rapport dans le plan :
+
+```markdown
+## Statut des critères d'acceptation
+
+| AC | Description | Statut | Justification | Date |
+|---|---|---|---|---|
+| CA-UC-001-01 | [Description] | ✅ | test_ca_uc_001_01 passe | 2026-04-03 |
+
+## Prochaines actions
+
+[Actions restantes ou "Lot terminé — prêt pour QA"]
+```
+
+## 7. Clôture
+
+**Si tous les AC sont satisfaits :**
+```
+✅ Lot $ARGUMENTS — tous les AC sont satisfaits.
+Prochaine étape : /sdd-qa-workflow $ARGUMENTS
+```
+
+**Si des AC restent non satisfaits :**
+```
+⚠️ Lot $ARGUMENTS — N AC non satisfaits.
+[Liste des AC en échec avec la raison]
+Le plan a été mis à jour. Relancer /sdd-dev-workflow $ARGUMENTS pour continuer.
+```

@@ -18,14 +18,14 @@ docs/SPEC.md + fichiers annexes
        |                            └─> docs/COMPLIANCE_MATRIX.md (si réglementaire)
        |
        v
-[3. Planification]────────────> plan/<epic>.md
+[3. Planification]────────────> plan/<lot>.md
        |
        v
-[4. Développement par EPIC]───> /sdd-dev-workflow <epic>
+[4. Développement par lot]────> /sdd-dev-workflow <lot>
        |                          (boucle implémentation / AC / tests)
        |
        v
-[5. QA par EPIC]─────────────> /sdd-qa-workflow <epic>
+[5. QA par lot]───────────────> /sdd-qa-workflow <lot>
        |                          (plan de test, exécution, revue de code)
        |
        v
@@ -69,12 +69,12 @@ La documentation évolue au fur et à mesure des phases d'exécution du projet.
 ### En interaction avec le pilote de projet lors de la phase de conception, de planification, de tests locaux et de déploiement
 
 #### Planification
-1- Lors d'une demande de planification, documenter chaque EPIC dans un fichier spécifique : `plan/<nom-epic>.md` (incluant le numéro de l'EPIC)
+1- Lors d'une demande de planification, documenter chaque lot dans un fichier spécifique : `plan/<nom-lot>.md` (incluant le numéro du lot)
 2- Mettre à jour la progression des tâches dans les fichiers `plan/` correspondants après chaque implémentation
 3- Mettre à jour les tableaux d'AC dans les fichiers `plan/` correspondants après chaque implémentation et test unitaire
 
 #### Recettes de test (QA)
-Le processus QA est piloté par la commande `/sdd-qa-workflow <epic>`. Les conventions sont rappelées par la rule `.claude/rules/sdd-qa.md` lors du travail sur `qa/**`.
+Le processus QA est piloté par `/sdd-qa-workflow <lot>`. Les conventions sont rappelées par la rule `.claude/rules/sdd-qa.md` lors du travail sur `qa/**`.
 
 
 #### Commandes
@@ -83,7 +83,7 @@ Le processus QA est piloté par la commande `/sdd-qa-workflow <epic>`. Les conve
 3- Au démarrage, afficher qu'un Makefile existe avec la commande permettant d'afficher l'aide
 
 ### Workflow de développement
-Le workflow de développement est piloté par la commande `/sdd-dev-workflow <epic>`. La rule `.claude/rules/sdd-dev-workflow.md` se charge automatiquement lors du travail sur `src/` et `tests/` pour rappeler le format attendu et suggérer de lancer la commande si nécessaire.
+Le workflow de développement est piloté par `/sdd-dev-workflow <lot>`. La rule `.claude/rules/sdd-dev-workflow.md` se charge automatiquement lors du travail sur `src/` et `tests/` pour rappeler le format attendu et suggérer de lancer la commande si nécessaire.
 
 ### Nommage des branches git
 1- Développement sur la branche `main` avec Claude Code

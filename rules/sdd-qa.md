@@ -6,14 +6,14 @@ paths:
 
 # Rappel — Processus QA SDD
 
-Lors d'un travail structuré de recette de test sur un EPIC complet, suggérer au pilote du projet de lancer `/sdd-qa-workflow <nom-epic>` si ce n'est pas déjà fait.
+Lors d'un travail structuré de recette de test sur un lot complet, suggérer au pilote du projet de lancer `/sdd-qa-workflow <nom-lot>` si ce n'est pas déjà fait.
 
 Ne pas suggérer la commande pour des consultations ou modifications ponctuelles de fichiers QA.
 
 ## Conventions QA
 
-- Plans de test : `qa/plan-test-<nom-epic>.md`
-- Revues de code : `qa/code-review/<nom-epic>-review.md`
-- Rapports finaux QA : `qa/qa-results/rapport-<nom-epic>.md`
-- La QA ne s'exécute que sur un EPIC complet, testé unitairement et avec des AC à 100%
+- Plans de test : `qa/plan-test-<nom-lot>.md`
+- Revues de code : `qa/code-review/<nom-lot>-review.md`
+- Rapports finaux QA : `qa/qa-results/rapport-<nom-lot>.md`
+- La QA ne s'exécute que sur un lot complet, testé unitairement et avec des AC à 100%
 - 
