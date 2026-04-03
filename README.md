@@ -14,8 +14,9 @@ Les skills sont conformes au standard [agentskills.io](https://agentskills.io/ho
 | 4 | 🏗️ | sdd-dev-workflow | v2.1.0 | `/sdd-dev-workflow <lot>` | Développement |
 | 5 | 🧪 | sdd-qa-workflow | v2.0.0 | `/sdd-qa-workflow <lot>` | QA |
 | 6 | 💡 | sdd-brief | v1.1.0 | `/sdd-brief` | Tableau de bord |
+| 7 | 🎓 | sdd-tuto | v1.0.0 | `/sdd-tuto` | Tutoriel interactif |
 
-Les skills auto-déclenchés (1-2) sont activés par Claude quand la demande correspond. Les skills invocables (3-6) ne se lancent que via `/nom-skill`.
+Les skills auto-déclenchés (1-2) sont activés par Claude quand la demande correspond. Les skills invocables (3-7) ne se lancent que via `/nom-skill`.
 
 ## Contenu
 
@@ -74,6 +75,12 @@ Pilote la recette de test d'un lot : plan de test, exécution, revue de code, ra
 Charge le contexte complet d'un projet SDD en début de session : état des livrables, phase courante, progression des lots, outils disponibles.
 
 **Usage :** `/sdd-brief`
+
+### 🎓 /sdd-tuto
+
+Tutoriel interactif de la méthodologie SDD. Explique les étapes, le pourquoi, le comment, avec des exemples concrets. En mode Claude Code, ouvre le tutoriel dans le navigateur ou l'affiche en texte. En mode claude.ai, produit un artefact HTML animé.
+
+**Usage :** `/sdd-tuto`
 
 ## Distribution
 
