@@ -206,7 +206,7 @@ obligatoire, sans exception.
 📐 skill:sdd-uc-system-design v3.1.0 · [Phase] [barre] étape N/T — [Nom de l'étape]
 ```
 
-La version affichée est celle indiquée dans l'en-tête du skill (actuellement v3.0.0).
+La version affichée est celle indiquée dans l'en-tête du skill (actuellement v3.1.0).
 
 **Règles de la barre de progression :**
 

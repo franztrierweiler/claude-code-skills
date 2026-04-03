@@ -19,3 +19,4 @@ Chaque itération doit se conclure par un rapport AC :
 ### Statut des critères d'acceptation
 - [ ] AC-XXX-XX: Description — Statut + justification
 ### Prochaines actions
+```

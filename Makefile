@@ -47,7 +47,7 @@ TEST_DIR     := tests
 TEST_OUT     := $(TEST_DIR)/output
 TEST_LOG     := $(TEST_DIR)/log
 
-.PHONY: help install copy copy-dry diff status \
+.PHONY: help install copy copy-dry diff status check-deps \
         zip zip-all zip-check clean-dist \
         test test-init test-uc-spec test-uc-system-design test-review \
         test-check test-system-design test-system-design-check \

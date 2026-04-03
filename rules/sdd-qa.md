@@ -16,4 +16,3 @@ Ne pas suggérer la commande pour des consultations ou modifications ponctuelles
 - Revues de code : `qa/code-review/<nom-lot>-review.md`
 - Rapports finaux QA : `qa/qa-results/rapport-<nom-lot>.md`
 - La QA ne s'exécute que sur un lot complet, testé unitairement et avec des AC à 100%
-- 

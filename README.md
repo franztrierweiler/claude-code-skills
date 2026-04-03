@@ -12,7 +12,7 @@ Les skills sont conformes au standard [agentskills.io](https://agentskills.io/ho
 | 2 | 📐 | sdd-uc-system-design | v3.1.0 | Automatique | Conception technique |
 | 3 | 🗺️ | sdd-plan | v1.0.0 | `/sdd-plan` | Planification |
 | 4 | 🏗️ | sdd-dev-workflow | v2.1.0 | `/sdd-dev-workflow <lot>` | Développement |
-| 5 | 🧪 | sdd-qa-workflow | v1.0.0 | `/sdd-qa-workflow <lot>` | QA |
+| 5 | 🧪 | sdd-qa-workflow | v2.0.0 | `/sdd-qa-workflow <lot>` | QA |
 | 6 | 💡 | sdd-brief | v1.1.0 | `/sdd-brief` | Tableau de bord |
 
 Les skills auto-déclenchés (1-2) sont activés par Claude quand la demande correspond. Les skills invocables (3-6) ne se lancent que via `/nom-skill`.
