@@ -77,19 +77,18 @@ Si des rapports QA existent dans `qa/qa-results/`, les mentionner.
 
 ### 5. Outils SDD disponibles
 
-Afficher deux tableaux :
+Afficher le tableau récapitulatif des skills SDD. Pour chaque skill,
+lire son SKILL.md pour extraire la version (ligne `Version :`) et
+l'icône (premier emoji dans le fichier).
 
-**Skills :**
-
-| Skill | Description | Quand l'utiliser |
-|-------|-------------|-----------------|
-| (lister les skills dont le nom contient `sdd` dans les skills disponibles, hors sdd-brief) | (synthèse 10 mots) | (phase du pipeline) |
-
-**Commandes :**
-
-| Commande | Description | Quand l'utiliser |
-|----------|-------------|-----------------|
-| (lister les skills sdd-* avec `disable-model-invocation: true`, hors sdd-brief) | (synthèse 10 mots) | (phase du pipeline) |
+| # | Icône | Skill | Version | Invocation | Phase |
+|---|-------|-------|---------|-----------|-------|
+| 1 | 🖊️ | sdd-uc-spec-write | (version lue) | Automatique | Spécification |
+| 2 | 📐 | sdd-uc-system-design | (version lue) | Automatique | Conception technique |
+| 3 | 🗺️ | sdd-plan | (version lue) | `/sdd-plan` | Planification |
+| 4 | 🏗️ | sdd-dev-workflow | (version lue) | `/sdd-dev-workflow <lot>` | Développement |
+| 5 | 🧪 | sdd-qa-workflow | (version lue) | `/sdd-qa-workflow <lot>` | QA |
+| 6 | 💡 | sdd-brief | (version lue) | `/sdd-brief` | Tableau de bord |
 
 **Rules actives :**
 
