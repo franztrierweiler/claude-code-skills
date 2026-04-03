@@ -78,7 +78,7 @@ Je cible ces corrections uniquement.
 
 Afficher :
 ```
-🔧 sdd-dev-workflow v2.0.0 · Lot: $ARGUMENTS · Mode: développement initial
+🏗️ sdd-dev-workflow v2.0.0 · Lot: $ARGUMENTS · Mode: développement initial
 ```
 
 ## 3. Chargement du contexte
