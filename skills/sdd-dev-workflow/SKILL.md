@@ -111,7 +111,11 @@ Corrections ciblées : P scénarios + Q points de revue
 
 ### Mode développement initial
 
-Pour chaque fonctionnalité du lot :
+Pour chaque fonctionnalité du lot, numéroter les itérations :
+
+```
+── Fonctionnalité 1/M · Itération 1 ──
+```
 
 1. **Écrire les tests unitaires d'abord** — Traduire les AC en tests.
    Les CA-UC du SPEC.md sont directement convertibles en assertions.
@@ -124,10 +128,15 @@ Pour chaque fonctionnalité du lot :
 4. **Vérifier chaque AC** — Lister explicitement :
    - ✅ AC satisfait (test passant + justification)
    - ❌ AC non satisfait (raison + action corrective)
-5. **Itérer** si des AC ne sont pas satisfaits.
+5. **Si des AC ne sont pas satisfaits**, incrémenter le compteur et itérer :
+   ```
+   ── Fonctionnalité 1/M · Itération 2 ──
+   AC non satisfaits : CA-UC-001-02 (raison), CA-UC-001-05 (raison)
+   ```
+   Reprendre à l'étape 2 avec les corrections ciblées.
 6. **Signaler la fin de la fonctionnalité :**
    ```
-   Fonctionnalité N/M terminée — AC : X/Y satisfaits
+   ✅ Fonctionnalité 1/M terminée — AC : X/Y satisfaits — 2 itérations
    ```
 
 ### Mode reprise QA
