@@ -68,24 +68,41 @@ Vérifier que les fichiers requis existent :
    ```
    Arrêter.
 
-## 2. Détection du mode
+## 2. Détection de l'état QA existant
 
-Chercher le fichier `qa/qa-results/rapport-$ARGUMENTS.md`.
+Chercher les fichiers QA existants pour ce lot :
 
-**Si le rapport existe déjà :**
+- `qa/plan-test-$ARGUMENTS.md` (plan de test)
+- `qa/code-review/$ARGUMENTS-review.md` (revue de code)
+- `qa/qa-results/rapport-$ARGUMENTS.md` (rapport final)
+
+**Si le rapport final existe :**
 ```
 ⚠️ Un rapport QA existe déjà pour ce lot :
   qa/qa-results/rapport-$ARGUMENTS.md
   Verdict précédent : [✅ VALIDÉ / ❌ À CORRIGER]
 
 Options :
-  1. Relancer la QA complète (écrase le rapport existant)
+  1. Relancer la QA complète (écrase tous les fichiers QA existants)
   2. Annuler
 
 Quel est ton choix ?
 ```
 
-**Sinon :** continuer normalement.
+**Si le plan de test existe mais pas le rapport (QA interrompue) :**
+```
+⚠️ Un plan de test existe déjà pour ce lot :
+  qa/plan-test-$ARGUMENTS.md (N scénarios)
+
+Options :
+  1. Reprendre la QA à partir du plan existant (passer à l'exécution)
+  2. Refaire le plan de test depuis zéro
+  3. Annuler
+
+Quel est ton choix ?
+```
+
+**Si aucun fichier QA n'existe :** continuer normalement.
 
 ## 3. Chargement du contexte
 
