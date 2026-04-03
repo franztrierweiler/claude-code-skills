@@ -151,6 +151,55 @@ run_uc_system_design() {
     fi
 }
 
+run_qa_workflow() {
+    echo ""
+    echo "=== Test sdd-qa-workflow — QA du premier lot MaintiX ==="
+    echo ""
+
+    local plan_count
+    plan_count=$(find "$TEST_OUT/plan" -name "*.md" -type f 2>/dev/null | wc -l)
+    if [ "$plan_count" -eq 0 ]; then
+        echo "  ÉCHEC — aucun fichier plan/*.md. Lancer 'make test-plan' d'abord."
+        exit 1
+    fi
+
+    if [ ! -d "$TEST_OUT/src" ]; then
+        echo "  ÉCHEC — src/ absent. Lancer 'make test-dev-workflow' d'abord."
+        exit 1
+    fi
+
+    local first_lot
+    first_lot=$(find "$TEST_OUT/plan" -name "*.md" -type f | sort | head -1)
+    local lot_name
+    lot_name=$(basename "$first_lot" .md)
+
+    echo "  Lot détecté : $lot_name"
+    echo ""
+
+    mkdir -p "$TEST_LOG"
+    cd "$TEST_OUT"
+
+    run_claude \
+        "Lis le fichier $PROMPTS/prompt-qa-workflow.md et exécute les instructions qu'il contient." \
+        "$TEST_LOG/qa-workflow.log"
+
+    echo ""
+    # Vérifications rapides
+    if [ -d "$TEST_OUT/qa" ]; then
+        echo "  ✓ qa/ créé"
+        for f in "plan-test-$lot_name.md" "qa-results/rapport-$lot_name.md"; do
+            if [ -f "$TEST_OUT/qa/$f" ]; then
+                echo "  ✓ qa/$f"
+            else
+                echo "  ⚠ qa/$f absent"
+            fi
+        done
+    else
+        echo "  ÉCHEC — qa/ absent, aucun livrable QA produit"
+        exit 1
+    fi
+}
+
 run_brief() {
     echo ""
     echo "=== Test sdd-brief — Tableau de bord projet ==="
@@ -281,6 +330,9 @@ case "$ACTION" in
     dev-workflow)
         run_dev_workflow
         ;;
+    qa-workflow)
+        run_qa_workflow
+        ;;
     brief)
         run_brief
         ;;
@@ -297,12 +349,13 @@ case "$ACTION" in
         run_uc_system_design
         run_plan
         run_dev_workflow
+        run_qa_workflow
         run_brief
         echo ""
         echo "Tous les tests ont été exécutés."
         ;;
     *)
-        echo "Usage: $0 [init|uc-spec|uc-system-design|plan|dev-workflow|brief|tuto|review|all]"
+        echo "Usage: $0 [init|uc-spec|uc-system-design|plan|dev-workflow|qa-workflow|brief|tuto|review|all]"
         exit 1
         ;;
 esac

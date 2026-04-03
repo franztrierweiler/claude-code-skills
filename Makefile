@@ -30,6 +30,8 @@
 #   make test-plan-check          — Contrôles des fichiers de plan
 #   make test-dev-workflow        — Développe le premier lot via sdd-dev-workflow
 #   make test-dev-check           — Contrôles des sorties du développement
+#   make test-qa-workflow         — Lance la QA sur le premier lot
+#   make test-qa-check            — Contrôles des sorties QA
 #   make test-brief               — Lance /sdd-brief sur le projet de test
 #   make test-brief-check         — Contrôles de la sortie du brief
 #   make test-setup               — Prépare l'environnement de test
@@ -50,6 +52,7 @@ TEST_LOG     := $(TEST_DIR)/log
         test test-init test-uc-spec test-uc-system-design test-review \
         test-check test-system-design test-system-design-check \
         test-plan test-plan-check test-dev-workflow test-dev-check \
+        test-qa-workflow test-qa-check \
         test-brief test-brief-check test-tuto \
         test-setup clean-test
 
@@ -90,6 +93,8 @@ help:
 	@echo "    make test-plan-check            Contrôles des fichiers de plan"
 	@echo "    make test-dev-workflow          Développe le premier lot"
 	@echo "    make test-dev-check             Contrôles des sorties du développement"
+	@echo "    make test-qa-workflow           Lance la QA sur le premier lot"
+	@echo "    make test-qa-check              Contrôles des sorties QA"
 	@echo "    make test-brief                 Lance /sdd-brief sur le projet de test"
 	@echo "    make test-brief-check           Contrôles de la sortie du brief"
 	@echo "    make test-tuto                  Affiche le tutoriel SDD (pas de contrôle)"
@@ -343,6 +348,7 @@ test: test-system-design test-setup
 	$(MAKE) test-system-design-check
 	$(MAKE) test-plan-check
 	$(MAKE) test-dev-check
+	$(MAKE) test-qa-check
 	$(MAKE) test-brief-check
 
 # Génère le CLAUDE.md dans output/
@@ -388,6 +394,14 @@ test-dev-check:
 # Lance /sdd-brief sur le projet de test (après tout le reste)
 test-brief: test-setup
 	$(TEST_DIR)/run-tests.sh brief
+
+# Lance la QA sur le premier lot
+test-qa-workflow: test-setup
+	$(TEST_DIR)/run-tests.sh qa-workflow
+
+# Contrôles des sorties QA (plan de test, revue, rapport)
+test-qa-check:
+	@$(TEST_DIR)/check_qa_workflow_output.sh $(TEST_OUT)
 
 # Affiche le tutoriel SDD (exécution seule, pas de contrôle déterministe)
 test-tuto: test-setup
