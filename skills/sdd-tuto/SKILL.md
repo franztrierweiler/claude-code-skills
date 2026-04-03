@@ -146,6 +146,33 @@ Expliquer :
 - Revue de code
 - Rapport avec verdict (✅ VALIDÉ / ❌ À CORRIGER)
 
+### Étape 8 — Les outils SDD
+
+Afficher le tableau récapitulatif des skills :
+
+```
+┌─────┬──────┬────────────────────────┬─────────────────────────────┬──────────────────┐
+│  #  │ Icône│ Skill                  │ Invocation                  │ Phase            │
+├─────┼──────┼────────────────────────┼─────────────────────────────┼──────────────────┤
+│  1  │ 🖊️   │ sdd-uc-spec-write      │ Automatique                 │ Spécification    │
+│  2  │ 📐   │ sdd-uc-system-design   │ Automatique                 │ Conception       │
+│  3  │ 🗺️   │ sdd-plan               │ /sdd-plan                   │ Planification    │
+│  4  │ 🏗️   │ sdd-dev-workflow       │ /sdd-dev-workflow <lot>     │ Développement    │
+│  5  │ 🔧   │ sdd-dev-workflow       │ /sdd-dev-workflow <lot>     │ Reprise QA       │
+│  6  │ 🧪   │ sdd-qa-workflow        │ /sdd-qa-workflow <lot>      │ QA               │
+│  7  │ 💡   │ sdd-brief              │ /sdd-brief                  │ Tableau de bord  │
+│  8  │ 🎓   │ sdd-tuto               │ /sdd-tuto                   │ Tutoriel         │
+└─────┴──────┴────────────────────────┴─────────────────────────────┴──────────────────┘
+```
+
+Expliquer la distinction :
+- **Automatique** : Claude active le skill quand la demande correspond.
+  L'utilisateur n'a pas besoin de le lancer explicitement.
+- **`/nom-skill`** : L'utilisateur lance le skill manuellement. Claude ne
+  peut pas le déclencher de lui-même.
+- **Reprise QA (🔧)** : Même skill que le développement, mais il détecte
+  automatiquement un rapport QA en échec et bascule en mode correction.
+
 ### Conclusion
 
 ```
