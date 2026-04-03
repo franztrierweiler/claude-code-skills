@@ -203,7 +203,7 @@ obligatoire, sans exception.
 **Format :**
 
 ```
-🏗️ skill:sdd-uc-system-design v3.0.0 · [Phase] [barre] étape N/T — [Nom de l'étape]
+🔬 skill:sdd-uc-system-design v3.0.0 · [Phase] [barre] étape N/T — [Nom de l'étape]
 ```
 
 La version affichée est celle indiquée dans l'en-tête du skill (actuellement v3.0.0).
@@ -218,15 +218,15 @@ La version affichée est celle indiquée dans l'en-tête du skill (actuellement 
 **Exemples par phase :**
 
 ```
-🏗️ skill:sdd-uc-system-design v3.0.0 · Architecture [█░░░░░░] étape 1/7 — Cadrage macro
-🏗️ skill:sdd-uc-system-design v3.0.0 · Architecture [███░░░░] étape 3/7 — Modèle de données
-🏗️ skill:sdd-uc-system-design v3.0.0 · Architecture [███████] étape 7/7 — Synthèse et arbitrages
-🏗️ skill:sdd-uc-system-design v3.0.0 · Architecture [████████] rédaction
-🏗️ skill:sdd-uc-system-design v3.0.0 · Déploiement [██░░░] étape 2/5 — Questions
-🏗️ skill:sdd-uc-system-design v3.0.0 · Sécurité [█░░] étape 1/3 — Modèle de menaces
-🏗️ skill:sdd-uc-system-design v3.0.0 · Sécurité [██░] étape 2/3 — Questions de cadrage
-🏗️ skill:sdd-uc-system-design v3.0.0 · Sécurité [███] étape 3/3 — Rédaction
-🏗️ skill:sdd-uc-system-design v3.0.0 · Conformité [█████] étape 5/5 — Rédaction
+🔬 skill:sdd-uc-system-design v3.0.0 · Architecture [█░░░░░░] étape 1/7 — Cadrage macro
+🔬 skill:sdd-uc-system-design v3.0.0 · Architecture [███░░░░] étape 3/7 — Modèle de données
+🔬 skill:sdd-uc-system-design v3.0.0 · Architecture [███████] étape 7/7 — Synthèse et arbitrages
+🔬 skill:sdd-uc-system-design v3.0.0 · Architecture [████████] rédaction
+🔬 skill:sdd-uc-system-design v3.0.0 · Déploiement [██░░░] étape 2/5 — Questions
+🔬 skill:sdd-uc-system-design v3.0.0 · Sécurité [█░░] étape 1/3 — Modèle de menaces
+🔬 skill:sdd-uc-system-design v3.0.0 · Sécurité [██░] étape 2/3 — Questions de cadrage
+🔬 skill:sdd-uc-system-design v3.0.0 · Sécurité [███] étape 3/3 — Rédaction
+🔬 skill:sdd-uc-system-design v3.0.0 · Conformité [█████] étape 5/5 — Rédaction
 ```
 
 Si plusieurs messages se succèdent au sein de la même étape (ex : questions
