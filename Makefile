@@ -34,6 +34,7 @@
 #   make test-qa-check            — Contrôles des sorties QA
 #   make test-brief               — Lance /sdd-brief sur le projet de test
 #   make test-brief-check         — Contrôles de la sortie du brief
+#   make test-tuto                — Affiche le tutoriel SDD (pas de contrôle)
 #   make test-setup               — Prépare l'environnement de test
 #   make clean-test               — Supprime les sorties de test
 # =============================================================================

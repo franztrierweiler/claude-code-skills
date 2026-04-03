@@ -224,7 +224,7 @@ obligatoire, sans exception.
 🖊️ skill:sdd-uc-spec-write v2.1.0 · [Étape] [barre] sous-étape N/T — [Nom]
 ```
 
-La version affichée est celle indiquée dans l'en-tête du skill (actuellement v2.0.0).
+La version affichée est celle indiquée dans l'en-tête du skill (actuellement v2.1.0).
 
 **Règles de la barre de progression :**
 
