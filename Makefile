@@ -50,7 +50,7 @@ TEST_LOG     := $(TEST_DIR)/log
         test test-init test-uc-spec test-uc-system-design test-review \
         test-check test-system-design test-system-design-check \
         test-plan test-plan-check test-dev-workflow test-dev-check \
-        test-brief test-brief-check \
+        test-brief test-brief-check test-tuto \
         test-setup clean-test
 
 .DEFAULT_GOAL := help
@@ -92,6 +92,7 @@ help:
 	@echo "    make test-dev-check             Contrôles des sorties du développement"
 	@echo "    make test-brief                 Lance /sdd-brief sur le projet de test"
 	@echo "    make test-brief-check           Contrôles de la sortie du brief"
+	@echo "    make test-tuto                  Affiche le tutoriel SDD (pas de contrôle)"
 	@echo "    make clean-test                 Supprime les sorties de test"
 	@echo ""
 	@echo "  Configuration :"
@@ -387,6 +388,10 @@ test-dev-check:
 # Lance /sdd-brief sur le projet de test (après tout le reste)
 test-brief: test-setup
 	$(TEST_DIR)/run-tests.sh brief
+
+# Affiche le tutoriel SDD (exécution seule, pas de contrôle déterministe)
+test-tuto: test-setup
+	$(TEST_DIR)/run-tests.sh tuto
 
 # Contrôles de la sortie du brief
 test-brief-check:

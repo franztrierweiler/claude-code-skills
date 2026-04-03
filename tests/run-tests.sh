@@ -164,6 +164,19 @@ run_brief() {
         "$TEST_LOG/brief.log"
 }
 
+run_tuto() {
+    echo ""
+    echo "=== Test sdd-tuto — Tutoriel SDD ==="
+    echo ""
+
+    mkdir -p "$TEST_LOG"
+    cd "$TEST_OUT"
+
+    run_claude \
+        "Lis le fichier $PROMPTS/prompt-tuto.md et exécute les instructions qu'il contient." \
+        "$TEST_LOG/tuto.log"
+}
+
 run_plan() {
     echo ""
     echo "=== Test planification — Découpe en lots MaintiX ==="
@@ -271,6 +284,9 @@ case "$ACTION" in
     brief)
         run_brief
         ;;
+    tuto)
+        run_tuto
+        ;;
     review)
         run_review
         ;;
@@ -286,7 +302,7 @@ case "$ACTION" in
         echo "Tous les tests ont été exécutés."
         ;;
     *)
-        echo "Usage: $0 [init|uc-spec|uc-system-design|plan|dev-workflow|brief|review|all]"
+        echo "Usage: $0 [init|uc-spec|uc-system-design|plan|dev-workflow|brief|tuto|review|all]"
         exit 1
         ;;
 esac
