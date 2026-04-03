@@ -27,10 +27,47 @@ Avant toute autre sortie, afficher :
 
 ## Détection du mode
 
-- **Si l'environnement est claude.ai** (présence d'artefacts) → Produire
-  un artefact HTML interactif (voir § Mode artefact).
-- **Sinon** (Claude Code CLI) → Afficher le tutoriel pas à pas dans le
-  terminal (voir § Mode terminal).
+Trois modes possibles, testés dans cet ordre :
+
+1. **claude.ai** (présence d'artefacts) → Servir le fichier
+   `references/tuto.html` comme artefact HTML (voir § Mode artefact).
+
+2. **Claude Code CLI avec navigateur disponible** → Tenter d'ouvrir
+   le fichier HTML dans un navigateur (voir § Mode navigateur).
+
+3. **Claude Code CLI sans navigateur** → Afficher le tutoriel en texte
+   dans le terminal (voir § Mode terminal).
+
+## Mode navigateur
+
+Si l'environnement est Claude Code CLI, tenter d'ouvrir le fichier
+`references/tuto.html` dans un navigateur. Le fichier HTML se trouve
+dans le répertoire du skill.
+
+**Procédure :**
+
+1. Localiser le fichier HTML du skill :
+   ```bash
+   TUTO_HTML=$(find .claude/skills/sdd-tuto -name "tuto.html" 2>/dev/null | head -1)
+   ```
+
+2. Si le fichier est trouvé, tenter de l'ouvrir :
+   - Linux : `xdg-open "$TUTO_HTML"`
+   - macOS : `open "$TUTO_HTML"`
+   - WSL : `wslview "$TUTO_HTML"` ou `explorer.exe "$TUTO_HTML"`
+
+3. Si l'ouverture réussit :
+   ```
+   🎓 Tutoriel SDD ouvert dans le navigateur.
+   Fichier : $TUTO_HTML
+   ```
+   Ne pas afficher le mode terminal.
+
+4. Si l'ouverture échoue (pas de navigateur, pas de display, SSH) :
+   ```
+   ⚠️ Impossible d'ouvrir le navigateur. Affichage en mode texte.
+   ```
+   Basculer vers le mode terminal.
 
 ## Mode terminal
 
