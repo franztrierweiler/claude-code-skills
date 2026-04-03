@@ -27,6 +27,7 @@
 #   make test-system-design       — Contrôles structurels du skill sdd-uc-system-design
 #   make test-system-design-check — Contrôles des documents produits
 #   make test-plan                — Planifie le développement en lots
+#   make test-plan-check          — Contrôles des fichiers de plan
 #   make test-dev-workflow        — Développe le premier lot via sdd-dev-workflow
 #   make test-dev-check           — Contrôles des sorties du développement
 #   make test-brief               — Lance /sdd-brief sur le projet de test
@@ -48,7 +49,7 @@ TEST_LOG     := $(TEST_DIR)/log
         zip zip-all zip-check clean-dist \
         test test-init test-uc-spec test-uc-system-design test-review \
         test-check test-system-design test-system-design-check \
-        test-plan test-dev-workflow test-dev-check \
+        test-plan test-plan-check test-dev-workflow test-dev-check \
         test-brief test-brief-check \
         test-setup clean-test
 
@@ -86,6 +87,7 @@ help:
 	@echo "    make test-system-design         Contrôles structurels du skill"
 	@echo "    make test-system-design-check   Contrôles des documents produits"
 	@echo "    make test-plan                  Planifie le développement en lots"
+	@echo "    make test-plan-check            Contrôles des fichiers de plan"
 	@echo "    make test-dev-workflow          Développe le premier lot"
 	@echo "    make test-dev-check             Contrôles des sorties du développement"
 	@echo "    make test-brief                 Lance /sdd-brief sur le projet de test"
@@ -338,6 +340,7 @@ test: test-system-design test-setup
 	$(TEST_DIR)/run-tests.sh all
 	$(MAKE) test-check
 	$(MAKE) test-system-design-check
+	$(MAKE) test-plan-check
 	$(MAKE) test-dev-check
 	$(MAKE) test-brief-check
 
@@ -368,6 +371,10 @@ test-system-design-check:
 # Planifie le développement en lots
 test-plan: test-setup
 	$(TEST_DIR)/run-tests.sh plan
+
+# Contrôles des fichiers de plan (format, traçabilité, couverture UC)
+test-plan-check:
+	@$(TEST_DIR)/check_plan_output.sh $(TEST_OUT)
 
 # Développe le premier lot via sdd-dev-workflow
 test-dev-workflow: test-setup
