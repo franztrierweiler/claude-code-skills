@@ -1,5 +1,7 @@
 # claude-code-skills
 
+<img width="56" height="62" alt="image" src="https://github.com/user-attachments/assets/dbaf5a60-487b-4578-bd7c-acd013a3fb9e" />
+
 Skills et règles Claude Code pour implémenter la méthodologie **Spec Driven Development (SDD)** dans une organisation.
 
 Les skills sont conformes au standard [agentskills.io](https://agentskills.io/home).
