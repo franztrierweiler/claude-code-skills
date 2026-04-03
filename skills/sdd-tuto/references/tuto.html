@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDD — Spec Driven Development</title>
+    <style>
+        :root {
+            --bg: #1a1b26;
+            --bg-card: #24283b;
+            --bg-hover: #2f3350;
+            --text: #c0caf5;
+            --text-dim: #565f89;
+            --text-bright: #ffffff;
+            --spec: #4FC3F7;
+            --design: #FFB74D;
+            --plan: #81C784;
+            --dev: #E57373;
+            --qa: #BA68C8;
+            --brief: #FFD54F;
+            --tuto: #90CAF9;
+            --border: #3b4261;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 3rem 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        header h1 {
+            font-size: 2.2rem;
+            color: var(--text-bright);
+            margin-bottom: 0.5rem;
+        }
+        header p {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Navigation pipeline */
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.25rem;
+            padding: 1.5rem 1rem;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            background: var(--bg);
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+        nav button {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            color: var(--text-dim);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        nav button:hover {
+            background: var(--bg-hover);
+            color: var(--text);
+        }
+        nav button.active {
+            color: var(--text-bright);
+            border-color: var(--active-color, var(--text));
+            background: var(--bg-hover);
+            box-shadow: 0 0 12px color-mix(in srgb, var(--active-color, var(--text)) 30%, transparent);
+        }
+        nav .arrow {
+            color: var(--text-dim);
+            font-size: 1.2rem;
+            align-self: center;
+            padding: 0 0.15rem;
+        }
+
+        /* Sections */
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem 4rem;
+        }
+        section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        section h2 {
+            font-size: 1.6rem;
+            color: var(--text-bright);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--section-color, var(--border));
+        }
+        section h3 {
+            font-size: 1.2rem;
+            color: var(--text-bright);
+            margin: 1.5rem 0 0.5rem;
+        }
+        section p, section li {
+            margin-bottom: 0.75rem;
+        }
+        section ul {
+            padding-left: 1.5rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin: 1rem 0;
+        }
+        .card.highlight {
+            border-left: 4px solid var(--section-color, var(--text));
+        }
+
+        /* Pipeline visual */
+        .pipeline {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin: 1.5rem 0;
+        }
+        .pipeline-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .pipeline-step:hover {
+            background: var(--bg-hover);
+        }
+        .pipeline-step .icon {
+            font-size: 1.5rem;
+            width: 2.5rem;
+            text-align: center;
+        }
+        .pipeline-step .label {
+            font-weight: 600;
+            color: var(--text-bright);
+        }
+        .pipeline-step .desc {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+        .pipeline-connector {
+            width: 2px;
+            height: 1.25rem;
+            background: var(--border);
+            margin-left: 2.2rem;
+        }
+
+        /* Code / identifiers */
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            background: var(--bg);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: var(--spec);
+        }
+
+        /* Collapsible */
+        details {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        details summary {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-bright);
+        }
+        details summary:hover {
+            background: var(--bg-hover);
+            border-radius: 8px;
+        }
+        details[open] summary {
+            border-bottom: 1px solid var(--border);
+        }
+        details .content {
+            padding: 1rem;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        th, td {
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            color: var(--text-bright);
+            font-weight: 600;
+        }
+
+        /* Quote */
+        blockquote {
+            border-left: 3px solid var(--section-color, var(--text-dim));
+            padding: 0.75rem 1rem;
+            margin: 1rem 0;
+            background: var(--bg-card);
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            color: var(--text-dim);
+        }
+
+        /* Footer nav */
+        .footer-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+        .footer-nav button {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+        .footer-nav button:hover {
+            background: var(--bg-hover);
+            color: var(--text-bright);
+        }
+        .footer-nav button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.6rem; }
+            nav button { padding: 0.4rem 0.6rem; font-size: 0.8rem; }
+            nav .arrow { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🎓 Spec Driven Development</h1>
+    <p>Une méthodologie où la spécification est le point de vérité unique du projet. Le code en découle et doit être traçable jusqu'à la spec.</p>
+</header>
+
+<nav id="nav"></nav>
+
+<main id="main">
+
+    <!-- SECTION 0 : Pourquoi -->
+    <section id="s0" style="--section-color: var(--tuto)">
+        <h2>Pourquoi SDD ?</h2>
+
+        <div class="card highlight">
+            <p><strong>Le problème :</strong> un cahier des charges classique est ambigu, incomplet, interprétable. Un agent IA (ou un développeur) ne peut pas implémenter correctement sans poser des dizaines de questions.</p>
+        </div>
+
+        <p>SDD produit un document <strong>exécutable</strong> :</p>
+        <ul>
+            <li>Suffisamment précis pour qu'un agent IA implémente <strong>sans ambiguïté</strong></li>
+            <li>Suffisamment clair pour qu'un décideur non technique comprenne ce qui sera <strong>livré</strong></li>
+        </ul>
+
+        <blockquote>
+            "Un agent IA qui lit uniquement ce document peut-il implémenter correctement ce comportement, sans deviner ?" — Si non, la spec est incomplète.
+        </blockquote>
+
+        <h3>SDD vs approches classiques</h3>
+        <table>
+            <tr><th>Approche</th><th>Problème</th><th>SDD</th></tr>
+            <tr><td>Cahier des charges</td><td>Ambigu, interprétable</td><td>Cas d'utilisation précis avec critères vérifiables</td></tr>
+            <tr><td>User Stories</td><td>Trop haut niveau, pas de flux détaillé</td><td>Étapes acteur/système, exceptions, règles de gestion</td></tr>
+            <tr><td>Pas de spec</td><td>Le code EST la spec (indéchiffrable)</td><td>La spec est la source, le code en découle</td></tr>
+        </table>
+    </section>
+
+    <!-- SECTION 1 : Spécification -->
+    <section id="s1" style="--section-color: var(--spec)">
+        <h2>🖊️ Étape 1 — Spécification</h2>
+
+        <div class="card">
+            <p><strong>Entrée :</strong> Notes informelles, cahier des charges, interviews</p>
+            <p><strong>Sortie :</strong> <code>docs/SPEC.md</code></p>
+            <p><strong>Skill :</strong> <code>sdd-uc-spec-write</code> (automatique)</p>
+        </div>
+
+        <p>La spécification est structurée par <strong>cas d'utilisation (UC)</strong>. Chaque UC décrit une interaction complète entre un acteur et le système.</p>
+
+        <h3>Concepts clés</h3>
+        <table>
+            <tr><th>Concept</th><th>Rôle</th><th>Identifiant</th></tr>
+            <tr><td>Cas d'utilisation</td><td>Scénario acteur → système</td><td><code>UC-001</code></td></tr>
+            <tr><td>Étapes Na/Nb</td><td>Alternance acteur (a) / système (b)</td><td><code>1a, 1b, 2a...</code></td></tr>
+            <tr><td>Exception</td><td>Ce qui peut mal tourner</td><td>Rattachée à une étape</td></tr>
+            <tr><td>Règle de gestion</td><td>Contrainte métier</td><td><code>RG-0001</code></td></tr>
+            <tr><td>Critère d'acceptation</td><td>Soit/Quand/Alors — vérifiable</td><td><code>CA-UC-001-01</code></td></tr>
+            <tr><td>Package</td><td>Regroupement de UC</td><td>Niveau 2 ≈ Epic, Niveau 1 ≈ Feature</td></tr>
+        </table>
+
+        <details>
+            <summary>Exemple : UC-001 — Créer un compte utilisateur</summary>
+            <div class="content">
+                <p><strong>Acteur :</strong> Visiteur</p>
+                <p><strong>État initial :</strong> Le visiteur n'a pas de compte</p>
+                <p><strong>État final :</strong> Le compte est créé, un email de confirmation est envoyé</p>
+
+                <h3>Étapes (cas nominal)</h3>
+                <table>
+                    <tr><th>#</th><th>Direction</th><th>Description</th></tr>
+                    <tr><td>1a</td><td>→ Acteur</td><td>Le visiteur saisit email, mot de passe, nom</td></tr>
+                    <tr><td>1b</td><td>← Système</td><td>Le système valide les données (RG-0001, RG-0002)</td></tr>
+                    <tr><td>2b</td><td>← Système</td><td>Le système crée le compte et envoie un email de confirmation</td></tr>
+                </table>
+
+                <h3>Exceptions</h3>
+                <table>
+                    <tr><th>Étape</th><th>Condition</th><th>Réaction</th></tr>
+                    <tr><td>1b</td><td>Email déjà utilisé</td><td>Message "Un compte existe déjà avec cet email"</td></tr>
+                </table>
+
+                <h3>Critères d'acceptation</h3>
+                <ul>
+                    <li><code>CA-UC-001-01</code> : <strong>Soit</strong> un email non enregistré, <strong>Quand</strong> le visiteur soumet le formulaire, <strong>Alors</strong> le compte est créé et un email est envoyé.</li>
+                    <li><code>CA-UC-001-02</code> : <strong>Soit</strong> un email déjà enregistré, <strong>Quand</strong> le visiteur soumet le formulaire, <strong>Alors</strong> un message d'erreur s'affiche.</li>
+                </ul>
+            </div>
+        </details>
+    </section>
+
+    <!-- SECTION 2 : Conception -->
+    <section id="s2" style="--section-color: var(--design)">
+        <h2>📐 Étape 2 — Conception technique</h2>
+
+        <div class="card">
+            <p><strong>Entrée :</strong> <code>docs/SPEC.md</code></p>
+            <p><strong>Sortie :</strong> 4 documents dans <code>docs/</code></p>
+            <p><strong>Skill :</strong> <code>sdd-uc-system-design</code> (automatique)</p>
+        </div>
+
+        <table>
+            <tr><th>Document</th><th>Question</th></tr>
+            <tr><td><code>ARCHITECTURE.md</code></td><td><strong>Comment</strong> le système est-il construit ?</td></tr>
+            <tr><td><code>DEPLOYMENT.md</code></td><td><strong>Comment</strong> le système est-il déployé et opéré ?</td></tr>
+            <tr><td><code>SECURITY.md</code></td><td><strong>Comment</strong> le système est-il sécurisé ?</td></tr>
+            <tr><td><code>COMPLIANCE_MATRIX.md</code></td><td><strong>Comment</strong> le système est-il conforme ? (si applicable)</td></tr>
+        </table>
+
+        <h3>Principe fondamental : traçabilité</h3>
+        <p>Chaque décision d'architecture est rattachée à un <code>UC-xxx</code>, une <code>RG-xxxx</code>, une <code>ENF-xxx</code> ou un <code>CA-UC-xxx-yy</code> du SPEC.md. Pas de décision sans justification.</p>
+
+        <h3>Types d'architecture supportés</h3>
+        <ul>
+            <li><strong>SaaS</strong> — multi-tenant, scalabilité, CDN</li>
+            <li><strong>Client lourd / Desktop</strong> — distribution, mise à jour, mode hors-ligne</li>
+            <li><strong>Driver / Firmware</strong> — certification, installation silencieuse</li>
+            <li><strong>Embarqué</strong> — mobile, TPE (avec HAL), terminal professionnel, dev board</li>
+        </ul>
+    </section>
+
+    <!-- SECTION 3 : Planification -->
+    <section id="s3" style="--section-color: var(--plan)">
+        <h2>🗺️ Étape 3 — Planification</h2>
+
+        <div class="card">
+            <p><strong>Entrée :</strong> <code>docs/SPEC.md</code> + <code>docs/ARCHITECTURE.md</code></p>
+            <p><strong>Sortie :</strong> <code>plan/lot-NN-nom.md</code></p>
+            <p><strong>Skill :</strong> <code>/sdd-plan</code> (invocation manuelle)</p>
+        </div>
+
+        <p>Le développement est découpé en <strong>lots</strong>. Chaque lot :</p>
+        <ul>
+            <li>Regroupe des UC liés (même package ou relations include/extend)</li>
+            <li>Est ordonné par <strong>dépendances</strong> (fondations d'abord)</li>
+            <li>Est <strong>testable de bout en bout</strong> une fois implémenté</li>
+            <li>A ses <strong>critères d'acceptation</strong> issus du SPEC.md</li>
+        </ul>
+
+        <h3>Principes de découpage</h3>
+        <table>
+            <tr><th>#</th><th>Principe</th><th>Exemple</th></tr>
+            <tr><td>1</td><td>Dépendances d'abord</td><td>Auth avant gestion des droits</td></tr>
+            <tr><td>2</td><td>Cohérence fonctionnelle</td><td>UC liés dans le même lot</td></tr>
+            <tr><td>3</td><td>Taille raisonnable</td><td>2 à 5 UC par lot, 3 à 8 lots</td></tr>
+            <tr><td>4</td><td>Priorité</td><td>UC Critiques en premier</td></tr>
+            <tr><td>5</td><td>Testabilité</td><td>Chaque lot compile et se teste seul</td></tr>
+        </table>
+    </section>
+
+    <!-- SECTION 4 : Développement -->
+    <section id="s4" style="--section-color: var(--dev)">
+        <h2>🏗️ Étape 4 — Développement</h2>
+
+        <div class="card">
+            <p><strong>Entrée :</strong> <code>plan/lot-NN-nom.md</code> + docs de conception</p>
+            <p><strong>Sortie :</strong> <code>src/</code>, <code>tests/</code>, plan mis à jour</p>
+            <p><strong>Skill :</strong> <code>/sdd-dev-workflow &lt;lot&gt;</code> (invocation manuelle)</p>
+        </div>
+
+        <h3>La boucle</h3>
+        <div class="pipeline">
+            <div class="pipeline-step"><span class="icon">✏️</span><div><span class="label">Tests d'abord</span><div class="desc">Traduire les CA en tests unitaires</div></div></div>
+            <div class="pipeline-connector"></div>
+            <div class="pipeline-step"><span class="icon">⚙️</span><div><span class="label">Implémenter</span><div class="desc">Coder selon ARCHITECTURE.md et SECURITY.md</div></div></div>
+            <div class="pipeline-connector"></div>
+            <div class="pipeline-step"><span class="icon">✅</span><div><span class="label">Vérifier les AC</span><div class="desc">Chaque critère est satisfait ou non</div></div></div>
+            <div class="pipeline-connector"></div>
+            <div class="pipeline-step"><span class="icon">🔄</span><div><span class="label">Itérer si nécessaire</span><div class="desc">Boucle numérotée jusqu'à 100% des AC</div></div></div>
+        </div>
+
+        <h3>Reprise après QA 🔧</h3>
+        <p>Si la QA échoue, le dev-workflow <strong>détecte automatiquement</strong> le rapport QA et bascule en mode reprise : il ne corrige que les scénarios en échec et les points de revue de code, sans refaire tout le lot.</p>
+    </section>
+
+    <!-- SECTION 5 : QA -->
+    <section id="s5" style="--section-color: var(--qa)">
+        <h2>🧪 Étape 5 — QA</h2>
+
+        <div class="card">
+            <p><strong>Entrée :</strong> Lot implémenté (AC à 100%)</p>
+            <p><strong>Sortie :</strong> <code>qa/</code> (plan de test, revue de code, rapport)</p>
+            <p><strong>Skill :</strong> <code>/sdd-qa-workflow &lt;lot&gt;</code> (invocation manuelle)</p>
+        </div>
+
+        <h3>Processus</h3>
+        <div class="pipeline">
+            <div class="pipeline-step"><span class="icon">📋</span><div><span class="label">Plan de test</span><div class="desc">Scénarios nominaux, limites, erreurs — soumis au pilote</div></div></div>
+            <div class="pipeline-connector"></div>
+            <div class="pipeline-step"><span class="icon">▶️</span><div><span class="label">Exécution</span><div class="desc">Tests automatisés + manuels si nécessaire</div></div></div>
+            <div class="pipeline-connector"></div>
+            <div class="pipeline-step"><span class="icon">🔍</span><div><span class="label">Revue de code</span><div class="desc">Lisibilité, sécurité, performance, conventions</div></div></div>
+            <div class="pipeline-connector"></div>
+            <div class="pipeline-step"><span class="icon">📊</span><div><span class="label">Rapport</span><div class="desc">Verdict : ✅ VALIDÉ ou ❌ À CORRIGER</div></div></div>
+        </div>
+
+        <p>Si le verdict est <strong>❌ À CORRIGER</strong>, retour au développement via <code>/sdd-dev-workflow</code> en mode reprise (🔧).</p>
+    </section>
+
+    <!-- SECTION 6 : Synthèse -->
+    <section id="s6" style="--section-color: var(--brief)">
+        <h2>Synthèse</h2>
+
+        <h3>Le pipeline complet</h3>
+        <div class="pipeline" id="final-pipeline"></div>
+
+        <div class="card highlight" style="margin-top: 2rem; text-align: center;">
+            <p style="font-size: 1.1rem; margin-bottom: 0.5rem;"><strong>SDD = Spécifier → Concevoir → Planifier → Construire → Vérifier → Livrer</strong></p>
+            <p>Chaque étape produit un livrable traçable.</p>
+            <p>Chaque livrable est exploitable par un agent IA.</p>
+            <p style="margin-bottom: 0;">Le code est la conséquence de la spec, pas l'inverse.</p>
+        </div>
+
+        <h3 style="margin-top: 2rem;">Outils</h3>
+        <table>
+            <tr><th>Icône</th><th>Skill</th><th>Invocation</th><th>Phase</th></tr>
+            <tr><td>🖊️</td><td>sdd-uc-spec-write</td><td>Automatique</td><td>Spécification</td></tr>
+            <tr><td>📐</td><td>sdd-uc-system-design</td><td>Automatique</td><td>Conception</td></tr>
+            <tr><td>🗺️</td><td>sdd-plan</td><td><code>/sdd-plan</code></td><td>Planification</td></tr>
+            <tr><td>🏗️</td><td>sdd-dev-workflow</td><td><code>/sdd-dev-workflow &lt;lot&gt;</code></td><td>Développement</td></tr>
+            <tr><td>🧪</td><td>sdd-qa-workflow</td><td><code>/sdd-qa-workflow &lt;lot&gt;</code></td><td>QA</td></tr>
+            <tr><td>💡</td><td>sdd-brief</td><td><code>/sdd-brief</code></td><td>Tableau de bord</td></tr>
+        </table>
+
+        <div class="card" style="margin-top: 2rem; text-align: center;">
+            <p>Pour commencer : <code>/sdd-brief</code></p>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    const steps = [
+        { id: 's0', icon: '🎓', label: 'Pourquoi', color: 'var(--tuto)' },
+        { id: 's1', icon: '🖊️', label: 'Spec', color: 'var(--spec)' },
+        { id: 's2', icon: '📐', label: 'Conception', color: 'var(--design)' },
+        { id: 's3', icon: '🗺️', label: 'Plan', color: 'var(--plan)' },
+        { id: 's4', icon: '🏗️', label: 'Dev', color: 'var(--dev)' },
+        { id: 's5', icon: '🧪', label: 'QA', color: 'var(--qa)' },
+        { id: 's6', icon: '✅', label: 'Synthèse', color: 'var(--brief)' },
+    ];
+
+    let current = 0;
+
+    // Build nav
+    const nav = document.getElementById('nav');
+    steps.forEach((s, i) => {
+        if (i > 0) {
+            const arrow = document.createElement('span');
+            arrow.className = 'arrow';
+            arrow.textContent = '›';
+            nav.appendChild(arrow);
+        }
+        const btn = document.createElement('button');
+        btn.dataset.index = i;
+        btn.style.setProperty('--active-color', s.color);
+        btn.innerHTML = `${s.icon} ${s.label}`;
+        btn.onclick = () => goTo(i);
+        nav.appendChild(btn);
+    });
+
+    // Build final pipeline
+    const pipelineData = [
+        { icon: '🖊️', label: 'Spécification', desc: 'SPEC.md — cas d\'utilisation', color: 'var(--spec)' },
+        { icon: '📐', label: 'Conception', desc: 'Architecture, Déploiement, Sécurité, Conformité', color: 'var(--design)' },
+        { icon: '🗺️', label: 'Planification', desc: 'Découpe en lots', color: 'var(--plan)' },
+        { icon: '🏗️', label: 'Développement', desc: 'Code + Tests, lot par lot', color: 'var(--dev)' },
+        { icon: '🧪', label: 'QA', desc: 'Plan de test, revue, rapport', color: 'var(--qa)' },
+        { icon: '✅', label: 'Livraison', desc: 'Déploiement', color: 'var(--brief)' },
+    ];
+    const fp = document.getElementById('final-pipeline');
+    pipelineData.forEach((p, i) => {
+        const step = document.createElement('div');
+        step.className = 'pipeline-step';
+        step.innerHTML = `<span class="icon">${p.icon}</span><div><span class="label" style="color:${p.color}">${p.label}</span><div class="desc">${p.desc}</div></div>`;
+        fp.appendChild(step);
+        if (i < pipelineData.length - 1) {
+            const conn = document.createElement('div');
+            conn.className = 'pipeline-connector';
+            fp.appendChild(conn);
+        }
+    });
+
+    // Footer nav for each section
+    document.querySelectorAll('section').forEach((sec, i) => {
+        const footer = document.createElement('div');
+        footer.className = 'footer-nav';
+
+        const prev = document.createElement('button');
+        prev.textContent = '← Précédent';
+        prev.disabled = (i === 0);
+        prev.onclick = () => goTo(i - 1);
+
+        const next = document.createElement('button');
+        next.textContent = 'Suivant →';
+        next.disabled = (i === steps.length - 1);
+        next.onclick = () => goTo(i + 1);
+
+        footer.appendChild(prev);
+        footer.appendChild(next);
+        sec.appendChild(footer);
+    });
+
+    function goTo(index) {
+        current = index;
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.getElementById(steps[index].id).classList.add('active');
+        document.querySelectorAll('nav button').forEach((btn, i) => {
+            btn.classList.toggle('active', i === index);
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Init
+    goTo(0);
+</script>
+</body>
+</html>

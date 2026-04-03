@@ -165,48 +165,15 @@ Expliquer :
 
 ## Mode artefact
 
-Si l'environnement supporte les artefacts (claude.ai), produire un
-**artefact HTML** autonome (single-file, pas de dépendances externes)
-avec :
+Si l'environnement supporte les artefacts (claude.ai), servir le fichier
+`references/tuto.html` comme artefact HTML. Ne pas le régénérer — utiliser
+le fichier tel quel.
 
-### Structure de l'artefact
+Le fichier HTML est autonome (CSS, JS, SVG inline, pas de dépendance
+externe) et contient :
 
-```html
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>SDD — Spec Driven Development</title>
-    <style>/* styles inline */</style>
-</head>
-<body>
-    <!-- Contenu du tutoriel -->
-    <script>/* animations */</script>
-</body>
-</html>
-```
-
-### Contenu et design
-
-- **Navigation par étapes** : 7 sections (les mêmes que le mode terminal),
-  navigation par boutons Précédent/Suivant ou par clic sur l'étape.
-- **Pipeline animé** : le schéma du pipeline s'affiche progressivement,
-  chaque étape s'illumine quand on y arrive.
-- **Exemples interactifs** : l'exemple de UC peut être
-  déplié/replié pour voir la structure complète.
-- **Style** : fond sombre, texte clair, accents de couleur par étape
-  (une couleur par icône). Typographie monospace pour les identifiants
-  (UC-xxx, RG-xxxx, CA-UC-xxx-yy).
-- **Responsive** : lisible sur mobile et desktop.
-- **Pas de dépendance externe** : tout en inline (CSS, JS, SVG).
-
-### Palette de couleurs par étape
-
-| Étape | Icône | Couleur |
-|-------|-------|---------|
-| Spécification | 🖊️ | `#4FC3F7` (bleu clair) |
-| Conception | 📐 | `#FFB74D` (orange) |
-| Planification | 🗺️ | `#81C784` (vert) |
-| Développement | 🏗️ | `#E57373` (rouge clair) |
-| QA | 🧪 | `#BA68C8` (violet) |
-| Brief | 💡 | `#FFD54F` (jaune) |
+- Navigation par étapes (7 sections) avec boutons Précédent/Suivant
+- Pipeline animé avec couleurs par étape
+- Exemples interactifs dépliables (UC, plan, etc.)
+- Design responsive fond sombre
+- Palette de couleurs : 🖊️ bleu, 📐 orange, 🗺️ vert, 🏗️ rouge, 🧪 violet, 💡 jaune
