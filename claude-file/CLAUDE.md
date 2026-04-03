@@ -8,10 +8,10 @@ Ce fichier fournit des instructions à Claude Code (claude.ai/code) pour travail
 docs/SPEC.md + fichiers annexes
        |
        v
-[1. Spécification]──correction──> sdd-uc-spec-write
+[1. Spécification]──correction──> 🖊️ sdd-uc-spec-write
        |
        v
-[2. Conception technique]───────> sdd-uc-system-design
+[2. Conception technique]───────> 📐 sdd-uc-system-design
        |                            ├─> docs/ARCHITECTURE.md
        |                            ├─> docs/DEPLOYMENT.md
        |                            ├─> docs/SECURITY.md
@@ -21,11 +21,11 @@ docs/SPEC.md + fichiers annexes
 [3. Planification]────────────> plan/<lot>.md
        |
        v
-[4. Développement par lot]────> /sdd-dev-workflow <lot>
+[4. Développement par lot]────> 🏗️ /sdd-dev-workflow <lot>
        |                          (boucle implémentation / AC / tests)
        |
        v
-[5. QA par lot]───────────────> /sdd-qa-workflow <lot>
+[5. QA par lot]───────────────> 🧪 /sdd-qa-workflow <lot>
        |                          (plan de test, exécution, revue de code)
        |
        v
