@@ -120,7 +120,7 @@ Lire les fichiers suivants :
 Afficher un résumé :
 
 ```
-🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS · Phase: chargement
+🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS [█░░░░] Phase: chargement
 
 Lot : $ARGUMENTS
 UC couverts : UC-001, UC-002, ...
@@ -134,7 +134,7 @@ Tests unitaires existants : Q
 
 Afficher :
 ```
-🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS · Phase: plan de test
+🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS [██░░░] Phase: plan de test
 ```
 
 ### Sources pour les scénarios
@@ -194,7 +194,7 @@ scénario QA dans son nom : `test_tXX_YY_description`.
 
 Afficher :
 ```
-🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS · Phase: exécution
+🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS [███░░] Phase: exécution
 ```
 
 Après validation du plan par le pilote :
@@ -213,7 +213,7 @@ Après validation du plan par le pilote :
 4. **Exécuter les tests manuels** (si applicable) et documenter les résultats.
 5. **Synthèse d'exécution :**
    ```
-   Exécution terminée — $ARGUMENTS
+   🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS [███░░] Exécution terminée
    Scénarios : X/Y passés
    🔴 Bloquants : A/B passés
    🟠 Majeurs : C/D passés
@@ -224,7 +224,7 @@ Après validation du plan par le pilote :
 
 Afficher :
 ```
-🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS · Phase: revue de code
+🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS [████░] Phase: revue de code
 ```
 
 Effectuer une revue de code de tout le lot en vérifiant **5 axes** :
@@ -298,7 +298,7 @@ Produire le rapport de revue dans `qa/code-review/$ARGUMENTS-review.md` :
 
 Afficher :
 ```
-🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS · Phase: rapport
+🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS [█████] Phase: rapport
 ```
 
 ### Calcul du verdict
@@ -358,7 +358,7 @@ Produire le rapport final dans `qa/qa-results/rapport-$ARGUMENTS.md` :
 
 **Si le verdict est ✅ VALIDÉ :**
 ```
-✅ QA $ARGUMENTS — validé.
+🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS [█████] ✅ VALIDÉ
 
 Scénarios : X/Y passés
 Revue de code : aucun bloquant
@@ -368,7 +368,7 @@ Attendre l'instruction du pilote pour le commit.
 
 **Si le verdict est ❌ À CORRIGER :**
 ```
-❌ QA $ARGUMENTS — à corriger.
+🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS [█████] ❌ À CORRIGER
 
 Bloquants : N scénario(s) en échec + M constat(s) de revue
 Le rapport détaillé est dans qa/qa-results/rapport-$ARGUMENTS.md

@@ -81,7 +81,7 @@ ces contraintes :
 Présenter le découpage sous cette forme :
 
 ```
-📦 Proposition de découpage — N lots
+🗺️ sdd-plan v1.0.0 [██░░] Proposition de découpage — N lots
 
 Lot 1 : [Nom] (priorité: Critique)
   UC : UC-001, UC-002, UC-003
@@ -166,7 +166,7 @@ Après validation par le pilote, produire un fichier par lot dans `plan/` :
 Après production de tous les fichiers, afficher :
 
 ```
-📦 Planification terminée — N lots produits
+🗺️ sdd-plan v1.0.0 [████] Planification terminée — N lots produits
 
 | Lot | Fichier | UC | Dépendances | Priorité |
 |-----|---------|-----|------------|----------|

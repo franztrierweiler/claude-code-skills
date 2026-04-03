@@ -58,7 +58,7 @@ Chercher le fichier `qa/qa-results/rapport-$ARGUMENTS.md`.
 
 Afficher :
 ```
-🔧 sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS · Mode: REPRISE QA
+🔧 sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS [░░░░░] — REPRISE QA
 
 Rapport QA : N scénarios en échec, M points de revue de code à corriger.
 
@@ -78,7 +78,7 @@ Je cible ces corrections uniquement.
 
 Afficher :
 ```
-🏗️ sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS · Mode: développement initial
+🏗️ sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS [░░░░░] — Développement initial
 ```
 
 ## 3. Chargement du contexte
@@ -111,10 +111,11 @@ Corrections ciblées : P scénarios + Q points de revue
 
 ### Mode développement initial
 
-Pour chaque fonctionnalité du lot, numéroter les itérations :
+Pour chaque fonctionnalité du lot, afficher la progression et numéroter
+les itérations :
 
 ```
-── Fonctionnalité 1/M · Itération 1 ──
+🏗️ sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS [█░░░░] Fonctionnalité 1/M · Itération 1
 ```
 
 1. **Écrire les tests unitaires d'abord** — Traduire les AC en tests.
@@ -130,13 +131,13 @@ Pour chaque fonctionnalité du lot, numéroter les itérations :
    - ❌ AC non satisfait (raison + action corrective)
 5. **Si des AC ne sont pas satisfaits**, incrémenter le compteur et itérer :
    ```
-   ── Fonctionnalité 1/M · Itération 2 ──
+   🏗️ sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS [█░░░░] Fonctionnalité 1/M · Itération 2
    AC non satisfaits : CA-UC-001-02 (raison), CA-UC-001-05 (raison)
    ```
    Reprendre à l'étape 2 avec les corrections ciblées.
 6. **Signaler la fin de la fonctionnalité :**
    ```
-   ✅ Fonctionnalité 1/M terminée — AC : X/Y satisfaits — 2 itérations
+   🏗️ sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS [█░░░░] ✅ Fonctionnalité 1/M — X/Y AC — 2 itérations
    ```
 
 ### Mode reprise QA
@@ -151,7 +152,7 @@ Pour chaque correction identifiée :
    de régression.
 5. **Signaler la correction :**
    ```
-   Correction N/M — [T01-03] corrigé — test ajouté/modifié
+   🔧 sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS [██░░░] Correction N/M — [T01-03] corrigé
    ```
 
 Pour les points de revue de code : appliquer les corrections et signaler.
@@ -172,7 +173,7 @@ Quand toutes les fonctionnalités (ou corrections) sont implémentées :
 
 Afficher :
 ```
-Vérification globale — $ARGUMENTS
+🏗️ sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS [████░] Vérification globale
 Tests : X/Y passent
 AC : M/M satisfaits (ou N non satisfaits)
 ```
@@ -205,13 +206,13 @@ Format du rapport dans le plan :
 
 **Si tous les AC sont satisfaits :**
 ```
-✅ Lot $ARGUMENTS — tous les AC sont satisfaits.
-Prochaine étape : /sdd-qa-workflow $ARGUMENTS
+🏗️ sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS [█████] ✅ Terminé — tous les AC satisfaits
+Prochaine étape : 🧪 /sdd-qa-workflow $ARGUMENTS
 ```
 
 **Si des AC restent non satisfaits :**
 ```
-⚠️ Lot $ARGUMENTS — N AC non satisfaits.
+🏗️ sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS [████░] ⚠️ N AC non satisfaits
 [Liste des AC en échec avec la raison]
-Le plan a été mis à jour. Relancer /sdd-dev-workflow $ARGUMENTS pour continuer.
+Le plan a été mis à jour. Relancer 🏗️ /sdd-dev-workflow $ARGUMENTS pour continuer.
 ```
