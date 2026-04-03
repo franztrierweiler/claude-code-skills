@@ -22,7 +22,7 @@ Date : 2026-04-03
 Avant toute autre sortie, afficher :
 
 ```
-ℹ️ sdd-brief v1.0.0
+💡 sdd-brief v1.0.0
 ```
 
 ## Instructions
