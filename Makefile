@@ -29,6 +29,8 @@
 #   make test-plan                — Planifie le développement en lots
 #   make test-dev-workflow        — Développe le premier lot via sdd-dev-workflow
 #   make test-dev-check           — Contrôles des sorties du développement
+#   make test-brief               — Lance /sdd-brief sur le projet de test
+#   make test-brief-check         — Contrôles de la sortie du brief
 #   make test-setup               — Prépare l'environnement de test
 #   make clean-test               — Supprime les sorties de test
 # =============================================================================
@@ -47,6 +49,7 @@ TEST_LOG     := $(TEST_DIR)/log
         test test-init test-uc-spec test-uc-system-design test-review \
         test-check test-system-design test-system-design-check \
         test-plan test-dev-workflow test-dev-check \
+        test-brief test-brief-check \
         test-setup clean-test
 
 .DEFAULT_GOAL := help
@@ -85,6 +88,8 @@ help:
 	@echo "    make test-plan                  Planifie le développement en lots"
 	@echo "    make test-dev-workflow          Développe le premier lot"
 	@echo "    make test-dev-check             Contrôles des sorties du développement"
+	@echo "    make test-brief                 Lance /sdd-brief sur le projet de test"
+	@echo "    make test-brief-check           Contrôles de la sortie du brief"
 	@echo "    make clean-test                 Supprime les sorties de test"
 	@echo ""
 	@echo "  Configuration :"
@@ -334,6 +339,7 @@ test: test-system-design test-setup
 	$(MAKE) test-check
 	$(MAKE) test-system-design-check
 	$(MAKE) test-dev-check
+	$(MAKE) test-brief-check
 
 # Génère le CLAUDE.md dans output/
 test-init: test-setup
@@ -370,6 +376,14 @@ test-dev-workflow: test-setup
 # Contrôles des sorties du développement (plan, code, tests, Makefile)
 test-dev-check:
 	@$(TEST_DIR)/check_dev_workflow_output.sh $(TEST_OUT)
+
+# Lance /sdd-brief sur le projet de test (après tout le reste)
+test-brief: test-setup
+	$(TEST_DIR)/run-tests.sh brief
+
+# Contrôles de la sortie du brief
+test-brief-check:
+	@$(TEST_DIR)/check_brief_output.sh $(TEST_LOG)/brief.log
 
 # Contrôles déterministes : sections, seuils d'identifiants, valeurs métier
 test-check:

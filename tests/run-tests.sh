@@ -151,6 +151,19 @@ run_uc_system_design() {
     fi
 }
 
+run_brief() {
+    echo ""
+    echo "=== Test sdd-brief — Tableau de bord projet ==="
+    echo ""
+
+    mkdir -p "$TEST_LOG"
+    cd "$TEST_OUT"
+
+    run_claude \
+        "Lis le fichier $PROMPTS/prompt-brief.md et exécute les instructions qu'il contient." \
+        "$TEST_LOG/brief.log"
+}
+
 run_plan() {
     echo ""
     echo "=== Test planification — Découpe en lots MaintiX ==="
@@ -255,6 +268,9 @@ case "$ACTION" in
     dev-workflow)
         run_dev_workflow
         ;;
+    brief)
+        run_brief
+        ;;
     review)
         run_review
         ;;
@@ -265,11 +281,12 @@ case "$ACTION" in
         run_uc_system_design
         run_plan
         run_dev_workflow
+        run_brief
         echo ""
         echo "Tous les tests ont été exécutés."
         ;;
     *)
-        echo "Usage: $0 [init|uc-spec|uc-system-design|plan|dev-workflow|review|all]"
+        echo "Usage: $0 [init|uc-spec|uc-system-design|plan|dev-workflow|brief|review|all]"
         exit 1
         ;;
 esac
