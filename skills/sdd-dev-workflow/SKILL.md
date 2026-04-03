@@ -58,7 +58,7 @@ Chercher le fichier `qa/qa-results/rapport-$ARGUMENTS.md`.
 
 Afficher :
 ```
-🔁 sdd-dev-workflow v2.0.0 · Lot: $ARGUMENTS · Mode: REPRISE QA
+🔧 sdd-dev-workflow v2.0.0 · Lot: $ARGUMENTS · Mode: REPRISE QA
 
 Rapport QA : N scénarios en échec, M points de revue de code à corriger.
 
