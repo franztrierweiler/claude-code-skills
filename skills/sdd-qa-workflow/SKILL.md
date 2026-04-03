@@ -1,4 +1,20 @@
+---
+name: sdd-qa-workflow
+description: >
+  Pilote la recette de test d'un EPIC SDD : plan de test, exécution,
+  revue de code, rapport QA.
+argument-hint: <nom-epic>
+disable-model-invocation: true
+metadata:
+  version: "1.0.0"
+  author: "Franz TRIERWEILER"
+license: "MIT"
+---
+
 # Recette de test (QA) d'un EPIC
+
+Version : 1.0.0
+Date : 2026-04-03
 
 ## Argument
 

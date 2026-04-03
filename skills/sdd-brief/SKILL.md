@@ -1,9 +1,21 @@
 ---
-description: Charge le contexte complet d'un projet SDD en début de session
+name: sdd-brief
+description: >
+  Charge le contexte complet d'un projet SDD en début de session.
+  Affiche l'état des livrables, la phase courante du pipeline, la
+  progression des EPICs, et les outils disponibles.
 argument-hint: (sans argument)
+disable-model-invocation: true
+metadata:
+  version: "1.0.0"
+  author: "Franz TRIERWEILER"
+license: "MIT"
 ---
 
 # Brief projet SDD
+
+Version : 1.0.0
+Date : 2026-04-03
 
 ## Instructions
 
@@ -63,13 +75,13 @@ Afficher deux tableaux :
 
 | Skill | Description | Quand l'utiliser |
 |-------|-------------|-----------------|
-| (lister les skills dont le nom contient `sdd` dans les skills disponibles) | (synthèse 10 mots) | (phase du pipeline) |
+| (lister les skills dont le nom contient `sdd` dans les skills disponibles, hors sdd-brief) | (synthèse 10 mots) | (phase du pipeline) |
 
 **Commandes :**
 
 | Commande | Description | Quand l'utiliser |
 |----------|-------------|-----------------|
-| (lister les fichiers `sdd-*` dans `.claude/commands/`, hors sdd-brief lui-même) | (synthèse 10 mots) | (phase du pipeline) |
+| (lister les skills sdd-* avec `disable-model-invocation: true`, hors sdd-brief) | (synthèse 10 mots) | (phase du pipeline) |
 
 **Rules actives :**
 

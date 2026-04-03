@@ -6,7 +6,7 @@
 #   make install    — Installe les skills dans ~/.claude/skills/
 #
 # Distribution locale :
-#   make copy       — Copie skills/commands/rules vers les projets cibles
+#   make copy       — Copie skills/rules vers les projets cibles
 #   make copy-dry   — Simule la copie sans rien modifier
 #   make diff       — Compare le repo avec les copies installées
 #   make status     — Liste les projets cibles et leur état
@@ -32,7 +32,7 @@
 
 TARGETS_FILE := targets.txt
 DIST_DIR     := dist
-DIRS         := skills commands rules
+DIRS         := skills rules
 SKILLS       := $(wildcard skills/*)
 
 TEST_DIR     := tests
@@ -58,7 +58,7 @@ help:
 	@echo "    make install      Installe les skills dans ~/.claude/skills/"
 	@echo ""
 	@echo "  Distribution locale (projets cibles) :"
-	@echo "    make copy        Copie skills/commands/rules vers les projets cibles"
+	@echo "    make copy        Copie skills/rules vers les projets cibles"
 	@echo "    make copy-dry    Simule la copie sans rien modifier"
 	@echo "    make diff        Compare le repo avec les copies installées"
 	@echo "    make status      Liste les projets cibles et leur état"
@@ -229,7 +229,7 @@ clean-dist:
 # CDC de test : MaintiX (maintenance industrielle)
 #
 # Le répertoire tests/output/ est le projet simulé :
-#   output/.claude/     skills/commands/rules
+#   output/.claude/     skills/rules
 #   output/CLAUDE.md    généré par test-init
 #   output/docs/        CDC (copié) + SPEC.md (généré par test-uc-spec)
 #
@@ -277,7 +277,7 @@ TEST_SKILLS := $(SKILLS)
 GLOBAL_SKILLS     := $(HOME)/.claude/skills
 GLOBAL_SKILLS_BAK := $(HOME)/.claude/skills.bak
 
-# Prépare le projet simulé dans output/ : skills UC + commands + rules + CDC
+# Prépare le projet simulé dans output/ : skills + rules + CDC
 # Remplace aussi ~/.claude/skills/ pour éviter les conflits de priorité.
 test-setup: check-deps
 	@echo "Préparation du projet de test dans $(TEST_OUT)/..."
@@ -287,10 +287,8 @@ test-setup: check-deps
 		rsync -a $$skill/ $(TEST_OUT)/.claude/$$skill/; \
 		echo "  ✓ $$skill (projet)"; \
 	done
-	@for dir in commands rules; do \
-		rsync -a --delete $$dir/ $(TEST_OUT)/.claude/$$dir/; \
-		echo "  ✓ $$dir/"; \
-	done
+	@rsync -a --delete rules/ $(TEST_OUT)/.claude/rules/
+	@echo "  ✓ rules/"
 	@cp $(TEST_DIR)/docs/CDC-maintenance.md $(TEST_OUT)/docs/CDC-maintenance.md
 	@echo "  ✓ $(TEST_OUT)/docs/CDC-maintenance.md copié"
 	@echo ""

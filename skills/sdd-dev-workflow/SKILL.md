@@ -1,4 +1,20 @@
+---
+name: sdd-dev-workflow
+description: >
+  Pilote le développement d'un EPIC SDD : implémentation itérative,
+  vérification des critères d'acceptation, mise à jour du plan.
+argument-hint: <nom-epic>
+disable-model-invocation: true
+metadata:
+  version: "1.0.0"
+  author: "Franz TRIERWEILER"
+license: "MIT"
+---
+
 # Workflow de développement d'un EPIC
+
+Version : 1.0.0
+Date : 2026-04-03
 
 ## Argument
 
