@@ -4,14 +4,14 @@ description: >
   Rédige et met à jour des spécifications logicielles structurées par cas d'utilisation (UC)
   selon la méthodologie SDD. Produit des SPEC.md exploitables par des agents IA.
 metadata:
-  version: "2.0.0"
+  version: "2.1.0"
   author: "Franz TRIERWEILER"
 license: "MIT"
 ---
 
 # Spec Driven Development (SDD) — Rédaction par cas d'utilisation
 
-Version : 2.0.0
+Version : 2.1.0
 Date : 2026-04-02
 
 ## Prérequis — vérification au démarrage
@@ -221,7 +221,7 @@ obligatoire, sans exception.
 **Format :**
 
 ```
-🖊️ skill:sdd-uc-spec-write v2.0.0 · [Étape] [barre] sous-étape N/T — [Nom]
+🖊️ skill:sdd-uc-spec-write v2.1.0 · [Étape] [barre] sous-étape N/T — [Nom]
 ```
 
 La version affichée est celle indiquée dans l'en-tête du skill (actuellement v2.0.0).
@@ -244,17 +244,17 @@ La version affichée est celle indiquée dans l'en-tête du skill (actuellement 
 **Exemples :**
 
 ```
-🖊️ skill:sdd-uc-spec-write v2.0.0 · Cadrage [█░░░] 1/4 — Questions obligatoires
-🖊️ skill:sdd-uc-spec-write v2.0.0 · Cadrage [████] 4/4 — Rédaction & validation
-🖊️ skill:sdd-uc-spec-write v2.0.0 · Cas d'utilisation [█░░░░] arborescence — Structure des packages
-🖊️ skill:sdd-uc-spec-write v2.0.0 · Cas d'utilisation [████░] package 3/4 — Export
-🖊️ skill:sdd-uc-spec-write v2.0.0 · Compléments [███] 3/3 — Rédaction finale & passage de relais
+🖊️ skill:sdd-uc-spec-write v2.1.0 · Cadrage [█░░░] 1/4 — Questions obligatoires
+🖊️ skill:sdd-uc-spec-write v2.1.0 · Cadrage [████] 4/4 — Rédaction & validation
+🖊️ skill:sdd-uc-spec-write v2.1.0 · Cas d'utilisation [█░░░░] arborescence — Structure des packages
+🖊️ skill:sdd-uc-spec-write v2.1.0 · Cas d'utilisation [████░] package 3/4 — Export
+🖊️ skill:sdd-uc-spec-write v2.1.0 · Compléments [███] 3/3 — Rédaction finale & passage de relais
 ```
 
 **Cas particulier — Mise à jour d'une spec existante :**
 
 ```
-🖊️ skill:sdd-uc-spec-write v2.0.0 · Mise à jour [██░] 2/3 — Application des modifications
+🖊️ skill:sdd-uc-spec-write v2.1.0 · Mise à jour [██░] 2/3 — Application des modifications
 ```
 
 Sous-étapes de mise à jour : 1. Lecture & périmètre · 2. Application ·

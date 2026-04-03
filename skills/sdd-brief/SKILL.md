@@ -7,14 +7,14 @@ description: >
 argument-hint: (sans argument)
 disable-model-invocation: true
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   author: "Franz TRIERWEILER"
 license: "MIT"
 ---
 
 # Brief projet SDD
 
-Version : 1.0.0
+Version : 1.1.0
 Date : 2026-04-03
 
 ## Identification
@@ -22,7 +22,7 @@ Date : 2026-04-03
 Avant toute autre sortie, afficher :
 
 ```
-💡 sdd-brief v1.0.0
+💡 sdd-brief v1.1.0
 ```
 
 ## Instructions

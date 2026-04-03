@@ -7,14 +7,14 @@ description: >
 argument-hint: <nom-lot>
 disable-model-invocation: true
 metadata:
-  version: "2.0.0"
+  version: "2.1.0"
   author: "Franz TRIERWEILER"
 license: "MIT"
 ---
 
 # Workflow de développement d'un lot
 
-Version : 2.0.0
+Version : 2.1.0
 Date : 2026-04-03
 
 ## Argument
@@ -58,7 +58,7 @@ Chercher le fichier `qa/qa-results/rapport-$ARGUMENTS.md`.
 
 Afficher :
 ```
-🔧 sdd-dev-workflow v2.0.0 · Lot: $ARGUMENTS · Mode: REPRISE QA
+🔧 sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS · Mode: REPRISE QA
 
 Rapport QA : N scénarios en échec, M points de revue de code à corriger.
 
@@ -78,7 +78,7 @@ Je cible ces corrections uniquement.
 
 Afficher :
 ```
-🏗️ sdd-dev-workflow v2.0.0 · Lot: $ARGUMENTS · Mode: développement initial
+🏗️ sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS · Mode: développement initial
 ```
 
 ## 3. Chargement du contexte
