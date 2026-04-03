@@ -17,6 +17,14 @@ license: "MIT"
 Version : 1.0.0
 Date : 2026-04-03
 
+## Identification
+
+Avant toute autre sortie, afficher :
+
+```
+📋 sdd-brief v1.0.0
+```
+
 ## Instructions
 
 ### 1. Lecture du contexte projet

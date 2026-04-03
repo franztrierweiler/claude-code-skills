@@ -20,9 +20,17 @@ Date : 2026-04-03
 
 $ARGUMENTS — nom du lot (ex: `lot-01-auth`)
 
+## Identification
+
+Avant toute autre sortie, afficher :
+
+```
+🧪 sdd-qa-workflow v1.0.0 · Lot: $ARGUMENTS
+```
+
 ## Prérequis
 
-- L'lot doit être complet, testé unitairement et avec des AC à 100%
+- Le lot doit être complet, testé unitairement et avec des AC à 100%
 - Si ce n'est pas le cas, indiquer les AC manquants et suggérer `/sdd-dev-workflow $ARGUMENTS`
 
 ## Instructions
