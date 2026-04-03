@@ -89,6 +89,7 @@ l'icône (premier emoji dans le fichier).
 | 4 | 🏗️ | sdd-dev-workflow | (version lue) | `/sdd-dev-workflow <lot>` | Développement |
 | 5 | 🧪 | sdd-qa-workflow | (version lue) | `/sdd-qa-workflow <lot>` | QA |
 | 6 | 💡 | sdd-brief | (version lue) | `/sdd-brief` | Tableau de bord |
+| 7 | 🎓 | sdd-tuto | (version lue) | `/sdd-tuto` | Tutoriel |
 
 **Rules actives :**
 
