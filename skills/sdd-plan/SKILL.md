@@ -22,7 +22,7 @@ Date : 2026-04-03
 Avant toute autre sortie, afficher :
 
 ```
-📦 sdd-plan v1.0.0
+🗺️ sdd-plan v1.0.0
 ```
 
 ## 1. Garde à l'entrée
