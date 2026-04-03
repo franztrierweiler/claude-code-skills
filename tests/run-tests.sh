@@ -151,6 +151,90 @@ run_uc_system_design() {
     fi
 }
 
+run_plan() {
+    echo ""
+    echo "=== Test planification — Découpe en lots MaintiX ==="
+    echo ""
+
+    if [ ! -f "$TEST_OUT/docs/ARCHITECTURE.md" ]; then
+        echo "  ÉCHEC — docs/ARCHITECTURE.md absent. Lancer 'make test-uc-system-design' d'abord."
+        exit 1
+    fi
+
+    mkdir -p "$TEST_LOG"
+    cd "$TEST_OUT"
+
+    run_claude \
+        "Lis le fichier $PROMPTS/prompt-plan.md et exécute les instructions qu'il contient." \
+        "$TEST_LOG/plan.log"
+
+    echo ""
+    local plan_count
+    plan_count=$(find "$TEST_OUT/plan" -name "*.md" -type f 2>/dev/null | wc -l)
+    if [ "$plan_count" -ge 1 ]; then
+        echo "  ✓ $plan_count lot(s) planifié(s) dans plan/"
+        find "$TEST_OUT/plan" -name "*.md" -type f | sort | while read -r f; do
+            echo "    - $(basename "$f")"
+        done
+    else
+        echo "  ÉCHEC — aucun fichier plan/*.md produit (voir $TEST_LOG/plan.log)"
+        exit 1
+    fi
+}
+
+run_dev_workflow() {
+    echo ""
+    echo "=== Test sdd-dev-workflow — Développement du premier lot MaintiX ==="
+    echo ""
+
+    local plan_count
+    plan_count=$(find "$TEST_OUT/plan" -name "*.md" -type f 2>/dev/null | wc -l)
+    if [ "$plan_count" -eq 0 ]; then
+        echo "  ÉCHEC — aucun fichier plan/*.md. Lancer 'make test-plan' d'abord."
+        exit 1
+    fi
+
+    local first_lot
+    first_lot=$(find "$TEST_OUT/plan" -name "*.md" -type f | sort | head -1)
+    local lot_name
+    lot_name=$(basename "$first_lot" .md)
+
+    echo "  Premier lot détecté : $lot_name"
+    echo ""
+
+    mkdir -p "$TEST_LOG"
+    cd "$TEST_OUT"
+
+    run_claude \
+        "Lis le fichier $PROMPTS/prompt-dev-workflow.md et exécute les instructions qu'il contient." \
+        "$TEST_LOG/dev-workflow.log"
+
+    echo ""
+    # Vérifications rapides
+    if [ -d "$TEST_OUT/src" ]; then
+        local py_count
+        py_count=$(find "$TEST_OUT/src" -name "*.py" -type f | wc -l)
+        echo "  ✓ src/ contient $py_count fichier(s) Python"
+    else
+        echo "  ÉCHEC — src/ absent, aucun code produit"
+        exit 1
+    fi
+
+    if [ -d "$TEST_OUT/tests" ]; then
+        local test_count
+        test_count=$(find "$TEST_OUT/tests" -name "test_*.py" -o -name "*_test.py" | wc -l)
+        echo "  ✓ tests/ contient $test_count fichier(s) de test"
+    else
+        echo "  ⚠ tests/ absent"
+    fi
+
+    if [ -f "$TEST_OUT/Makefile" ]; then
+        echo "  ✓ Makefile produit"
+    else
+        echo "  ⚠ Makefile absent"
+    fi
+}
+
 # --- Main --------------------------------------------------------------------
 
 ACTION="${1:-all}"
@@ -165,6 +249,12 @@ case "$ACTION" in
     uc-system-design)
         run_uc_system_design
         ;;
+    plan)
+        run_plan
+        ;;
+    dev-workflow)
+        run_dev_workflow
+        ;;
     review)
         run_review
         ;;
@@ -173,11 +263,13 @@ case "$ACTION" in
         run_uc_spec
         run_review
         run_uc_system_design
+        run_plan
+        run_dev_workflow
         echo ""
         echo "Tous les tests ont été exécutés."
         ;;
     *)
-        echo "Usage: $0 [init|uc-spec|uc-system-design|review|all]"
+        echo "Usage: $0 [init|uc-spec|uc-system-design|plan|dev-workflow|review|all]"
         exit 1
         ;;
 esac

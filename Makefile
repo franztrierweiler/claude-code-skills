@@ -18,14 +18,17 @@
 #   make clean-dist — Supprime le répertoire dist/
 #
 # Tests :
-#   make test              — Lance tous les tests (init + uc-spec + review + system-design)
-#   make test-init         — Génère le CLAUDE.md via /init + template SDD
-#   make test-uc-spec      — Teste sdd-uc-spec-write sur MaintiX
-#   make test-review       — Claude évalue la complétude du SPEC.md
-#   make test-check        — Contrôles déterministes (seuils, valeurs métier)
+#   make test                     — Lance tous les tests
+#   make test-init                — Génère le CLAUDE.md via /init + template SDD
+#   make test-uc-spec             — Teste sdd-uc-spec-write sur MaintiX
+#   make test-review              — Claude évalue la complétude du SPEC.md
+#   make test-check               — Contrôles déterministes (seuils, valeurs métier)
 #   make test-uc-system-design    — Teste sdd-uc-system-design sur MaintiX
 #   make test-system-design       — Contrôles structurels du skill sdd-uc-system-design
-#   make test-system-design-check — Contrôles des documents produits par le skill
+#   make test-system-design-check — Contrôles des documents produits
+#   make test-plan                — Planifie le développement en lots
+#   make test-dev-workflow        — Développe le premier lot via sdd-dev-workflow
+#   make test-dev-check           — Contrôles des sorties du développement
 #   make test-setup               — Prépare l'environnement de test
 #   make clean-test               — Supprime les sorties de test
 # =============================================================================
@@ -43,6 +46,7 @@ TEST_LOG     := $(TEST_DIR)/log
         zip zip-all zip-check clean-dist \
         test test-init test-uc-spec test-uc-system-design test-review \
         test-check test-system-design test-system-design-check \
+        test-plan test-dev-workflow test-dev-check \
         test-setup clean-test
 
 .DEFAULT_GOAL := help
@@ -78,6 +82,9 @@ help:
 	@echo "    make test-check                 Contrôles déterministes (seuils, valeurs)"
 	@echo "    make test-system-design         Contrôles structurels du skill"
 	@echo "    make test-system-design-check   Contrôles des documents produits"
+	@echo "    make test-plan                  Planifie le développement en lots"
+	@echo "    make test-dev-workflow          Développe le premier lot"
+	@echo "    make test-dev-check             Contrôles des sorties du développement"
 	@echo "    make clean-test                 Supprime les sorties de test"
 	@echo ""
 	@echo "  Configuration :"
@@ -318,6 +325,7 @@ test-setup: check-deps
 	@echo ""
 
 # Lance tous les tests
+# Chaîne complète : structurel → génération (Claude) → contrôles déterministes
 test: test-system-design test-setup
 	@echo ""
 	@echo "=== Répertoire cible des tests : $(TEST_OUT) ==="
@@ -325,6 +333,7 @@ test: test-system-design test-setup
 	$(TEST_DIR)/run-tests.sh all
 	$(MAKE) test-check
 	$(MAKE) test-system-design-check
+	$(MAKE) test-dev-check
 
 # Génère le CLAUDE.md dans output/
 test-init: test-setup
@@ -349,6 +358,18 @@ test-system-design:
 # Contrôles des documents produits par sdd-uc-system-design
 test-system-design-check:
 	@$(TEST_DIR)/check_system_design_output.sh $(TEST_OUT)
+
+# Planifie le développement en lots
+test-plan: test-setup
+	$(TEST_DIR)/run-tests.sh plan
+
+# Développe le premier lot via sdd-dev-workflow
+test-dev-workflow: test-setup
+	$(TEST_DIR)/run-tests.sh dev-workflow
+
+# Contrôles des sorties du développement (plan, code, tests, Makefile)
+test-dev-check:
+	@$(TEST_DIR)/check_dev_workflow_output.sh $(TEST_OUT)
 
 # Contrôles déterministes : sections, seuils d'identifiants, valeurs métier
 test-check:
