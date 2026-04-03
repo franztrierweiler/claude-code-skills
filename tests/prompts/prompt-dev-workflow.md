@@ -1,10 +1,9 @@
-Lance le skill /sdd-dev-workflow sur le premier lot du projet.
+Identifie le premier lot dans plan/ (celui sans dépendances, ou le numéro 1).
 
-Pour identifier le premier lot, lis les fichiers dans plan/ et choisis celui
-qui n'a aucune dépendance (ou le lot numéro 1).
+Lance /sdd-dev-workflow <nom-du-lot> sur ce lot.
 
-Suis le processus complet du skill sdd-dev-workflow sans poser de questions.
 Considère toutes les décisions techniques comme validées par le pilote.
+Ne pose pas de questions.
 
 Contraintes spécifiques pour ce test :
 - Utilise Python/FastAPI comme stack backend (imposé par ARCHITECTURE.md)
