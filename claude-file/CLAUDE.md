@@ -75,7 +75,7 @@ La documentation évolue au fur et à mesure des phases d'exécution du projet.
 3- Mettre à jour les tableaux d'AC dans les fichiers `plan/` correspondants après chaque implémentation et test unitaire
 
 #### Recettes de test (QA)
-Le processus QA est piloté par `/sdd-qa-workflow <lot>`. Les conventions sont rappelées par la rule `.claude/rules/sdd-qa.md` lors du travail sur `qa/**`.
+Le processus QA est piloté par `/sdd-qa-workflow <lot>`.
 
 
 #### Commandes
@@ -84,7 +84,7 @@ Le processus QA est piloté par `/sdd-qa-workflow <lot>`. Les conventions sont r
 3- Au démarrage, afficher qu'un Makefile existe avec la commande permettant d'afficher l'aide
 
 ### Workflow de développement
-Le workflow de développement est piloté par `/sdd-dev-workflow <lot>`. La rule `.claude/rules/sdd-dev-workflow.md` se charge automatiquement lors du travail sur `src/` et `tests/` pour rappeler le format attendu et suggérer de lancer la commande si nécessaire.
+Le workflow de développement est piloté par `/sdd-dev-workflow <lot>`.
 
 ### Nommage des branches git
 1- Développement sur la branche `main` avec Claude Code

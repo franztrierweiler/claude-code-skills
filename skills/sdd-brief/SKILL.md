@@ -91,12 +91,6 @@ l'icône (premier emoji dans le fichier).
 | 6 | 💡 | sdd-brief | (version lue) | `/sdd-brief` | Tableau de bord |
 | 7 | 🎓 | sdd-tuto | (version lue) | `/sdd-tuto` | Tutoriel |
 
-**Rules actives :**
-
-| Rule | Se déclenche sur | Rôle |
-|------|-----------------|------|
-| (lister les fichiers `.claude/rules/sdd-*.md` et extraire `paths` et `description` du frontmatter) | (paths) | (description) |
-
 ### 6. Makefile
 
 Si un fichier `Makefile` existe à la racine :

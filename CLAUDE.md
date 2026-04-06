@@ -4,14 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Repository Is
 
-This is a **collection of Claude Code skills and rules** implementing the Spec Driven Development (SDD) methodology. It is NOT a software project with build/test/deploy cycles. The deliverables are Markdown files (SKILL.md, rule files) that get installed into target projects' `.claude/` directories.
+This is a **collection of Claude Code skills** implementing the Spec Driven Development (SDD) methodology. It is NOT a software project with build/test/deploy cycles. The deliverables are Markdown files (SKILL.md) that get installed into target projects' `.claude/` directories.
 
 All content is written in French.
 
 ## Repository Structure
 
 - `skills/` — Claude Code skills (conform to https://agentskills.io/home), each in its own directory with a `SKILL.md`
-- `rules/` — Claude Code rules that auto-trigger on file path patterns
 - `claude-file/CLAUDE.md` — **Template** CLAUDE.md for target SDD projects (not for this repo). Describes the SDD feedback loop and is meant to be copied into projects using the methodology.
 
 ## SDD Workflow Chain
@@ -25,15 +24,9 @@ The skills form a pipeline for target projects. All skills use the UC (Use Case)
 5. **QA workflow** (`/sdd-qa-workflow <lot>`) — test plans, execution, code review, reports (user-invocable)
 6. **Brief** (`/sdd-brief`) — loads project context at session start (user-invocable)
 
-## Rules Auto-Triggering
-
-- `rules/sdd-dev-workflow.md` — triggers on `src/**` and `tests/**`, reminds about the dev workflow
-- `rules/sdd-qa.md` — triggers on `qa/**`, reminds about QA conventions
-
 ## How to Work on This Repository
 
 When editing skills:
 - Skills must have YAML frontmatter (`name`, `description`) and follow the SKILL.md structure
 - User-invocable skills use `disable-model-invocation: true` and receive `$ARGUMENTS`
-- Rules need `description` and `paths` in their YAML frontmatter
 - Keep the `claude-file/CLAUDE.md` template in sync with any workflow changes

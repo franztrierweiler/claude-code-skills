@@ -25,7 +25,6 @@ Les skills auto-déclenchés (1-2) sont activés par Claude quand la demande cor
 | Répertoire | Rôle | Cible |
 |---|---|---|
 | `skills/` | Skills SDD (SKILL.md) — pipeline complet de la spec à la QA | Claude Code + claude.ai enterprise |
-| `rules/` | Règles auto-déclenchées sur des chemins de fichiers | Claude Code uniquement |
 | `claude-file/` | Template CLAUDE.md décrivant le processus SDD | À copier dans les projets cibles |
 | `tests/` | Tests de régression (CDC de référence, prompts, contrôles) | Interne |
 | `to-do/` | Revues et améliorations planifiées | Interne |
@@ -89,7 +88,7 @@ Tutoriel interactif de la méthodologie SDD. Explique les étapes, le pourquoi, 
 Ce projet se clone à côté des projets de travail. Les fichiers sont distribués de trois façons :
 
 - **`make install`** — Installe les skills dans `~/.claude/skills/` (disponibles dans tous les projets). Sauvegarde automatique avant installation.
-- **`make copy`** — Copie `skills/`, `rules/` dans le `.claude/` des projets locaux listés dans `targets.txt`.
+- **`make copy`** — Copie `skills/` dans le `.claude/` des projets locaux listés dans `targets.txt`.
 - **`make zip`** — Produit un ZIP par skill dans `dist/` pour upload dans claude.ai enterprise.
 
 ### Configuration de targets.txt
