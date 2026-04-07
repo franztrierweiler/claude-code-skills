@@ -69,11 +69,18 @@ Logique de détection :
 
 Si des fichiers `plan/*.md` existent, afficher :
 
-| lot | Fichier | AC complétés | Statut |
-|------|---------|-------------|--------|
-| [Nom] | `plan/xxx.md` | N/M (X%) | En cours / Terminé / Non démarré |
+| Lot | Fichier | AC complétés | Statut |
+|-----|---------|-------------|--------|
+| [Nom] | `plan/xxx.md` | N/M (X%) | (voir règles ci-dessous) |
 
-Si des rapports QA existent dans `qa/qa-results/`, les mentionner.
+Règles de statut :
+
+- **AC 0 %** → `Non démarré`
+- **AC partiel (entre 0 % et 100 %)** → `En cours`
+- **AC 100 %** → vérifier l'existence de `qa/qa-results/rapport-<nom-lot>.md` :
+  - Rapport absent → `Dev terminé — QA en attente`
+  - Rapport présent et contient `❌ À CORRIGER` → `QA en échec — reprise dev`
+  - Rapport présent sans `❌ À CORRIGER` → `QA validée`
 
 ### 5. Outils SDD disponibles
 
