@@ -5,15 +5,28 @@ description: >
   sécurité, conformité) à partir d'un SPEC.md structuré par cas d'utilisation
   (UC) selon la méthodologie SDD.
 metadata:
-  version: "3.1.0"
+  version: "3.3.0"
   author: "Franz TRIERWEILER"
 license: "MIT"
 ---
 
 # SDD UC System Design — Conception technique
 
-Version : 3.1.0
-Date : 2026-04-02
+Version : 3.3.0
+Date : 2026-04-21
+
+## Barre de progression — OBLIGATION STRICTE
+
+**Chaque réponse produite sous ce skill DOIT commencer par la barre de
+progression ci-dessous. AUCUNE EXCEPTION. Cela inclut le message d'accueil.**
+
+```
+📐 skill:sdd-uc-system-design v3.3.0 · [Phase] [barre] étape N/T — [Nom]
+```
+
+Caractère plein : `█` — Caractère vide : `░`. Voir la section
+« Identification du skill dans les réponses » plus bas pour le détail
+des sous-étapes et les exemples complets.
 
 ## Prérequis — vérification au démarrage
 
@@ -96,6 +109,8 @@ user stories, cahier des charges classique), Claude informe l'utilisateur :
 Quand le skill est activé et que le SPEC.md est validé, Claude affiche :
 
 ```
+📐 skill:sdd-uc-system-design v3.3.0 · Architecture [░░░░░░░] 0/7 — Démarrage
+
 Ce skill produit les documents de conception technique à partir de ton
 SPEC.md, selon la méthodologie SDD. Je vais produire jusqu'à 4 documents :
 
@@ -203,10 +218,10 @@ obligatoire, sans exception.
 **Format :**
 
 ```
-📐 skill:sdd-uc-system-design v3.1.0 · [Phase] [barre] étape N/T — [Nom de l'étape]
+📐 skill:sdd-uc-system-design v3.3.0 · [Phase] [barre] étape N/T — [Nom de l'étape]
 ```
 
-La version affichée est celle indiquée dans l'en-tête du skill (actuellement v3.1.0).
+La version affichée est celle indiquée dans l'en-tête du skill (actuellement v3.3.0).
 
 **Règles de la barre de progression :**
 
@@ -218,15 +233,15 @@ La version affichée est celle indiquée dans l'en-tête du skill (actuellement 
 **Exemples par phase :**
 
 ```
-📐 skill:sdd-uc-system-design v3.1.0 · Architecture [█░░░░░░] étape 1/7 — Cadrage macro
-📐 skill:sdd-uc-system-design v3.1.0 · Architecture [███░░░░] étape 3/7 — Modèle de données
-📐 skill:sdd-uc-system-design v3.1.0 · Architecture [███████] étape 7/7 — Synthèse et arbitrages
-📐 skill:sdd-uc-system-design v3.1.0 · Architecture [████████] rédaction
-📐 skill:sdd-uc-system-design v3.1.0 · Déploiement [██░░░] étape 2/5 — Questions
-📐 skill:sdd-uc-system-design v3.1.0 · Sécurité [█░░] étape 1/3 — Modèle de menaces
-📐 skill:sdd-uc-system-design v3.1.0 · Sécurité [██░] étape 2/3 — Questions de cadrage
-📐 skill:sdd-uc-system-design v3.1.0 · Sécurité [███] étape 3/3 — Rédaction
-📐 skill:sdd-uc-system-design v3.1.0 · Conformité [█████] étape 5/5 — Rédaction
+📐 skill:sdd-uc-system-design v3.3.0 · Architecture [█░░░░░░] étape 1/7 — Cadrage macro
+📐 skill:sdd-uc-system-design v3.3.0 · Architecture [███░░░░] étape 3/7 — Modèle de données
+📐 skill:sdd-uc-system-design v3.3.0 · Architecture [███████] étape 7/7 — Synthèse et arbitrages
+📐 skill:sdd-uc-system-design v3.3.0 · Architecture [████████] rédaction
+📐 skill:sdd-uc-system-design v3.3.0 · Déploiement [██░░░] étape 2/5 — Questions
+📐 skill:sdd-uc-system-design v3.3.0 · Sécurité [█░░] étape 1/3 — Modèle de menaces
+📐 skill:sdd-uc-system-design v3.3.0 · Sécurité [██░] étape 2/3 — Questions de cadrage
+📐 skill:sdd-uc-system-design v3.3.0 · Sécurité [███] étape 3/3 — Rédaction
+📐 skill:sdd-uc-system-design v3.3.0 · Conformité [█████] étape 5/5 — Rédaction
 ```
 
 Si plusieurs messages se succèdent au sein de la même étape (ex : questions

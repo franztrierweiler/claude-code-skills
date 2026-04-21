@@ -7,12 +7,18 @@ sections marquées comme optionnelles si elles ne s'appliquent pas, et retire le
 commentaires HTML avant livraison.
 
 ````markdown
-# [Nom du projet] — Spécification SDD (Cas d'utilisation)
+# [Nom du projet] — Spécification SDD par cas d'utilisation
 
-Version : 1.0
-Date : [YYYY-MM-DD]
-Auteur : [Nom]
-Statut : Brouillon
+> | | |
+> |---|---|
+> | **Document** | SPEC-racine-[NomProjet].md |
+> | **UUID** | `[UUID v4 généré à la création]` |
+> | **Version** | 1.0 |
+> | **Date** | [YYYY-MM-DD] |
+> | **Auteur** | [Nom] |
+> | **Statut** | Brouillon |
+> | **Type** | Document racine |
+> | **Généré par** | sdd-uc-spec-write v2.4.0 |
 
 <!-- CHANGELOG — Ne pas inclure en v1.0. Décommenter à partir de la v1.1.
 ## Changelog

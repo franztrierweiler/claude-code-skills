@@ -7,14 +7,14 @@ description: >
 argument-hint: (sans argument)
 disable-model-invocation: true
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
   author: "Franz TRIERWEILER"
 license: "MIT"
 ---
 
 # Brief projet SDD
 
-Version : 1.1.0
+Version : 1.2.0
 Date : 2026-04-03
 
 ## Identification
@@ -22,7 +22,7 @@ Date : 2026-04-03
 Avant toute autre sortie, afficher :
 
 ```
-💡 sdd-brief v1.1.0
+💡 sdd-brief v1.2.0
 ```
 
 ## Instructions
@@ -42,7 +42,8 @@ fichier, détecter sa présence et extraire la version (ligne `Version :`) :
 
 | Livrable | Fichier | Statut | Version |
 |----------|---------|--------|---------|
-| Spécification | `docs/SPEC.md` | ✅ Présent / ❌ Absent | vX.Y |
+| Spécification (racine) | `docs/SPEC-racine-*.md` | ✅ Présent / ❌ Absent | vX.Y |
+| Spécification (extensions) | `docs/SPEC-extension-*.md` | ✅ N extension(s) / ❌ Aucune | — |
 | Architecture | `docs/ARCHITECTURE.md` | ✅ / ❌ | vX.Y |
 | Déploiement | `docs/DEPLOYMENT.md` | ✅ / ❌ | vX.Y |
 | Sécurité | `docs/SECURITY.md` | ✅ / ❌ | vX.Y |
@@ -58,8 +59,8 @@ Phase actuelle : [N. Nom de la phase]
 
 Logique de détection :
 
-1. **Pas de `docs/SPEC.md`** → `1. Spécification` — "Le SPEC.md n'existe pas encore. Lancer le skill sdd-uc-spec-write pour le produire."
-2. **`docs/SPEC.md` présent mais pas de `docs/ARCHITECTURE.md`** → `2. Conception technique` — "La spec est prête. Lancer le skill sdd-uc-system-design pour produire les documents de conception."
+1. **Aucun `docs/SPEC-*.md`** (ni racine, ni extension) → `1. Spécification` — "Aucun document de spécification trouvé. Lancer le skill sdd-uc-spec-write pour produire une spec racine ou une extension."
+2. **Au moins un `docs/SPEC-*.md` présent mais pas de `docs/ARCHITECTURE.md`** → `2. Conception technique` — "La spec est prête. Lancer le skill sdd-uc-system-design pour produire les documents de conception."
 3. **Documents de conception présents mais pas de `plan/*.md`** → `3. Planification` — "La conception est prête. Créer les fichiers plan/<lot>.md pour planifier les lots."
 4. **`plan/*.md` présents avec des lots non terminés** → `4. Développement` — "lots en cours. Utiliser /sdd-dev-workflow <lot> pour continuer."
 5. **lots terminés (AC 100%) mais pas de rapports QA** → `5. QA` — "Développement terminé. Utiliser /sdd-qa-workflow <lot> pour la recette."

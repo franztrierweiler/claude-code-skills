@@ -4,15 +4,28 @@ description: >
   Rédige et met à jour des spécifications logicielles structurées par cas d'utilisation (UC)
   selon la méthodologie SDD. Produit des SPEC.md exploitables par des agents IA.
 metadata:
-  version: "2.1.0"
+  version: "2.4.0"
   author: "Franz TRIERWEILER"
 license: "MIT"
 ---
 
 # Spec Driven Development (SDD) — Rédaction par cas d'utilisation
 
-Version : 2.1.0
-Date : 2026-04-02
+Version : 2.4.0
+Date : 2026-04-21
+
+## Barre de progression — OBLIGATION STRICTE
+
+**Chaque réponse produite sous ce skill DOIT commencer par la barre de
+progression ci-dessous. AUCUNE EXCEPTION. Cela inclut le message d'accueil.**
+
+```
+🖊️ skill:sdd-uc-spec-write v2.4.0 · [Étape] [barre] sous-étape N/T — [Nom]
+```
+
+Caractère plein : `█` — Caractère vide : `░`. Voir la section
+« Identification du skill dans les réponses » plus bas pour le détail
+des sous-étapes et les exemples complets.
 
 ## Prérequis — vérification au démarrage
 
@@ -21,9 +34,11 @@ répertoire `references/` du skill :
 
 | Fichier | Rôle |
 |---|---|
-| `references/TEMPLATE-SPEC.md` | Template de référence pour la génération du SPEC.md |
+| `references/TEMPLATE-SPEC.md` | Template de référence pour la génération d'un document racine |
+| `references/TEMPLATE-SPEC-EXTENSION.md` | Template de référence pour la génération d'un document d'extension |
 | `references/UC-FORMAT.md` | Format et règles de rédaction des cas d'utilisation |
 | `references/UPDATE-WORKFLOW.md` | Workflow de mise à jour d'une spec existante |
+| `references/EXTENSION-WORKFLOW.md` | Workflow de création d'une extension fonctionnelle |
 | `references/GLOSSARY-SDD.md` | Glossaire méthodologique SDD |
 
 Si un ou plusieurs fichiers sont absents, **arrête immédiatement** et affiche :
@@ -38,12 +53,39 @@ Ne tente pas de générer le SPEC.md de mémoire si un fichier de référence ma
 
 ## Message d'accueil
 
-Quand le skill est activé, Claude commence par vérifier si un SPEC.md existe
-déjà dans `docs/`. Selon le résultat, il affiche l'un des trois messages
-ci-dessous avant toute autre action :
+Quand le skill est activé, Claude commence par chercher des fichiers
+`docs/SPEC-racine-*.md` et `docs/SPEC-extension-*.md`. Selon le résultat,
+il affiche l'un des messages ci-dessous avant toute autre action.
 
-**Rédaction initiale (aucun SPEC.md trouvé) :**
+**Logique de détection :**
+
+1. Aucun `SPEC-racine-*.md` trouvé → **Mode 1 (création racine)**
+2. Un ou plusieurs documents SPEC trouvés, au moins un incomplet → **Mode 2 (reprise)**
+3. Tous les documents SPEC complets + intention d'extension détectée → **Mode 4 (extension)**
+4. Tous les documents SPEC complets + pas d'intention d'extension → proposer le choix modification / extension
+
+Un document est considéré incomplet s'il contient des placeholders `[...]`,
+des sections vides, des UC sans critères d'acceptation, ou si des sections
+attendues du template sont absentes.
+
+**Détection du vocabulaire d'extension (option hybride) :**
+
+- Vocabulaire non ambigu → mode 4 directement : « nouvelle fonction »,
+  « extension », « module supplémentaire », « fonctionnalité supplémentaire »,
+  « ajouter une fonction au projet ».
+- Vocabulaire ambigu → demander clarification : « ajouter une fonction » sans
+  « extension » ou « nouvelle ». Question : « Tu veux ajouter une fonction dans
+  un UC existant (modification) ou documenter une nouvelle fonction dans un
+  SPEC-extension ? »
+- Vocabulaire de modification → mode 3 directement : « modifier », « corriger »,
+  « mettre à jour », « compléter ».
+
+---
+
+**Mode 1 — Rédaction initiale (aucun SPEC-racine-*.md trouvé) :**
 ```
+🖊️ skill:sdd-uc-spec-write v2.4.0 · Cadrage [░░░░] 0/4 — Démarrage
+
 Ce skill produit des spécifications logicielles structurées par cas d'utilisation (UC),
 selon la méthodologie Spec Driven Development (SDD). L'objectif est de produire un
 document suffisamment précis pour qu'un agent IA implémente le logiciel sans ambiguïté,
@@ -57,14 +99,15 @@ Je vais te guider en trois étapes :
 On commence par le cadrage.
 ```
 
-**Reprise d'une rédaction en cours (SPEC.md incomplet détecté) :**
+**Mode 2 — Reprise d'une rédaction en cours (document incomplet détecté) :**
 
-Un SPEC.md est considéré incomplet s'il contient des placeholders `[...]`,
-des sections vides, des UC sans critères d'acceptation, ou si des sections
-attendues du template sont absentes.
+Si plusieurs documents existent, lister ceux qui sont incomplets et demander
+sur lequel travailler.
 
 ```
-J'ai trouvé un SPEC.md existant mais incomplet. Sections manquantes ou
+🖊️ skill:sdd-uc-spec-write v2.4.0 · [Étape détectée] [barre] — Reprise
+
+J'ai trouvé [nom du fichier] mais il est incomplet. Sections manquantes ou
 incomplètes :
 - [liste des manques détectés]
 
@@ -73,18 +116,54 @@ Tu préfères reprendre là où ça s'est arrêté, ou travailler sur une
 section spécifique ?
 ```
 
-**Modification d'un SPEC.md existant (SPEC.md complet détecté) :**
+**Mode 3 — Modification d'un document existant (document complet) :**
+
+Si plusieurs documents complets existent, lister et demander lequel modifier.
+
 ```
-Ce skill permet de modifier une spécification SDD existante structurée par cas
-d'utilisation. Je peux intervenir sur :
+🖊️ skill:sdd-uc-spec-write v2.4.0 · Mise à jour [░░░] 0/3 — Démarrage
+
+J'ai trouvé [nom du fichier]. Ce skill permet de modifier une spécification
+SDD existante structurée par cas d'utilisation. Je peux intervenir sur :
 - Les cas d'utilisation (ajout, modification, dépréciation)
 - Le glossaire
 - Les exigences non fonctionnelles
 - Les niveaux de support et le hors périmètre
 - L'arborescence et les diagrammes
-- Toute autre section du SPEC.md
+- Toute autre section
 
 Quelle section veux-tu modifier ?
+```
+
+**Mode 4 — Création d'une extension (spec racine complète + intention extension) :**
+
+```
+🖊️ skill:sdd-uc-spec-write v2.4.0 · Extension [░░░░] 0/4 — Démarrage
+
+J'ai trouvé [nom de la spec racine] ([N] UC, v[X.Y]).
+
+Je vais créer une extension pour documenter la fonction « [nom] ». Ce document
+sera autonome et lié à la spec racine. Je te guide en quatre étapes :
+1. Cadrage fonction — identifier la fonction, son préfixe, ses dépendances racine.
+2. Cas d'utilisation — détailler les UC de la fonction (identifiants préfixés).
+3. Compléments — objets participants, exigences non fonctionnelles.
+4. Finalisation — vérification des dépendances et passage de relais.
+
+On commence par le cadrage de la fonction.
+```
+
+**Choix proposé (spec racine complète, intention non détectée) :**
+
+```
+🖊️ skill:sdd-uc-spec-write v2.4.0 · Démarrage
+
+J'ai trouvé [liste des documents SPEC].
+
+Je peux :
+1. Modifier un document existant — mise à jour ciblée (UC, RG, ENF, glossaire...)
+2. Créer une extension — documenter une nouvelle fonction dans un SPEC-extension lié à la spec racine
+
+Que veux-tu faire ?
 ```
 
 ## Critères de déclenchement
@@ -214,17 +293,19 @@ L'utilisateur peut fournir ce schéma sous forme d'image que Claude interprète.
 
 ## Identification du skill dans les réponses
 
-Chaque réponse produite sous ce skill commence par une barre de progression
-indiquant le skill actif, l'étape en cours et l'avancement. Cette ligne est
-obligatoire, sans exception.
+**OBLIGATION STRICTE — AUCUNE EXCEPTION.** Chaque réponse produite sous ce
+skill commence par une barre de progression indiquant le skill actif, l'étape
+en cours et l'avancement. Cette règle s'applique dès la toute première réponse
+(message d'accueil inclus) et à chaque message suivant. Ne jamais omettre
+cette ligne, même si le fichier SKILL.md a été lu partiellement.
 
 **Format :**
 
 ```
-🖊️ skill:sdd-uc-spec-write v2.1.0 · [Étape] [barre] sous-étape N/T — [Nom]
+🖊️ skill:sdd-uc-spec-write v2.4.0 · [Étape] [barre] sous-étape N/T — [Nom]
 ```
 
-La version affichée est celle indiquée dans l'en-tête du skill (actuellement v2.1.0).
+La version affichée est celle indiquée dans l'en-tête du skill (actuellement v2.4.0).
 
 **Règles de la barre de progression :**
 
@@ -233,7 +314,7 @@ La version affichée est celle indiquée dans l'en-tête du skill (actuellement 
   Cas d'utilisation (1 caractère par package de niveau 1), 3 caractères pour Compléments.
 - La barre reflète la sous-étape en cours (incluse).
 
-**Découpage en sous-étapes :**
+**Découpage en sous-étapes (document racine) :**
 
 | Étape | Sous-étapes | Total |
 |-------|-------------|-------|
@@ -241,30 +322,53 @@ La version affichée est celle indiquée dans l'en-tête du skill (actuellement 
 | Cas d'utilisation | 1. Arborescence & diagramme global · puis 1 sous-étape par package de niveau 1 (nombre variable, noté N/M) | 1+M |
 | Compléments | 1. Objets participants · 2. Exigences non fonctionnelles · 3. Rédaction finale & passage de relais | 3 |
 
+**Découpage en sous-étapes (extension) :**
+
+| Étape | Sous-étapes | Total |
+|-------|-------------|-------|
+| Cadrage fonction | 1. Identification fonction & préfixe · 2. Contexte & dépendances racine · 3. Diagramme de contexte fonction · 4. Rédaction & validation sections initiales | 4 |
+| Cas d'utilisation | 1. Arborescence & diagramme · puis 1 sous-étape par package de niveau 1 | 1+M |
+| Compléments | 1. Objets participants · 2. Exigences non fonctionnelles | 2 |
+| Finalisation | 1. Vérification table des dépendances · 2. Rédaction finale & passage de relais | 2 |
+
 **Exemples :**
 
 ```
-🖊️ skill:sdd-uc-spec-write v2.1.0 · Cadrage [█░░░] 1/4 — Questions obligatoires
-🖊️ skill:sdd-uc-spec-write v2.1.0 · Cadrage [████] 4/4 — Rédaction & validation
-🖊️ skill:sdd-uc-spec-write v2.1.0 · Cas d'utilisation [█░░░░] arborescence — Structure des packages
-🖊️ skill:sdd-uc-spec-write v2.1.0 · Cas d'utilisation [████░] package 3/4 — Export
-🖊️ skill:sdd-uc-spec-write v2.1.0 · Compléments [███] 3/3 — Rédaction finale & passage de relais
+🖊️ skill:sdd-uc-spec-write v2.4.0 · Cadrage [█░░░] 1/4 — Questions obligatoires
+🖊️ skill:sdd-uc-spec-write v2.4.0 · Cadrage [████] 4/4 — Rédaction & validation
+🖊️ skill:sdd-uc-spec-write v2.4.0 · Cas d'utilisation [█░░░░] arborescence — Structure des packages
+🖊️ skill:sdd-uc-spec-write v2.4.0 · Cas d'utilisation [████░] package 3/4 — Export
+🖊️ skill:sdd-uc-spec-write v2.4.0 · Compléments [███] 3/3 — Rédaction finale & passage de relais
 ```
 
 **Cas particulier — Mise à jour d'une spec existante :**
 
 ```
-🖊️ skill:sdd-uc-spec-write v2.1.0 · Mise à jour [██░] 2/3 — Application des modifications
+🖊️ skill:sdd-uc-spec-write v2.4.0 · Mise à jour [██░] 2/3 — Application des modifications
 ```
 
 Sous-étapes de mise à jour : 1. Lecture & périmètre · 2. Application ·
 3. Changelog & impacts.
+
+**Cas particulier — Création d'une extension :**
+
+```
+🖊️ skill:sdd-uc-spec-write v2.4.0 · Extension [█░░░] 1/4 — Cadrage fonction
+🖊️ skill:sdd-uc-spec-write v2.4.0 · Extension [██░░] package 2/3 — Import
+🖊️ skill:sdd-uc-spec-write v2.4.0 · Extension [███░] 3/4 — Compléments
+🖊️ skill:sdd-uc-spec-write v2.4.0 · Extension [████] 4/4 — Finalisation
+```
 
 Si plusieurs messages se succèdent au sein de la même sous-étape (ex :
 clarifications, allers-retours), la barre reste identique. Elle avance
 uniquement au passage à la sous-étape suivante.
 
 ## Processus de rédaction
+
+**RAPPEL OBLIGATOIRE : chaque réponse produite sous ce skill DOIT commencer par
+la barre de progression (voir section « Identification du skill dans les réponses »).
+Aucune exception. Cela s'applique dès la première réponse, y compris le message
+d'accueil.**
 
 La rédaction d'une spec SDD par cas d'utilisation est un dialogue, pas une génération
 en un coup. Claude guide l'utilisateur à travers trois étapes successives, en posant
@@ -302,10 +406,11 @@ Contexte, Architecture et périmètre. Pose-les par petits groupes
 - As-tu un **diagramme de contexte** à fournir pour expliquer le périmètre du système ?
   Si tu n'en as pas, je peux en produire un à partir des informations du cadrage.
 
-Quand les réponses sont suffisantes, rédige les sections initiales du SPEC.md
-(en-tête, contexte, diagramme de contexte si fourni, architecture si applicable,
+Quand les réponses sont suffisantes, rédige les sections initiales du document
+(cartouche, contexte, diagramme de contexte si fourni, architecture si applicable,
 niveaux de support si applicable, hors périmètre) et présente-les à l'utilisateur
-pour validation avant de poursuivre.
+pour validation avant de poursuivre. Le fichier est créé dans `docs/` avec le
+nommage défini dans la section « Format de livraison ».
 
 ### Étape 2 — Cas d'utilisation
 
@@ -331,7 +436,7 @@ principaux de chaque package, puis revenir affiner.
 Si l'utilisateur fournit des informations que tu ne maîtrises pas entièrement,
 demande des précisions plutôt que de deviner. Un UC faux est pire qu'un UC absent.
 
-**Régénération des diagrammes :** À chaque livraison du SPEC.md, régénère les
+**Régénération des diagrammes :** À chaque livraison du document, régénère les
 diagrammes Mermaid des relations entre UC. Si > 15-20 UC, découpe par package.
 
 ### Étape 3 — Compléments
@@ -350,30 +455,48 @@ Produis chaque document comme un fichier téléchargeable, pas comme du texte da
 le chat. Le chat sert au dialogue (questions, validations, arbitrages). Les fichiers
 portent le contenu livrable.
 
-**Création initiale :** Rédige le SPEC.md au fil des étapes en utilisant le template
+**Création initiale :** Le fichier **ne doit jamais s'appeler `SPEC.md`**. Utilise
+la convention de nommage décrite ci-dessous pour nommer le fichier dès la première
+écriture (exemple : `docs/SPEC-racine-MaintiX.md`).
+Le nom du fichier sur disque doit correspondre exactement au champ `Document`
+du cartouche. Rédige le document au fil des étapes en utilisant le template
 défini dans `references/TEMPLATE-SPEC.md`. À chaque validation de section par
 l'utilisateur, mets à jour le fichier. Livre les documents complémentaires
 (DATA-MODEL.md, etc.) séparément.
 
-**Mise à jour :** Produis le SPEC.md modifié complet, pas un diff. Régénère les
+**Mise à jour :** Produis le document modifié complet, pas un diff. Régénère les
 diagrammes Mermaid. Consulte `references/UPDATE-WORKFLOW.md` pour les règles
 d'identifiants, le changelog et le workflow détaillé.
 
-**Nommage :** Document principal : `SPEC.md`. Schéma de données : `DATA-MODEL.md`.
-Ne préfixe pas les noms de fichiers avec le nom du projet ou une date.
+**Nommage :** Le nom du fichier encode uniquement le type et le projet (et la
+fonction pour les extensions). Les métadonnées (version, date, statut) restent
+dans le cartouche — le fichier n'est jamais renommé.
+
+- Document racine : `SPEC-racine-<NomProjet>.md`
+- Document d'extension : `SPEC-extension-<NomProjet>-<NomFonction>.md`
+
+Exemples :
+- `SPEC-racine-MaintiX.md`
+- `SPEC-extension-MaintiX-Alertes.md`
+
+Le `<NomProjet>` et `<NomFonction>` utilisent le PascalCase sans espaces ni
+caractères spéciaux. Le champ `Document` du cartouche contient le nom complet
+du fichier.
+
+Schéma de données : `DATA-MODEL.md` (nommage inchangé).
 
 ### Passage de relais
 
-Quand les trois étapes sont terminées et que le SPEC.md contient un cadrage validé,
+Quand les trois étapes sont terminées et que le document contient un cadrage validé,
 des cas d'utilisation couvrant les packages principaux, et des compléments documentés,
 informe l'utilisateur que le document est suffisamment structuré pour qu'il puisse le
 compléter et l'enrichir lui-même.
 
-Dis-le explicitement, par exemple : "Le SPEC.md a maintenant une structure solide avec
-[N] cas d'utilisation répartis en [packages]. Tu peux désormais le compléter directement
-— ajouter des UC, affiner les étapes et exceptions, préciser les règles de gestion —
-en suivant le format et les conventions établis. Le glossaire et la structure des
-identifiants (UC/RG/IHM/ENF/CA) te guident."
+Dis-le explicitement, par exemple : "[nom du fichier] a maintenant une structure solide
+avec [N] cas d'utilisation répartis en [packages]. Tu peux désormais le compléter
+directement — ajouter des UC, affiner les étapes et exceptions, préciser les règles de
+gestion — en suivant le format et les conventions établis. Le glossaire et la structure
+des identifiants (UC/RG/IHM/ENF/CA) te guident."
 
 L'objectif du skill n'est pas de rédiger 100% de la spec. C'est d'amorcer le document
 avec suffisamment de structure, de rigueur et d'exemples concrets pour que l'utilisateur
@@ -383,14 +506,52 @@ projet.
 Avant de remettre la spec à l'utilisateur, vérifie chaque point de la checklist et
 signale les manques.
 
-Le skill suivant dans la chaîne SDD est `sdd-uc-system-design`, qui prend le SPEC.md
+Le skill suivant dans la chaîne SDD est `sdd-uc-system-design`, qui prend ce document
 comme entrée pour produire l'architecture technique, le déploiement, la sécurité et
 la matrice de conformité.
 
 ### Mise à jour d'une spec existante
 
 Pour le workflow complet de mise à jour (types de modifications, règles d'identifiants,
-changelog, processus), consulte `references/UPDATE-WORKFLOW.md`.
+changelog, processus), consulte `references/UPDATE-WORKFLOW.md`. Ce workflow s'applique
+aussi bien aux documents racine qu'aux extensions (modes 2 et 3 polymorphes).
+
+### Création d'une extension
+
+Pour le workflow complet de création d'extension, consulte
+`references/EXTENSION-WORKFLOW.md`. Les grandes étapes sont :
+
+**Étape 1 — Cadrage fonction :**
+
+1. Identifier la fonction à documenter (nom court, objectif).
+2. Dériver et valider le préfixe (3-4 lettres, ex : ALR pour « Alertes »).
+   Scanner les extensions existantes pour éviter les collisions.
+3. Lire la spec racine pour extraire l'UUID, les acteurs, les UC et RG
+   disponibles pour les références croisées.
+4. Créer le fichier `docs/SPEC-extension-<NomProjet>-<NomFonction>.md` en
+   utilisant le template `references/TEMPLATE-SPEC-EXTENSION.md`.
+5. Rédiger le contexte de la fonction, le diagramme de contexte (si fourni),
+   et les sections initiales. Présenter à l'utilisateur pour validation.
+
+**Étape 2 — Cas d'utilisation :**
+
+Même processus que pour un document racine (arborescence, puis UC par package),
+avec deux différences :
+- Tous les identifiants portent le préfixe de l'extension (UC-ALR-001, RG-ALR-0001).
+- À chaque référence à un UC ou RG de la racine, mettre à jour la table
+  « Dépendances vers la spec racine ».
+
+**Étape 3 — Compléments :**
+
+Objets participants et exigences non fonctionnelles spécifiques à la fonction
+(identifiants préfixés : ENF-ALR-001).
+
+**Étape 4 — Finalisation :**
+
+1. Vérifier que la table des dépendances est complète.
+2. Vérifier le glossaire fonction (pas de doublons avec la racine).
+3. Passer la checklist extension (voir `references/EXTENSION-WORKFLOW.md`).
+4. Passage de relais.
 
 ## Structure d'un cas d'utilisation
 
@@ -404,13 +565,13 @@ Le glossaire SDD est défini dans `references/GLOSSARY-SDD.md`. Reproduis-le en
 dernière section de chaque SPEC.md produite, tel quel. Ces termes sont imposés par
 la méthodologie SDD et ne doivent pas être remplacés par des synonymes.
 
-## Structure d'une SPEC.md
+## Structure d'un document racine (SPEC-racine)
 
-Le SPEC.md suit cet ordre de sections. Le template complet avec les exemples de
-structure est dans `references/TEMPLATE-SPEC.md`.
+Le document racine suit cet ordre de sections. Le template complet est dans
+`references/TEMPLATE-SPEC.md`.
 
-1. **En-tête** — Nom, version, date, auteur, statut.
-2. **Changelog** (à partir de la v1.1) — Entre l'en-tête et le contexte.
+1. **Cartouche** — Blockquote avec tableau : Document, UUID, version, date, auteur, statut, type (`Document racine`), skill générateur. L'UUID (v4) est généré une seule fois à la création du document et ne change jamais par la suite.
+2. **Changelog** (à partir de la v1.1) — Entre le cartouche et le contexte.
 3. **Contexte et objectifs** — Ce que le projet fait, pourquoi, pour qui, contraintes, acteurs.
 4. **Diagramme de contexte** (si fourni) — Schéma informel du périmètre.
 5. **Architecture** (si applicable) — Contraintes techniques, composants imposés.
@@ -425,6 +586,25 @@ structure est dans `references/TEMPLATE-SPEC.md`.
 14. **Glossaire projet** — Termes spécifiques au domaine.
 15. **Glossaire SDD** — Vocabulaire méthodologique. Voir `references/GLOSSARY-SDD.md`.
 
+## Structure d'un document d'extension (SPEC-extension)
+
+Le document d'extension suit cet ordre de sections. Le template complet est dans
+`references/TEMPLATE-SPEC-EXTENSION.md`.
+
+1. **Cartouche** — 11 champs : Document, UUID, version, date, auteur, statut, type (`Document d'extension`), spec racine, UUID racine, préfixe (3-4 lettres), skill générateur.
+2. **Changelog** (à partir de la v1.1) — Entre le cartouche et le contexte.
+3. **Contexte de la fonction** — Ce que la fonction fait, pourquoi, acteurs concernés, contraintes structurantes.
+4. **Diagramme de contexte** (si fourni) — Schéma de la fonction dans son environnement.
+5. **Dépendances vers la spec racine** — Tableau des UC/RG racine référencés.
+6. **Niveaux de support** (si applicable) — Supporté / Ignoré / Erreur explicite.
+7. **Hors périmètre** — Ce que la fonction ne fait explicitement pas.
+8. **Arborescence des cas d'utilisation** — Identifiants préfixés.
+9. **Diagramme des cas d'utilisation** — UC de l'extension + UC racine en pointillés.
+10. **Cas d'utilisation détaillés** — Identifiants préfixés. Format : voir `references/UC-FORMAT.md`.
+11. **Objets participants** (si applicable) — Spécifiques à la fonction.
+12. **Exigences non fonctionnelles** — ENF préfixées, spécifiques à la fonction.
+13. **Glossaire fonction** — Termes nouveaux uniquement.
+
 ## Directives de rédaction
 
 ### Langue et registre
@@ -435,6 +615,7 @@ compréhensible par un directeur métier, exploitable par un développeur ou un 
 
 ### Identifiants — convention de nommage
 
+**Document racine :**
 ```
 UC-001        Cas d'utilisation numéro 1
 CA-UC-001-01  Premier critère d'acceptation du UC-001
@@ -443,6 +624,19 @@ IHM-001       Écran / maquette numéro 1
 ENF-001       Exigence non-fonctionnelle numéro 1
 CA-ENF-001-01  Premier critère d'acceptation de ENF-001
 ```
+
+**Document d'extension (préfixe ALR pour « Alertes ») :**
+```
+UC-ALR-001        Cas d'utilisation n°1 de l'extension
+CA-UC-ALR-001-01  Premier critère d'acceptation du UC-ALR-001
+RG-ALR-0001       Règle de gestion n°1 de l'extension
+IHM-ALR-001       Écran n°1 de l'extension
+ENF-ALR-001       Exigence non-fonctionnelle n°1 de l'extension
+CA-ENF-ALR-001-01 Premier CA de ENF-ALR-001
+```
+
+Identifiant sans préfixe = spec racine. Identifiant avec préfixe = extension.
+Consulte `references/EXTENSION-WORKFLOW.md` pour les détails.
 
 Numérote séquentiellement. Ne réutilise jamais un identifiant supprimé.
 Les identifiants sont référencés dans le code (commentaires) pour assurer la traçabilité.
@@ -465,3 +659,13 @@ Avant de considérer la spec comme terminée, vérifie :
 - [ ] Les niveaux de support sont documentés (si applicable).
 - [ ] Les exigences non fonctionnelles pertinentes sont documentées.
 - [ ] Un agent IA pourrait implémenter chaque UC sans poser de question.
+
+**Checklist complémentaire pour les extensions :**
+
+- [ ] Le cartouche contient les 11 champs requis (dont Spec racine, UUID racine, Préfixe).
+- [ ] Le préfixe est unique (pas de collision avec une autre extension du projet).
+- [ ] Tous les identifiants de l'extension portent le préfixe.
+- [ ] La table « Dépendances vers la spec racine » est complète et à jour.
+- [ ] Les références aux UC/RG de la racine utilisent les identifiants sans préfixe.
+- [ ] Le glossaire fonction ne duplique pas les termes du glossaire racine.
+- [ ] Les diagrammes Mermaid incluent les UC racine référencés (en pointillés).

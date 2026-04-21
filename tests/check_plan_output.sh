@@ -15,8 +15,19 @@
 set -euo pipefail
 
 PROJECT_DIR="${1:-tests/output}"
-PLAN_DIR="$PROJECT_DIR/plan"
-SPEC="$PROJECT_DIR/docs/SPEC.md"
+# Préfère le snapshot pris juste après run_plan (avant que sdd-dev-workflow
+# ne modifie les AC). Fallback sur plan/ si le snapshot n'existe pas (ex :
+# exécution isolée de 'make test-plan').
+if [ -d "$PROJECT_DIR/plan-initial" ]; then
+    PLAN_DIR="$PROJECT_DIR/plan-initial"
+else
+    PLAN_DIR="$PROJECT_DIR/plan"
+fi
+SPEC=$(find "$PROJECT_DIR/docs" -maxdepth 1 -name 'SPEC-racine-*.md' -type f 2>/dev/null | head -1)
+if [ -z "$SPEC" ]; then
+    # Fallback sur l'ancien nommage pour compatibilité
+    SPEC="$PROJECT_DIR/docs/SPEC.md"
+fi
 
 FAIL=0
 PASS=0
@@ -118,8 +129,8 @@ for plan in "$PLAN_DIR"/*.md; do
     [ -f "$plan" ] || continue
     name=$(basename "$plan" .md)
 
-    uc_count=$(grep -oE "UC-[0-9]+" "$plan" 2>/dev/null | sort -u | wc -l)
-    ac_count=$(grep -oE "CA-UC-[0-9]+-[0-9]+" "$plan" 2>/dev/null | sort -u | wc -l)
+    uc_count=$(grep -oE "UC-([A-Z]{3,4}-)?[0-9]+" "$plan" 2>/dev/null | sort -u | wc -l)
+    ac_count=$(grep -oE "CA-UC-([A-Z]{3,4}-)?[0-9]+-[0-9]+" "$plan" 2>/dev/null | sort -u | wc -l)
 
     if [ "$uc_count" -ge 1 ]; then
         ok "$name : $uc_count UC référencés"
@@ -170,13 +181,21 @@ echo "--- 5. Couverture des UC ---"
 if [ ! -f "$SPEC" ]; then
     skip "SPEC.md absent — impossible de vérifier la couverture"
 else
-    # UC dans le SPEC.md
-    SPEC_UCS=$(grep -oE "UC-[0-9]+" "$SPEC" 2>/dev/null | sort -u)
-    SPEC_UC_COUNT=$(echo "$SPEC_UCS" | wc -l)
+    # UC dans le SPEC (racine + extensions)
+    SPEC_UCS=$(grep -oE "UC-([A-Z]{3,4}-)?[0-9]+" "$SPEC" 2>/dev/null | sort -u)
+    # Ajouter les UC des extensions si présentes
+    for ext in "$PROJECT_DIR/docs"/SPEC-extension-*.md; do
+        [ -f "$ext" ] || continue
+        ext_ucs=$(grep -oE "UC-([A-Z]{3,4}-)?[0-9]+" "$ext" 2>/dev/null | sort -u)
+        SPEC_UCS=$(printf "%s\n%s" "$SPEC_UCS" "$ext_ucs" | sort -u)
+    done
+    SPEC_UC_COUNT=$(echo "$SPEC_UCS" | grep -c "UC-" || true)
+    SPEC_UC_COUNT=${SPEC_UC_COUNT:-0}
 
     # UC dans tous les plans
-    PLAN_UCS=$(cat "$PLAN_DIR"/*.md 2>/dev/null | grep -oE "UC-[0-9]+" | sort -u)
-    PLAN_UC_COUNT=$(echo "$PLAN_UCS" | wc -l)
+    PLAN_UCS=$(cat "$PLAN_DIR"/*.md 2>/dev/null | grep -oE "UC-([A-Z]{3,4}-)?[0-9]+" | sort -u)
+    PLAN_UC_COUNT=$(echo "$PLAN_UCS" | grep -c "UC-" || true)
+    PLAN_UC_COUNT=${PLAN_UC_COUNT:-0}
 
     if [ "$PLAN_UC_COUNT" -ge 1 ]; then
         ok "$PLAN_UC_COUNT UC couverts par les lots (SPEC.md en contient $SPEC_UC_COUNT)"
@@ -186,7 +205,8 @@ else
 
     # UC du SPEC.md non couverts
     MISSING_UCS=$(comm -23 <(echo "$SPEC_UCS") <(echo "$PLAN_UCS") 2>/dev/null)
-    MISSING_COUNT=$(echo "$MISSING_UCS" | grep -c "UC-" 2>/dev/null || echo "0")
+    MISSING_COUNT=$(echo "$MISSING_UCS" | grep -c "UC-" || true)
+    MISSING_COUNT=${MISSING_COUNT:-0}
 
     if [ "$MISSING_COUNT" -eq 0 ]; then
         ok "Tous les UC du SPEC.md sont couverts"
@@ -203,8 +223,10 @@ echo ""
 echo "--- 6. Statut initial des AC ---"
 
 # Tous les AC doivent être en ⏳ (pas encore implémentés)
-RESOLVED=$(cat "$PLAN_DIR"/*.md 2>/dev/null | grep -cE "✅|❌" || echo "0")
-PENDING=$(cat "$PLAN_DIR"/*.md 2>/dev/null | grep -c "⏳" || echo "0")
+RESOLVED=$(cat "$PLAN_DIR"/*.md 2>/dev/null | grep -cE "✅|❌" || true)
+RESOLVED=${RESOLVED:-0}
+PENDING=$(cat "$PLAN_DIR"/*.md 2>/dev/null | grep -c "⏳" || true)
+PENDING=${PENDING:-0}
 
 if [ "$PENDING" -ge 1 ]; then
     ok "$PENDING AC en statut ⏳ (à implémenter)"

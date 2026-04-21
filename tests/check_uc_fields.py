@@ -22,7 +22,7 @@ REQUIRED_FIELDS = [
     "Critères d'acceptation",
 ]
 
-UC_HEADER_RE = re.compile(r"^#{3,5}\s+\*{0,2}(UC-\d+)\*{0,2}\s*:", re.MULTILINE)
+UC_HEADER_RE = re.compile(r"^#{3,5}\s+\*{0,2}(UC-(?:[A-Z]{3,4}-)?\d+)\*{0,2}\s*:", re.MULTILINE)
 
 
 def extract_uc_blocks(text):

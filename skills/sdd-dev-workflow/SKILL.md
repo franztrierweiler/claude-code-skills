@@ -7,15 +7,26 @@ description: >
 argument-hint: <nom-lot>
 disable-model-invocation: true
 metadata:
-  version: "2.1.0"
+  version: "2.3.0"
   author: "Franz TRIERWEILER"
 license: "MIT"
 ---
 
 # Workflow de développement d'un lot
 
-Version : 2.1.0
-Date : 2026-04-03
+Version : 2.3.0
+Date : 2026-04-21
+
+## Barre de progression — OBLIGATION STRICTE
+
+**Chaque réponse produite sous ce skill DOIT commencer par la barre de
+progression ci-dessous. AUCUNE EXCEPTION. Cela inclut le premier message.**
+
+```
+🏗️ sdd-dev-workflow v2.3.0 · Lot: $ARGUMENTS [barre] — [Étape]
+```
+
+Caractère plein : `█` — Caractère vide : `░`.
 
 ## Argument
 
@@ -33,11 +44,12 @@ Vérifier que les fichiers requis existent :
    ```
    Arrêter.
 
-2. **`docs/SPEC.md`** — obligatoire. Si absent :
+2. **Documents SPEC** (`docs/SPEC-racine-*.md` et/ou `docs/SPEC-extension-*.md`) —
+   au moins un document obligatoire. Si aucun trouvé :
    ```
-   ❌ docs/SPEC.md introuvable. Lancer sdd-uc-spec-write d'abord.
+   ❌ Aucun document de spécification trouvé dans docs/. Lancer sdd-uc-spec-write d'abord.
    ```
-   Arrêter.
+   Arrêter. Si trouvé(s), lister les documents et demander confirmation.
 
 3. **`docs/ARCHITECTURE.md`** — obligatoire. Si absent :
    ```
@@ -58,7 +70,7 @@ Chercher le fichier `qa/qa-results/rapport-$ARGUMENTS.md`.
 
 Afficher :
 ```
-🔧 sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS [░░░░░] — REPRISE QA
+🔧 sdd-dev-workflow v2.3.0 · Lot: $ARGUMENTS [░░░░░] — REPRISE QA
 
 Rapport QA : N scénarios en échec, M points de revue de code à corriger.
 
@@ -78,7 +90,7 @@ Je cible ces corrections uniquement.
 
 Afficher :
 ```
-🏗️ sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS [░░░░░] — Développement initial
+🏗️ sdd-dev-workflow v2.3.0 · Lot: $ARGUMENTS [░░░░░] — Développement initial
 ```
 
 ## 3. Chargement du contexte
@@ -88,7 +100,8 @@ Lire les fichiers suivants :
 | Fichier | Ce qu'on en extrait |
 |---|---|
 | `plan/$ARGUMENTS.md` | Fonctionnalités du lot, critères d'acceptation (AC), dépendances |
-| `docs/SPEC.md` | UC concernés, règles de gestion (RG), critères d'acceptation (CA-UC) |
+| `docs/SPEC-racine-*.md` | UC concernés, règles de gestion (RG), critères d'acceptation (CA-UC) |
+| `docs/SPEC-extension-*.md` | UC préfixés et dépendances (si présent) |
 | `docs/ARCHITECTURE.md` | Stack technique (§ 3), composants concernés (§ 4.2), structure du répertoire (§ 7), principes d'architecture (§ 2) |
 | `docs/SECURITY.md` | Principes de développement sécurisé (§ 6), exigences pertinentes |
 | `docs/DEPLOYMENT.md` | Configuration par environnement (§ 4) si pertinent |
@@ -115,11 +128,11 @@ Pour chaque fonctionnalité du lot, afficher la progression et numéroter
 les itérations :
 
 ```
-🏗️ sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS [█░░░░] Fonctionnalité 1/M · Itération 1
+🏗️ sdd-dev-workflow v2.3.0 · Lot: $ARGUMENTS [█░░░░] Fonctionnalité 1/M · Itération 1
 ```
 
 1. **Écrire les tests unitaires d'abord** — Traduire les AC en tests.
-   Les CA-UC du SPEC.md sont directement convertibles en assertions.
+   Les CA-UC de la spec sont directement convertibles en assertions.
    Nommer les tests de manière traçable (ex: `test_ca_uc_001_01_...`).
 2. **Implémenter** — Coder la fonctionnalité en respectant :
    - La structure du répertoire de ARCHITECTURE.md § 7
@@ -131,13 +144,13 @@ les itérations :
    - ❌ AC non satisfait (raison + action corrective)
 5. **Si des AC ne sont pas satisfaits**, incrémenter le compteur et itérer :
    ```
-   🏗️ sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS [█░░░░] Fonctionnalité 1/M · Itération 2
+   🏗️ sdd-dev-workflow v2.3.0 · Lot: $ARGUMENTS [█░░░░] Fonctionnalité 1/M · Itération 2
    AC non satisfaits : CA-UC-001-02 (raison), CA-UC-001-05 (raison)
    ```
    Reprendre à l'étape 2 avec les corrections ciblées.
 6. **Signaler la fin de la fonctionnalité :**
    ```
-   🏗️ sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS [█░░░░] ✅ Fonctionnalité 1/M — X/Y AC — 2 itérations
+   🏗️ sdd-dev-workflow v2.3.0 · Lot: $ARGUMENTS [█░░░░] ✅ Fonctionnalité 1/M — X/Y AC — 2 itérations
    ```
 
 ### Mode reprise QA
@@ -152,7 +165,7 @@ Pour chaque correction identifiée :
    de régression.
 5. **Signaler la correction :**
    ```
-   🔧 sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS [██░░░] Correction N/M — [T01-03] corrigé
+   🔧 sdd-dev-workflow v2.3.0 · Lot: $ARGUMENTS [██░░░] Correction N/M — [T01-03] corrigé
    ```
 
 Pour les points de revue de code : appliquer les corrections et signaler.
@@ -173,7 +186,7 @@ Quand toutes les fonctionnalités (ou corrections) sont implémentées :
 
 Afficher :
 ```
-🏗️ sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS [████░] Vérification globale
+🏗️ sdd-dev-workflow v2.3.0 · Lot: $ARGUMENTS [████░] Vérification globale
 Tests : X/Y passent
 AC : M/M satisfaits (ou N non satisfaits)
 ```
@@ -206,13 +219,13 @@ Format du rapport dans le plan :
 
 **Si tous les AC sont satisfaits :**
 ```
-🏗️ sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS [█████] ✅ Terminé — tous les AC satisfaits
+🏗️ sdd-dev-workflow v2.3.0 · Lot: $ARGUMENTS [█████] ✅ Terminé — tous les AC satisfaits
 Prochaine étape : 🧪 /sdd-qa-workflow $ARGUMENTS
 ```
 
 **Si des AC restent non satisfaits :**
 ```
-🏗️ sdd-dev-workflow v2.1.0 · Lot: $ARGUMENTS [████░] ⚠️ N AC non satisfaits
+🏗️ sdd-dev-workflow v2.3.0 · Lot: $ARGUMENTS [████░] ⚠️ N AC non satisfaits
 [Liste des AC en échec avec la raison]
 Le plan a été mis à jour. Relancer 🏗️ /sdd-dev-workflow $ARGUMENTS pour continuer.
 ```

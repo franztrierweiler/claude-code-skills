@@ -43,6 +43,31 @@ count_unique() {
     grep -oE "$pattern" "$file" 2>/dev/null | sort -u | wc -l
 }
 
+# Vérifie le cartouche d'un document system-design
+# Champs attendus : Document, Version, Date, Auteur, Généré par (sdd-uc-system-design)
+# Pas d'UUID, pas de Type, pas de Statut
+check_cartouche_sd() {
+    local file="$1"
+    local has_blockquote
+    has_blockquote=$(grep -c '^> .*|' "$file" 2>/dev/null || echo "0")
+    if [ "$has_blockquote" -lt 3 ]; then
+        ko "Cartouche (blockquote table) absent"
+        return
+    fi
+    for field in "Document" "Version" "Date" "Auteur" "Généré par"; do
+        if grep -q "^> .*\*\*$field\*\*" "$file" 2>/dev/null; then
+            ok "Cartouche — $field"
+        else
+            ko "Cartouche — $field absent"
+        fi
+    done
+    if grep -q "sdd-uc-system-design v[0-9]\+\.[0-9]\+\.[0-9]\+" "$file" 2>/dev/null; then
+        ok "Cartouche — skill et version détectés"
+    else
+        ko "Cartouche — Généré par : format invalide"
+    fi
+}
+
 check_section() {
     local file="$1"
     local section="$2"
@@ -83,6 +108,8 @@ ARCH="$DOCS_DIR/ARCHITECTURE.md"
 if [ ! -f "$ARCH" ]; then
     skip "ARCHITECTURE.md absent — lancer le skill d'abord"
 else
+    echo "  Cartouche :"
+    check_cartouche_sd "$ARCH"
     echo "  Sections obligatoires :"
     for section in \
         "Vue d'ensemble" \
@@ -156,6 +183,8 @@ DEPL="$DOCS_DIR/DEPLOYMENT.md"
 if [ ! -f "$DEPL" ]; then
     skip "DEPLOYMENT.md absent — lancer le skill d'abord"
 else
+    echo "  Cartouche :"
+    check_cartouche_sd "$DEPL"
     echo "  Sections obligatoires (tronc commun) :"
     for section in \
         "Vue d'ensemble" \
@@ -201,6 +230,8 @@ SEC="$DOCS_DIR/SECURITY.md"
 if [ ! -f "$SEC" ]; then
     skip "SECURITY.md absent — lancer le skill d'abord"
 else
+    echo "  Cartouche :"
+    check_cartouche_sd "$SEC"
     echo "  Sections obligatoires :"
     for section in \
         "Vue d'ensemble" \
@@ -252,6 +283,8 @@ COMP="$DOCS_DIR/COMPLIANCE_MATRIX.md"
 if [ ! -f "$COMP" ]; then
     skip "COMPLIANCE_MATRIX.md absent (normal si pas de cadre réglementaire)"
 else
+    echo "  Cartouche :"
+    check_cartouche_sd "$COMP"
     echo "  Sections obligatoires :"
     for section in \
         "Contexte réglementaire" \

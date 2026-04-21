@@ -7,14 +7,14 @@ description: >
 argument-hint: (sans argument)
 disable-model-invocation: true
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   author: "Franz TRIERWEILER"
 license: "MIT"
 ---
 
 # Planification du développement en lots
 
-Version : 1.0.0
+Version : 1.1.0
 Date : 2026-04-03
 
 ## Identification
@@ -22,18 +22,24 @@ Date : 2026-04-03
 Avant toute autre sortie, afficher :
 
 ```
-🗺️ sdd-plan v1.0.0
+🗺️ sdd-plan v1.1.0
 ```
 
 ## 1. Garde à l'entrée
 
 Vérifier que les fichiers requis existent :
 
-1. **`docs/SPEC.md`** — obligatoire. Si absent :
+1. **Documents SPEC** (`docs/SPEC-racine-*.md` et/ou `docs/SPEC-extension-*.md`) —
+   au moins un document obligatoire. Si aucun trouvé :
    ```
-   ❌ docs/SPEC.md introuvable. Lancer 🖊️ sdd-uc-spec-write d'abord.
+   ❌ Aucun document de spécification trouvé dans docs/. Lancer 🖊️ sdd-uc-spec-write d'abord.
    ```
-   Arrêter.
+   Arrêter. Si trouvé(s), lister les documents et demander confirmation :
+   ```
+   📄 Documents SPEC détectés :
+   - [liste des fichiers]
+   Je les utilise comme référence. OK ?
+   ```
 
 2. **`docs/ARCHITECTURE.md`** — obligatoire. Si absent :
    ```
@@ -54,7 +60,8 @@ Lire les fichiers suivants :
 
 | Fichier | Ce qu'on en extrait |
 |---|---|
-| `docs/SPEC.md` | UC (identifiants, intitulés, priorité, relations include/extend), packages (niveau 2 / niveau 1), ENF |
+| `docs/SPEC-racine-*.md` | UC (identifiants, intitulés, priorité, relations include/extend), packages (niveau 2 / niveau 1), ENF (si présent) |
+| `docs/SPEC-extension-*.md` | UC préfixés, dépendances racine, ENF spécifiques (si présent) |
 | `docs/ARCHITECTURE.md` | Composants (§ 4.2), matrice UC → Composants, dépendances entre composants, stack technique (§ 3.1), structure du répertoire (§ 7) |
 | `docs/SECURITY.md` | Exigences de sécurité impactant l'ordre de développement (ex: auth d'abord) |
 
@@ -81,7 +88,7 @@ ces contraintes :
 Présenter le découpage sous cette forme :
 
 ```
-🗺️ sdd-plan v1.0.0 [██░░] Proposition de découpage — N lots
+🗺️ sdd-plan v1.1.0 [██░░] Proposition de découpage — N lots
 
 Lot 1 : [Nom] (priorité: Critique)
   UC : UC-001, UC-002, UC-003
@@ -127,7 +134,7 @@ Après validation par le pilote, produire un fichier par lot dans `plan/` :
 
 | UC | Intitulé | Priorité |
 |---|---|---|
-| UC-XXX | [Intitulé du SPEC.md] | [Critique / Important / Souhaité] |
+| UC-XXX | [Intitulé de la spec] | [Critique / Important / Souhaité] |
 
 ## Composants impactés
 
@@ -153,7 +160,7 @@ Après validation par le pilote, produire un fichier par lot dans `plan/` :
 
 | AC | Description | Statut | Justification | Date |
 |---|---|---|---|---|
-| CA-UC-XXX-YY | [Description issue du SPEC.md] | ⏳ | | |
+| CA-UC-XXX-YY | [Description issue de la spec] | ⏳ | | |
 | CA-UC-XXX-YY | [Description] | ⏳ | | |
 
 ## Prochaines actions
@@ -166,7 +173,7 @@ Après validation par le pilote, produire un fichier par lot dans `plan/` :
 Après production de tous les fichiers, afficher :
 
 ```
-🗺️ sdd-plan v1.0.0 [████] Planification terminée — N lots produits
+🗺️ sdd-plan v1.1.0 [████] Planification terminée — N lots produits
 
 | Lot | Fichier | UC | Dépendances | Priorité |
 |-----|---------|-----|------------|----------|

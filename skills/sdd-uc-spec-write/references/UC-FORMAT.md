@@ -2,10 +2,13 @@
 
 ## Structure d'un cas d'utilisation
 
-Chaque cas d'utilisation suit ce format exact :
+Chaque cas d'utilisation suit ce format exact. Dans un document racine, les
+identifiants n'ont pas de préfixe (`UC-XXX`). Dans un document d'extension,
+tous les identifiants portent le préfixe de l'extension (`UC-PFX-XXX`).
+Les exemples ci-dessous utilisent `[PFX-]` pour indiquer la partie optionnelle.
 
 ```markdown
-### **UC-XXX** : [Intitulé]
+### **UC-[PFX-]XXX** : [Intitulé]
 
 **Résumé :** [Description en une à trois phrases de ce que fait ce cas d'utilisation.]
 
@@ -22,16 +25,16 @@ Chaque cas d'utilisation suit ce format exact :
 elle peut être traitée par le service logistique."]
 
 **Relations :**
-- Include : [UC-XXX — raison] (ou "Aucune")
-- Extend : [UC-XXX — condition] (ou "Aucune")
-- Généralisation : [UC-XXX — spécialisation] (ou "Aucune")
+- Include : [UC-[PFX-]XXX — raison] (ou "Aucune")
+- Extend : [UC-[PFX-]XXX — condition] (ou "Aucune")
+- Généralisation : [UC-[PFX-]XXX — spécialisation] (ou "Aucune")
 
 **Étapes (cas nominal) :**
 
 | # | Direction | Description |
 |---|---|---|
 | 1a | → Acteur | [L'acteur fait quelque chose.] |
-| 1b | ← Système | [Le système réagit. (IHM-XXX si applicable)] |
+| 1b | ← Système | [Le système réagit. (IHM-[PFX-]XXX si applicable)] |
 | 2a | → Acteur | [L'acteur fait quelque chose.] |
 | 2b | ← Système | [Le système réagit.] |
 
@@ -39,28 +42,28 @@ elle peut être traitée par le service logistique."]
 
 | Id étape | Condition | Réaction du système |
 |---|---|---|
-| 2b | Si [condition] | [Réaction. Suite à l'étape X / Dérouler UC-XXX] |
+| 2b | Si [condition] | [Réaction. Suite à l'étape X / Dérouler UC-[PFX-]XXX] |
 
 **Règles de gestion :**
 
 | n° RG | Id étape | Énoncé |
 |---|---|---|
-| RG-XXXX | [Nb] | [Énoncé de la règle de gestion.] |
+| RG-[PFX-]XXXX | [Nb] | [Énoncé de la règle de gestion.] |
 
 **IHM :**
 
 | Id IHM | Description |
 |---|---|
-| IHM-XXX | [Description de l'écran ou copie d'écran fournie par l'utilisateur.] |
+| IHM-[PFX-]XXX | [Description de l'écran ou copie d'écran fournie par l'utilisateur.] |
 
 **Objets participants :** [Liste des entités métier impliquées dans ce UC.]
 
-**Contraintes non fonctionnelles :** [Contraintes spécifiques à ce UC, ou "Voir ENF-XXX".]
+**Contraintes non fonctionnelles :** [Contraintes spécifiques à ce UC, ou "Voir ENF-[PFX-]XXX".]
 
 **Critères d'acceptation / Cas de tests :**
 
-- **CA-UC-XXX-01 :** Soit [contexte initial], Quand [action], Alors [résultat attendu].
-- **CA-UC-XXX-02 :** Soit [contexte initial], Quand [action], Alors [résultat attendu].
+- **CA-UC-[PFX-]XXX-01 :** Soit [contexte initial], Quand [action], Alors [résultat attendu].
+- **CA-UC-[PFX-]XXX-02 :** Soit [contexte initial], Quand [action], Alors [résultat attendu].
 ```
 
 ## Règles de rédaction des UC
@@ -94,8 +97,13 @@ elle peut être traitée par le service logistique."]
   identifiants sont référencés dans le code pour assurer la traçabilité.
 
 - **Visibilité de la référence UC.** L'identifiant UC dans le titre du cas
-  d'utilisation est toujours en gras : `### **UC-XXX** : [Intitulé]`.
+  d'utilisation est toujours en gras : `### **UC-[PFX-]XXX** : [Intitulé]`.
   Cela garantit un repérage visuel immédiat lors de la lecture du document.
+
+- **Identifiants dans les extensions.** Dans un document d'extension, tous les
+  identifiants portent le préfixe de l'extension (3-4 lettres). Les références
+  vers des UC ou RG de la spec racine utilisent les identifiants sans préfixe.
+  Exemple : `UC-ALR-001` (extension Alertes), `UC-005` (spec racine).
 
 ## Critères d'acceptation — format Soit/Quand/Alors
 

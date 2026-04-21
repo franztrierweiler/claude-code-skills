@@ -1,6 +1,6 @@
-Le fichier docs/SPEC.md contient la spécification complète du projet MaintiX, structurée par cas d'utilisation (format sdd-uc-spec-write).
+Le fichier docs/SPEC-racine-*.md contient la spécification complète du projet MaintiX, structurée par cas d'utilisation (format sdd-uc-spec-write). Identifie-le dans docs/.
 
-Produis les documents de conception technique en suivant le processus complet du skill sdd-uc-system-design, sans poser de questions. Considère chaque information du SPEC.md comme validée par le pilote du projet.
+Produis les documents de conception technique en suivant le processus complet du skill sdd-uc-system-design, sans poser de questions. Considère chaque information de la spécification comme validée par le pilote du projet.
 
 Pour les questions qui nécessiteraient normalement une réponse du pilote, utilise les hypothèses suivantes :
 

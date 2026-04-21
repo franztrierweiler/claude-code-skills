@@ -96,3 +96,5 @@ Quand l'utilisateur demande de modifier une spec existante, suis ce processus :
    de l'implémentation correspondante. Liste-les explicitement :
    "UC impactés côté code : UC-012 (déprécié → retirer), UC-048/049
    (nouveaux → implémenter), RG-0025 (nouvelle règle → implémenter)."
+   Si des fichiers `docs/SPEC-extension-*.md` référencent des identifiants
+   modifiés ou dépréciés, signaler les impacts sur ces extensions.

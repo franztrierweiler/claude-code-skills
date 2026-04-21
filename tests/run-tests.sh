@@ -1,7 +1,7 @@
 #!/bin/bash
 # =============================================================================
 # Exécution des tests de régression des skills SDD
-# Usage: ./tests/run-tests.sh [init|uc-spec|review|all]
+# Usage: ./tests/run-tests.sh [init|uc-spec|uc-spec-extension|uc-system-design|plan|dev-workflow|qa-workflow|brief|tuto|review|review-extension|all]
 # Appelé par le Makefile — ne pas exécuter directement avant test-setup.
 # Requiert: claude, python3
 # =============================================================================
@@ -74,8 +74,11 @@ run_init() {
 
 run_uc_spec() {
     echo ""
-    echo "=== Test sdd-uc-spec-write — SPEC.md MaintiX ==="
+    echo "=== Test sdd-uc-spec-write — SPEC MaintiX ==="
     echo ""
+
+    # Nettoyage des anciens SPEC pour forcer la regénération
+    rm -f "$TEST_OUT/docs/SPEC.md" "$TEST_OUT"/docs/SPEC-*.md
 
     mkdir -p "$TEST_LOG"
     cd "$TEST_OUT"
@@ -85,21 +88,55 @@ run_uc_spec() {
         "$TEST_LOG/uc-spec.log"
 
     echo ""
-    if [ -f "$TEST_OUT/docs/SPEC.md" ]; then
-        echo "  ✓ $TEST_OUT/docs/SPEC.md généré"
+    local spec_file
+    spec_file=$(find "$TEST_OUT/docs" -maxdepth 1 -name 'SPEC-*.md' -type f 2>/dev/null | head -1)
+    if [ -n "$spec_file" ]; then
+        echo "  ✓ $spec_file généré"
     else
-        echo "  ÉCHEC — docs/SPEC.md non produit (voir $TEST_LOG/uc-spec.log)"
+        echo "  ÉCHEC — aucun docs/SPEC-*.md produit (voir $TEST_LOG/uc-spec.log)"
+        exit 1
+    fi
+}
+
+run_uc_spec_extension() {
+    echo ""
+    echo "=== Test sdd-uc-spec-write — Extension Alertes MaintiX ==="
+    echo ""
+
+    local spec_racine
+    spec_racine=$(find "$TEST_OUT/docs" -maxdepth 1 -name 'SPEC-racine-*.md' -type f 2>/dev/null | head -1)
+    if [ -z "$spec_racine" ]; then
+        echo "  ÉCHEC — aucun docs/SPEC-racine-*.md trouvé. Lancer 'make test-uc-spec-racine' d'abord."
+        exit 1
+    fi
+
+    mkdir -p "$TEST_LOG"
+    cd "$TEST_OUT"
+
+    run_claude \
+        "Lis le fichier $PROMPTS/prompt-uc-spec-extension.md et exécute les instructions qu'il contient." \
+        "$TEST_LOG/uc-spec-extension.log"
+
+    echo ""
+    local ext_file
+    ext_file=$(find "$TEST_OUT/docs" -maxdepth 1 -name 'SPEC-extension-*.md' -type f 2>/dev/null | head -1)
+    if [ -n "$ext_file" ]; then
+        echo "  ✓ $ext_file généré"
+    else
+        echo "  ÉCHEC — aucun docs/SPEC-extension-*.md produit (voir $TEST_LOG/uc-spec-extension.log)"
         exit 1
     fi
 }
 
 run_review() {
     echo ""
-    echo "=== Review — Évaluation du SPEC.md par Claude ==="
+    echo "=== Review — Évaluation du SPEC par Claude ==="
     echo ""
 
-    if [ ! -f "$TEST_OUT/docs/SPEC.md" ]; then
-        echo "  ÉCHEC — docs/SPEC.md absent. Lancer 'make test-uc-spec' d'abord."
+    local spec_racine
+    spec_racine=$(find "$TEST_OUT/docs" -maxdepth 1 -name 'SPEC-racine-*.md' -type f 2>/dev/null | head -1)
+    if [ -z "$spec_racine" ]; then
+        echo "  ÉCHEC — aucun docs/SPEC-racine-*.md trouvé. Lancer 'make test-uc-spec-racine' d'abord."
         exit 1
     fi
 
@@ -111,13 +148,35 @@ run_review() {
         "$TEST_LOG/review.log"
 }
 
+run_review_extension() {
+    echo ""
+    echo "=== Review — Évaluation du SPEC extension par Claude ==="
+    echo ""
+
+    local ext_count
+    ext_count=$(find "$TEST_OUT/docs" -maxdepth 1 -name 'SPEC-extension-*.md' -type f 2>/dev/null | wc -l)
+    if [ "$ext_count" -eq 0 ]; then
+        echo "  ÉCHEC — aucun docs/SPEC-extension-*.md trouvé. Lancer 'make test-uc-spec-extension' d'abord."
+        exit 1
+    fi
+
+    mkdir -p "$TEST_LOG"
+    cd "$TEST_OUT"
+
+    run_claude \
+        "Lis le fichier $PROMPTS/prompt-review-spec-extension.md et exécute les instructions qu'il contient." \
+        "$TEST_LOG/review-extension.log"
+}
+
 run_uc_system_design() {
     echo ""
     echo "=== Test sdd-uc-system-design — Documents de conception MaintiX ==="
     echo ""
 
-    if [ ! -f "$TEST_OUT/docs/SPEC.md" ]; then
-        echo "  ÉCHEC — docs/SPEC.md absent. Lancer 'make test-uc-spec' d'abord."
+    local spec_racine
+    spec_racine=$(find "$TEST_OUT/docs" -maxdepth 1 -name 'SPEC-racine-*.md' -type f 2>/dev/null | head -1)
+    if [ -z "$spec_racine" ]; then
+        echo "  ÉCHEC — aucun docs/SPEC-racine-*.md trouvé. Lancer 'make test-uc-spec-racine' d'abord."
         exit 1
     fi
 
@@ -255,6 +314,11 @@ run_plan() {
         echo "  ÉCHEC — aucun fichier plan/*.md produit (voir $TEST_LOG/plan.log)"
         exit 1
     fi
+
+    # Snapshot du plan initial avant que sdd-dev-workflow ne marque des AC comme résolus.
+    # check_plan_output.sh consomme plan-initial/ quand il existe.
+    rm -rf "$TEST_OUT/plan-initial"
+    cp -r "$TEST_OUT/plan" "$TEST_OUT/plan-initial"
 }
 
 run_dev_workflow() {
@@ -321,6 +385,9 @@ case "$ACTION" in
     uc-spec)
         run_uc_spec
         ;;
+    uc-spec-extension)
+        run_uc_spec_extension
+        ;;
     uc-system-design)
         run_uc_system_design
         ;;
@@ -342,10 +409,15 @@ case "$ACTION" in
     review)
         run_review
         ;;
+    review-extension)
+        run_review_extension
+        ;;
     all)
         run_init
         run_uc_spec
+        run_uc_spec_extension
         run_review
+        run_review_extension
         run_uc_system_design
         run_plan
         run_dev_workflow
@@ -355,7 +427,7 @@ case "$ACTION" in
         echo "Tous les tests ont été exécutés."
         ;;
     *)
-        echo "Usage: $0 [init|uc-spec|uc-system-design|plan|dev-workflow|qa-workflow|brief|tuto|review|all]"
+        echo "Usage: $0 [init|uc-spec|uc-spec-extension|uc-system-design|plan|dev-workflow|qa-workflow|brief|tuto|review|review-extension|all]"
         exit 1
         ;;
 esac

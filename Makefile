@@ -17,24 +17,32 @@
 #   make zip-check  — Affiche le contenu des ZIPs pour vérification
 #   make clean-dist — Supprime le répertoire dist/
 #
-# Tests :
-#   make test                     — Lance tous les tests
-#   make test-init                — Génère le CLAUDE.md via /init + template SDD
-#   make test-uc-spec             — Teste sdd-uc-spec-write sur MaintiX
-#   make test-review              — Claude évalue la complétude du SPEC.md
-#   make test-check               — Contrôles déterministes (seuils, valeurs métier)
-#   make test-uc-system-design    — Teste sdd-uc-system-design sur MaintiX
-#   make test-system-design       — Contrôles structurels du skill sdd-uc-system-design
-#   make test-system-design-check — Contrôles des documents produits
-#   make test-plan                — Planifie le développement en lots
-#   make test-plan-check          — Contrôles des fichiers de plan
-#   make test-dev-workflow        — Développe le premier lot via sdd-dev-workflow
-#   make test-dev-check           — Contrôles des sorties du développement
-#   make test-qa-workflow         — Lance la QA sur le premier lot
-#   make test-qa-check            — Contrôles des sorties QA
-#   make test-brief               — Lance /sdd-brief sur le projet de test
-#   make test-brief-check         — Contrôles de la sortie du brief
-#   make test-tuto                — Affiche le tutoriel SDD (pas de contrôle)
+# Tests — Génération (Claude) :
+#   make test-init                              Génère le CLAUDE.md
+#   make test-uc-spec-racine                    Produit le SPEC racine
+#   make test-uc-spec-extension                 Produit un SPEC extension
+#   make test-uc-system-design                  Produit les docs de conception
+#   make test-plan                              Planifie le développement en lots
+#   make test-dev-workflow                      Développe le premier lot
+#   make test-qa-workflow                       Lance la QA sur le premier lot
+#   make test-brief                             Lance /sdd-brief
+#   make test-tuto                              Affiche le tutoriel SDD
+#
+# Tests — Revue qualité (Claude) :
+#   make test-uc-spec-racine-review-content     Claude évalue le SPEC racine vs CDC
+#   make test-uc-spec-extension-review-content  Claude évalue le SPEC extension
+#
+# Tests — Contrôles déterministes :
+#   make test-skills-check-structure            Contrôles structurels de tous les skills
+#   make test-uc-spec-racine-check-structure    Contrôles du SPEC racine
+#   make test-uc-spec-extension-check-structure Contrôles du SPEC extension
+#   make test-uc-system-design-check-structure  Contrôles des documents de conception
+#   make test-plan-check-structure              Contrôles des fichiers de plan
+#   make test-dev-workflow-check-structure       Contrôles des sorties du développement
+#   make test-qa-workflow-check-structure        Contrôles des sorties QA
+#   make test-brief-check-structure             Contrôles de la sortie du brief
+#
+# Utilitaires :
 #   make test-setup               — Prépare l'environnement de test
 #   make clean-test               — Supprime les sorties de test
 # =============================================================================
@@ -50,12 +58,17 @@ TEST_LOG     := $(TEST_DIR)/log
 
 .PHONY: help install copy copy-dry diff status check-deps \
         zip zip-all zip-check clean-dist \
-        test test-init test-uc-spec test-uc-system-design test-review \
-        test-check test-system-design test-system-design-check \
-        test-plan test-plan-check test-dev-workflow test-dev-check \
-        test-qa-workflow test-qa-check \
-        test-brief test-brief-check test-tuto \
-        test-setup clean-test
+        test test-init test-uc-spec-racine test-uc-spec-extension \
+        test-uc-system-design test-plan test-dev-workflow test-qa-workflow \
+        test-brief test-tuto \
+        test-uc-spec-racine-review-content test-uc-spec-extension-review-content \
+        test-skills-check-structure \
+        test-uc-spec-racine-check-structure test-uc-spec-extension-check-structure \
+        test-uc-system-design-check-structure \
+        test-plan-check-structure test-dev-workflow-check-structure \
+        test-qa-workflow-check-structure test-brief-check-structure \
+        test-setup clean-test \
+        clean-dist
 
 .DEFAULT_GOAL := help
 
@@ -81,25 +94,34 @@ help:
 	@echo "    make zip-check  Affiche le contenu des ZIPs"
 	@echo "    make clean-dist Supprime le répertoire dist/"
 	@echo ""
-	@echo "  Tests :"
-	@echo "    make test                       Lance tous les tests"
-	@echo "    make test-init                  Génère le CLAUDE.md"
-	@echo "    make test-uc-spec               Produit le SPEC.md (sdd-uc-spec-write)"
-	@echo "    make test-uc-system-design      Produit les docs de conception (sdd-uc-system-design)"
-	@echo "    make test-review                Claude évalue la complétude du SPEC.md"
-	@echo "    make test-check                 Contrôles déterministes (seuils, valeurs)"
-	@echo "    make test-system-design         Contrôles structurels du skill"
-	@echo "    make test-system-design-check   Contrôles des documents produits"
-	@echo "    make test-plan                  Planifie le développement en lots"
-	@echo "    make test-plan-check            Contrôles des fichiers de plan"
-	@echo "    make test-dev-workflow          Développe le premier lot"
-	@echo "    make test-dev-check             Contrôles des sorties du développement"
-	@echo "    make test-qa-workflow           Lance la QA sur le premier lot"
-	@echo "    make test-qa-check              Contrôles des sorties QA"
-	@echo "    make test-brief                 Lance /sdd-brief sur le projet de test"
-	@echo "    make test-brief-check           Contrôles de la sortie du brief"
-	@echo "    make test-tuto                  Affiche le tutoriel SDD (pas de contrôle)"
-	@echo "    make clean-test                 Supprime les sorties de test"
+	@echo "  Tests — Génération (Claude) :"
+	@echo "    make test-init                              Génère le CLAUDE.md"
+	@echo "    make test-uc-spec-racine                    Produit le SPEC racine"
+	@echo "    make test-uc-spec-extension                 Produit un SPEC extension"
+	@echo "    make test-uc-system-design                  Produit les docs de conception"
+	@echo "    make test-plan                              Planifie le développement en lots"
+	@echo "    make test-dev-workflow                      Développe le premier lot"
+	@echo "    make test-qa-workflow                       Lance la QA sur le premier lot"
+	@echo "    make test-brief                             Lance /sdd-brief"
+	@echo "    make test-tuto                              Affiche le tutoriel SDD"
+	@echo ""
+	@echo "  Tests — Revue qualité (Claude) :"
+	@echo "    make test-uc-spec-racine-review-content     Claude évalue le SPEC racine vs CDC"
+	@echo "    make test-uc-spec-extension-review-content  Claude évalue le SPEC extension"
+	@echo ""
+	@echo "  Tests — Contrôles déterministes :"
+	@echo "    make test-skills-check-structure             Contrôles structurels de tous les skills"
+	@echo "    make test-uc-spec-racine-check-structure     Contrôles du SPEC racine"
+	@echo "    make test-uc-spec-extension-check-structure  Contrôles du SPEC extension"
+	@echo "    make test-uc-system-design-check-structure   Contrôles des documents de conception"
+	@echo "    make test-plan-check-structure               Contrôles des fichiers de plan"
+	@echo "    make test-dev-workflow-check-structure        Contrôles des sorties du développement"
+	@echo "    make test-qa-workflow-check-structure         Contrôles des sorties QA"
+	@echo "    make test-brief-check-structure              Contrôles de la sortie du brief"
+	@echo ""
+	@echo "  Utilitaires :"
+	@echo "    make test-setup    Prépare l'environnement de test"
+	@echo "    make clean-test    Supprime les sorties de test"
 	@echo ""
 	@echo "  Configuration :"
 	@echo "    Créer un fichier targets.txt avec un chemin absolu par ligne."
@@ -243,32 +265,32 @@ zip-check:
 clean-dist:
 	@rm -rf $(DIST_DIR)
 
-# -----------------------------------------------------------------------------
-# Tests — validation du skill sdd-uc-spec-write avec un CDC de référence
-# -----------------------------------------------------------------------------
+# =============================================================================
+# Tests
+# =============================================================================
 #
 # CDC de test : MaintiX (maintenance industrielle)
 #
 # Le répertoire tests/output/ est le projet simulé :
 #   output/.claude/     skills
 #   output/CLAUDE.md    généré par test-init
-#   output/docs/        CDC (copié) + SPEC.md (généré par test-uc-spec)
-#
-# Flux :
-#   make test          Génère CLAUDE.md + SPEC.md
-#   make test-check    Contrôles déterministes (seuils, valeurs métier)
-#   make test-review   Claude évalue la complétude du SPEC.md vs le CDC
-# -----------------------------------------------------------------------------
+#   output/docs/        CDC (copié) + SPEC (généré par test-uc-spec-racine)
+# =============================================================================
 
-# Valeurs métier qui doivent apparaître dans le SPEC.md (séparées par |)
+# Valeurs métier qui doivent apparaître dans le SPEC racine (séparées par |)
 EXPECTED_VALUES := 15 min|4h|24h|10 ans|6 mois|2 ans|300ms|99,5%|200 techniciens|8 heures|30 secondes|10 secondes
 
-# Seuils minimaux d'identifiants dans le SPEC.md
-# Extraits du CDC MaintiX : ~15 UC, ~15 RG, ~15 CA, ~6 ENF
+# Seuils minimaux d'identifiants dans le SPEC racine
 MIN_UC  := 10
 MIN_RG  := 10
 MIN_CA  := 10
 MIN_ENF := 4
+
+# Seuils minimaux pour une extension Alertes capteurs
+MIN_UC_EXT  := 3
+MIN_RG_EXT  := 2
+MIN_CA_EXT  := 3
+MIN_ENF_EXT := 1
 
 # Vérifie les dépendances requises
 check-deps:
@@ -292,14 +314,11 @@ check-deps:
 # Skills à installer dans l'environnement de test
 TEST_SKILLS := $(SKILLS)
 
-# Sauvegarde des skills globaux (~/.claude/skills/ est prioritaire sur
-# les skills projet). On remplace temporairement par les skills UC du
-# repo pour que les tests utilisent les bonnes versions.
+# Sauvegarde des skills globaux
 GLOBAL_SKILLS     := $(HOME)/.claude/skills
 GLOBAL_SKILLS_BAK := $(HOME)/.claude/skills.bak
 
 # Prépare le projet simulé dans output/ : skills + CDC
-# Remplace aussi ~/.claude/skills/ pour éviter les conflits de priorité.
 test-setup: check-deps
 	@echo "Préparation du projet de test dans $(TEST_OUT)/..."
 	@mkdir -p $(TEST_OUT)/.claude/skills $(TEST_OUT)/docs $(TEST_LOG)
@@ -336,90 +355,80 @@ test-setup: check-deps
 	fi
 	@echo ""
 
-# Lance tous les tests
-# Chaîne complète : structurel → génération (Claude) → contrôles déterministes
-test: test-system-design test-setup
+# Lance tous les tests (chaîne complète)
+test: test-skills-check-structure test-setup
 	@echo ""
 	@echo "=== Répertoire cible des tests : $(TEST_OUT) ==="
 	@echo ""
 	$(TEST_DIR)/run-tests.sh all
-	$(MAKE) test-check
-	$(MAKE) test-system-design-check
-	$(MAKE) test-plan-check
-	$(MAKE) test-dev-check
-	$(MAKE) test-qa-check
-	$(MAKE) test-brief-check
+	$(MAKE) test-uc-spec-racine-check-structure
+	$(MAKE) test-uc-spec-extension-check-structure
+	$(MAKE) test-uc-system-design-check-structure
+	$(MAKE) test-plan-check-structure
+	$(MAKE) test-dev-workflow-check-structure
+	$(MAKE) test-qa-workflow-check-structure
+	$(MAKE) test-brief-check-structure
 
-# Génère le CLAUDE.md dans output/
+# -----------------------------------------------------------------------------
+# Tests — Génération (Claude)
+# -----------------------------------------------------------------------------
+
 test-init: test-setup
 	$(TEST_DIR)/run-tests.sh init
 
-# Produit le SPEC.md dans output/docs/
-test-uc-spec: test-setup
+test-uc-spec-racine: test-setup
+	@rm -f $(TEST_OUT)/docs/SPEC.md $(TEST_OUT)/docs/SPEC-*.md
 	$(TEST_DIR)/run-tests.sh uc-spec
 
-# Produit les documents de conception (ARCHITECTURE, DEPLOYMENT, SECURITY, COMPLIANCE)
+test-uc-spec-extension: test-setup
+	$(TEST_DIR)/run-tests.sh uc-spec-extension
+
 test-uc-system-design: test-setup
 	$(TEST_DIR)/run-tests.sh uc-system-design
 
-# Évaluation du SPEC.md par Claude (complétude, cohérence vs CDC)
-test-review: test-setup
-	$(TEST_DIR)/run-tests.sh review
-
-# Contrôles structurels du skill sdd-uc-system-design
-test-system-design:
-	@$(TEST_DIR)/check_system_design.sh
-
-# Contrôles des documents produits par sdd-uc-system-design
-test-system-design-check:
-	@$(TEST_DIR)/check_system_design_output.sh $(TEST_OUT)
-
-# Planifie le développement en lots
 test-plan: test-setup
 	$(TEST_DIR)/run-tests.sh plan
 
-# Contrôles des fichiers de plan (format, traçabilité, couverture UC)
-test-plan-check:
-	@$(TEST_DIR)/check_plan_output.sh $(TEST_OUT)
-
-# Développe le premier lot via sdd-dev-workflow
 test-dev-workflow: test-setup
 	$(TEST_DIR)/run-tests.sh dev-workflow
 
-# Contrôles des sorties du développement (plan, code, tests, Makefile)
-test-dev-check:
-	@$(TEST_DIR)/check_dev_workflow_output.sh $(TEST_OUT)
-
-# Lance /sdd-brief sur le projet de test (après tout le reste)
-test-brief: test-setup
-	$(TEST_DIR)/run-tests.sh brief
-
-# Lance la QA sur le premier lot
 test-qa-workflow: test-setup
 	$(TEST_DIR)/run-tests.sh qa-workflow
 
-# Contrôles des sorties QA (plan de test, revue, rapport)
-test-qa-check:
-	@$(TEST_DIR)/check_qa_workflow_output.sh $(TEST_OUT)
+test-brief: test-setup
+	$(TEST_DIR)/run-tests.sh brief
 
-# Affiche le tutoriel SDD (exécution seule, pas de contrôle déterministe)
 test-tuto: test-setup
 	$(TEST_DIR)/run-tests.sh tuto
 
-# Contrôles de la sortie du brief
-test-brief-check:
-	@$(TEST_DIR)/check_brief_output.sh $(TEST_LOG)/brief.log
+# -----------------------------------------------------------------------------
+# Tests — Revue qualité (Claude)
+# -----------------------------------------------------------------------------
 
-# Contrôles déterministes : sections, seuils d'identifiants, valeurs métier
-test-check:
+test-uc-spec-racine-review-content: test-setup
+	$(TEST_DIR)/run-tests.sh review
+
+test-uc-spec-extension-review-content: test-setup
+	$(TEST_DIR)/run-tests.sh review-extension
+
+# -----------------------------------------------------------------------------
+# Tests — Contrôles déterministes
+# -----------------------------------------------------------------------------
+
+# Contrôles structurels de tous les skills (fichiers, versions, références)
+test-skills-check-structure:
+	@$(TEST_DIR)/check_skills_structure.sh
+
+# Contrôles du SPEC racine (cartouche, sections, UC, identifiants, valeurs métier)
+test-uc-spec-racine-check-structure:
 	@echo ""
-	@echo "=== Contrôles déterministes ==="
+	@echo "=== Contrôles du SPEC racine ==="
 	@fail=0; \
 	echo ""; \
 	echo "--- CLAUDE.md ---"; \
 	out="$(TEST_OUT)/CLAUDE.md"; \
 	if [ ! -f "$$out" ]; then \
-		echo "  SKIP — fichier absent (lancer 'make test' d'abord)"; \
+		echo "  SKIP — fichier absent (lancer 'make test-init' d'abord)"; \
 	else \
 		for section in "Processus global" "Vue d'ensemble" "Méthode de travail" "Règles pour Claude Code" "Workflow de développement" "Commits"; do \
 			if grep -qi "$$section" "$$out"; then \
@@ -431,11 +440,16 @@ test-check:
 		done; \
 	fi; \
 	echo ""; \
-	echo "--- docs/SPEC.md ---"; \
-	out="$(TEST_OUT)/docs/SPEC.md"; \
-	if [ ! -f "$$out" ]; then \
-		echo "  SKIP — fichier absent (lancer 'make test' d'abord)"; \
+	echo "--- docs/SPEC-racine-*.md ---"; \
+	out=$$(find "$(TEST_OUT)/docs" -maxdepth 1 -name 'SPEC-racine-*.md' -type f 2>/dev/null | head -1); \
+	if [ -z "$$out" ]; then \
+		echo "  SKIP — aucun SPEC-racine-*.md trouvé (lancer 'make test-uc-spec-racine' d'abord)"; \
 	else \
+		echo "  Fichier détecté : $$out"; \
+		echo "  Cartouche :"; \
+		if ! python3 $(TEST_DIR)/check_cartouche.py "$$out"; then \
+			fail=1; \
+		fi; \
 		echo "  Sections obligatoires du template :"; \
 		for section in "Contexte et objectifs" "Hors périmètre" "Arborescence des cas d'utilisation" "Cas d'utilisation détaillés" "Exigences non fonctionnelles" "Glossaire projet" "Glossaire SDD"; do \
 			if grep -qi "$$section" "$$out"; then \
@@ -454,9 +468,9 @@ test-check:
 			prefix=$${pair%%:*}; \
 			min=$${pair##*:}; \
 			if [ "$$prefix" = "CA" ]; then \
-					count=$$(grep -oE "CA-(UC|ENF)-[0-9]+-[0-9]+" "$$out" 2>/dev/null | sort -u | wc -l); \
+					count=$$(grep -oE "CA-(UC|ENF)-([A-Z]{3,4}-)?[0-9]+-[0-9]+" "$$out" 2>/dev/null | sort -u | wc -l); \
 				else \
-					count=$$(grep -oP "(?<!CA-)$$prefix-[0-9]+" "$$out" 2>/dev/null | sort -u | wc -l); \
+					count=$$(grep -oP "(?<!CA-)$$prefix-([A-Z]{3,4}-)?[0-9]+" "$$out" 2>/dev/null | sort -u | wc -l); \
 				fi; \
 			if [ "$$count" -ge "$$min" ]; then \
 				echo "    ✓ $$prefix : $$count (min $$min)"; \
@@ -482,8 +496,88 @@ test-check:
 		echo "Des écarts ont été détectés."; \
 	fi
 
-# Supprime le projet simulé et les logs (conserve le CDC, les prompts et les références)
-# Supprime le projet simulé et restaure les skills globaux
+# Contrôles du SPEC extension (cartouche 11 champs, sections, UC préfixés, dépendances)
+test-uc-spec-extension-check-structure:
+	@echo ""
+	@echo "=== Contrôles du SPEC extension ==="
+	@fail=0; \
+	ext=$$(find "$(TEST_OUT)/docs" -maxdepth 1 -name 'SPEC-extension-*.md' -type f 2>/dev/null | head -1); \
+	if [ -z "$$ext" ]; then \
+		echo "  SKIP — aucun SPEC-extension-*.md trouvé (lancer 'make test-uc-spec-extension' d'abord)"; \
+	else \
+		echo "  Fichier détecté : $$ext"; \
+		echo "  Cartouche (extension) :"; \
+		if ! python3 $(TEST_DIR)/check_cartouche.py "$$ext"; then \
+			fail=1; \
+		fi; \
+		echo "  Sections obligatoires du template extension :"; \
+		for section in "Contexte de la fonction" "Dépendances vers la spec racine" "Hors périmètre" "Arborescence des cas d'utilisation" "Cas d'utilisation détaillés" "Glossaire fonction"; do \
+			if grep -qi "$$section" "$$ext"; then \
+				echo "    ✓ \"$$section\""; \
+			else \
+				echo "    ✗ \"$$section\" ABSENT"; \
+				fail=1; \
+			fi; \
+		done; \
+		echo "  Champs structurels par UC :"; \
+		if ! python3 $(TEST_DIR)/check_uc_fields.py "$$ext"; then \
+			fail=1; \
+		fi; \
+		echo "  Identifiants préfixés (seuils minimaux) :"; \
+		for pair in "UC:$(MIN_UC_EXT)" "RG:$(MIN_RG_EXT)" "CA:$(MIN_CA_EXT)" "ENF:$(MIN_ENF_EXT)"; do \
+			prefix=$${pair%%:*}; \
+			min=$${pair##*:}; \
+			if [ "$$prefix" = "CA" ]; then \
+				count=$$(grep -oE "CA-(UC|ENF)-[A-Z]{3,4}-[0-9]+-[0-9]+" "$$ext" 2>/dev/null | sort -u | wc -l); \
+			else \
+				count=$$(grep -oP "(?<!CA-)$$prefix-[A-Z]{3,4}-[0-9]+" "$$ext" 2>/dev/null | sort -u | wc -l); \
+			fi; \
+			if [ "$$count" -ge "$$min" ]; then \
+				echo "    ✓ $$prefix : $$count (min $$min)"; \
+			else \
+				echo "    ✗ $$prefix : $$count < $$min"; \
+				fail=1; \
+			fi; \
+		done; \
+		echo "  Références à la spec racine :"; \
+		if grep -q "Dépendances vers la spec racine" "$$ext" && grep -qE "UC-[0-9]+" "$$ext"; then \
+			echo "    ✓ Table des dépendances avec références racine"; \
+		else \
+			echo "    ✗ Table des dépendances vide ou absente"; \
+			fail=1; \
+		fi; \
+	fi; \
+	echo ""; \
+	if [ "$$fail" -eq 0 ]; then \
+		echo "Tous les contrôles extension passent."; \
+	else \
+		echo "Des écarts ont été détectés."; \
+	fi
+
+# Contrôles des documents produits par sdd-uc-system-design
+test-uc-system-design-check-structure:
+	@$(TEST_DIR)/check_system_design_output.sh $(TEST_OUT)
+
+# Contrôles des fichiers de plan
+test-plan-check-structure:
+	@$(TEST_DIR)/check_plan_output.sh $(TEST_OUT)
+
+# Contrôles des sorties du développement
+test-dev-workflow-check-structure:
+	@$(TEST_DIR)/check_dev_workflow_output.sh $(TEST_OUT)
+
+# Contrôles des sorties QA
+test-qa-workflow-check-structure:
+	@$(TEST_DIR)/check_qa_workflow_output.sh $(TEST_OUT)
+
+# Contrôles de la sortie du brief
+test-brief-check-structure:
+	@$(TEST_DIR)/check_brief_output.sh $(TEST_LOG)/brief.log
+
+# -----------------------------------------------------------------------------
+# Nettoyage
+# -----------------------------------------------------------------------------
+
 clean-test:
 	@rm -rf $(TEST_OUT)
 	@rm -rf $(TEST_LOG)

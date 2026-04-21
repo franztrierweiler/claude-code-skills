@@ -21,7 +21,7 @@ for line in sys.stdin:
             for c in obj.get("message", {}).get("content", []):
                 ct = c.get("type")
                 if ct == "text":
-                    print(f"{RESET}{c['text']}{RESET}", end="", flush=True)
+                    print(f"{ORANGE}{c['text']}{RESET}", end="", flush=True)
                 elif ct == "tool_use":
                     name = c.get("name", "?")
                     inp = c.get("input", {})
@@ -53,9 +53,9 @@ for line in sys.stdin:
                     print(f"{ORANGE}    done: {summary}{RESET}", flush=True)
 
         elif msg_type == "result":
-            result = obj.get("result", "")
-            if result:
-                print(f"{RESET}{result}{RESET}", flush=True)
+            # Le texte final est déjà affiché via les messages "assistant".
+            # Ne pas le réafficher ici pour éviter le doublon.
+            pass
 
     except (json.JSONDecodeError, KeyError):
         pass

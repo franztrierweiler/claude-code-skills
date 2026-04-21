@@ -5,7 +5,7 @@ Ce fichier fournit des instructions à Claude Code (claude.ai/code) pour travail
 ## Processus global
 
 ```
-docs/SPEC.md + fichiers annexes
+docs/SPEC-racine-*.md + extensions + fichiers annexes
        |
        v
 [1. Spécification]──correction──> 🖊️ sdd-uc-spec-write
@@ -47,7 +47,7 @@ La documentation évolue au fur et à mesure des phases d'exécution du projet.
 ## Méthode de travail pour ce projet
 
 ### Travail au sein de l'équipe
-1- Le fichier SPEC.md et les premiers fichiers référencés par le fichier SPEC.md constituent les documents de référence. Ils sont utilisés en entrée du skill sdd-uc-system-design lors de la phase de mise au point. Si besoin, le skill sdd-uc-spec-write permet de corriger la spécification et les fichiers qu'elle référence.
+1- La spec racine (SPEC-racine-*.md) et ses éventuelles extensions (SPEC-extension-*.md) constituent les documents de référence. Ils sont utilisés en entrée du skill sdd-uc-system-design lors de la phase de mise au point. Si besoin, le skill sdd-uc-spec-write permet de corriger la spécification ou de créer des extensions.
 2- Le skill sdd-uc-system-design est utilisé pour produire les fichiers de conception technique.
 3- La planification est utilisée si et seulement si les fichiers de conception technique sont disponibles.
 

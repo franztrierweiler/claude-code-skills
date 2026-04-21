@@ -6,14 +6,14 @@ description: >
 argument-hint: <nom-lot>
 disable-model-invocation: true
 metadata:
-  version: "2.0.0"
+  version: "2.1.0"
   author: "Franz TRIERWEILER"
 license: "MIT"
 ---
 
 # Recette de test (QA) d'un lot
 
-Version : 2.0.0
+Version : 2.1.0
 Date : 2026-04-03
 
 ## Argument
@@ -25,7 +25,7 @@ $ARGUMENTS — nom du lot (ex: `lot-01-auth`)
 Avant toute autre sortie, afficher :
 
 ```
-🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS
+🧪 sdd-qa-workflow v2.1.0 · Lot: $ARGUMENTS
 ```
 
 ## 1. Garde à l'entrée
@@ -40,11 +40,12 @@ Vérifier que les fichiers requis existent :
    ```
    Arrêter.
 
-2. **`docs/SPEC.md`** — obligatoire. Si absent :
+2. **Documents SPEC** (`docs/SPEC-racine-*.md` et/ou `docs/SPEC-extension-*.md`) —
+   au moins un document obligatoire. Si aucun trouvé :
    ```
-   ❌ docs/SPEC.md introuvable.
+   ❌ Aucun document de spécification trouvé dans docs/.
    ```
-   Arrêter.
+   Arrêter. Si trouvé(s), lister les documents et demander confirmation.
 
 3. **`docs/ARCHITECTURE.md`** — obligatoire. Si absent :
    ```
@@ -111,7 +112,8 @@ Lire les fichiers suivants :
 | Fichier | Ce qu'on en extrait |
 |---|---|
 | `plan/$ARGUMENTS.md` | AC du lot, fonctionnalités, nombre d'itérations de dev |
-| `docs/SPEC.md` | UC concernés (étapes, exceptions, RG), CA-UC détaillés, ENF |
+| `docs/SPEC-racine-*.md` | UC concernés (étapes, exceptions, RG), CA-UC détaillés, ENF |
+| `docs/SPEC-extension-*.md` | UC préfixés et dépendances (si présent) |
 | `docs/ARCHITECTURE.md` | Composants impactés (§ 4.2), structure du répertoire (§ 7), principes (§ 2) |
 | `docs/SECURITY.md` | Principes de développement sécurisé (§ 6), exigences pertinentes |
 | `src/` | Fichiers source implémentés pour ce lot |
@@ -120,7 +122,7 @@ Lire les fichiers suivants :
 Afficher un résumé :
 
 ```
-🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS [█░░░░] Phase: chargement
+🧪 sdd-qa-workflow v2.1.0 · Lot: $ARGUMENTS [█░░░░] Phase: chargement
 
 Lot : $ARGUMENTS
 UC couverts : UC-001, UC-002, ...
@@ -134,18 +136,18 @@ Tests unitaires existants : Q
 
 Afficher :
 ```
-🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS [██░░░] Phase: plan de test
+🧪 sdd-qa-workflow v2.1.0 · Lot: $ARGUMENTS [██░░░] Phase: plan de test
 ```
 
 ### Sources pour les scénarios
 
 Le plan de test s'appuie sur **trois sources** :
 
-1. **CA-UC du SPEC.md** — Chaque critère d'acceptation (Soit/Quand/Alors)
+1. **CA-UC de la spec** — Chaque critère d'acceptation (Soit/Quand/Alors)
    génère au minimum un scénario nominal.
-2. **Exceptions des UC du SPEC.md** — Chaque exception documentée dans les
+2. **Exceptions des UC de la spec** — Chaque exception documentée dans les
    étapes des UC génère un scénario d'erreur.
-3. **ENF du SPEC.md** — Les exigences non fonctionnelles pertinentes
+3. **ENF de la spec** — Les exigences non fonctionnelles pertinentes
    (performance, sécurité) génèrent des scénarios spécifiques.
 
 ### Classification des scénarios
@@ -194,7 +196,7 @@ scénario QA dans son nom : `test_tXX_YY_description`.
 
 Afficher :
 ```
-🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS [███░░] Phase: exécution
+🧪 sdd-qa-workflow v2.1.0 · Lot: $ARGUMENTS [███░░] Phase: exécution
 ```
 
 Après validation du plan par le pilote :
@@ -213,7 +215,7 @@ Après validation du plan par le pilote :
 4. **Exécuter les tests manuels** (si applicable) et documenter les résultats.
 5. **Synthèse d'exécution :**
    ```
-   🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS [███░░] Exécution terminée
+   🧪 sdd-qa-workflow v2.1.0 · Lot: $ARGUMENTS [███░░] Exécution terminée
    Scénarios : X/Y passés
    🔴 Bloquants : A/B passés
    🟠 Majeurs : C/D passés
@@ -224,7 +226,7 @@ Après validation du plan par le pilote :
 
 Afficher :
 ```
-🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS [████░] Phase: revue de code
+🧪 sdd-qa-workflow v2.1.0 · Lot: $ARGUMENTS [████░] Phase: revue de code
 ```
 
 Effectuer une revue de code de tout le lot en vérifiant **5 axes** :
@@ -298,7 +300,7 @@ Produire le rapport de revue dans `qa/code-review/$ARGUMENTS-review.md` :
 
 Afficher :
 ```
-🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS [█████] Phase: rapport
+🧪 sdd-qa-workflow v2.1.0 · Lot: $ARGUMENTS [█████] Phase: rapport
 ```
 
 ### Calcul du verdict
@@ -358,7 +360,7 @@ Produire le rapport final dans `qa/qa-results/rapport-$ARGUMENTS.md` :
 
 **Si le verdict est ✅ VALIDÉ :**
 ```
-🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS [█████] ✅ VALIDÉ
+🧪 sdd-qa-workflow v2.1.0 · Lot: $ARGUMENTS [█████] ✅ VALIDÉ
 
 Scénarios : X/Y passés
 Revue de code : aucun bloquant
@@ -368,7 +370,7 @@ Attendre l'instruction du pilote pour le commit.
 
 **Si le verdict est ❌ À CORRIGER :**
 ```
-🧪 sdd-qa-workflow v2.0.0 · Lot: $ARGUMENTS [█████] ❌ À CORRIGER
+🧪 sdd-qa-workflow v2.1.0 · Lot: $ARGUMENTS [█████] ❌ À CORRIGER
 
 Bloquants : N scénario(s) en échec + M constat(s) de revue
 Le rapport détaillé est dans qa/qa-results/rapport-$ARGUMENTS.md

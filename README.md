@@ -10,13 +10,13 @@ Les skills sont conformes au standard [agentskills.io](https://agentskills.io/ho
 
 | # | Icône | Skill | Version | Invocation | Phase |
 |---|-------|-------|---------|-----------|-------|
-| 1 | 🖊️ | sdd-uc-spec-write | v2.1.0 | Automatique | Spécification |
-| 2 | 📐 | sdd-uc-system-design | v3.1.0 | Automatique | Conception technique |
-| 3 | 🗺️ | sdd-plan | v1.0.0 | `/sdd-plan` | Planification |
-| 4 | 🏗️ | sdd-dev-workflow | v2.1.0 | `/sdd-dev-workflow <lot>` | Développement |
-| 5 | 🧪 | sdd-qa-workflow | v2.0.0 | `/sdd-qa-workflow <lot>` | QA |
-| 6 | 💡 | sdd-brief | v1.1.0 | `/sdd-brief` | Tableau de bord |
-| 7 | 🎓 | sdd-tuto | v1.0.0 | `/sdd-tuto` | Tutoriel interactif |
+| 1 | 🖊️ | sdd-uc-spec-write | v2.4.0 | Automatique | Spécification |
+| 2 | 📐 | sdd-uc-system-design | v3.3.0 | Automatique | Conception technique |
+| 3 | 🗺️ | sdd-plan | v1.1.0 | `/sdd-plan` | Planification |
+| 4 | 🏗️ | sdd-dev-workflow | v2.3.0 | `/sdd-dev-workflow <lot>` | Développement |
+| 5 | 🧪 | sdd-qa-workflow | v2.1.0 | `/sdd-qa-workflow <lot>` | QA |
+| 6 | 💡 | sdd-brief | v1.2.0 | `/sdd-brief` | Tableau de bord |
+| 7 | 🎓 | sdd-tuto | v1.1.0 | `/sdd-tuto` | Tutoriel interactif |
 
 Les skills auto-déclenchés (1-2) sont activés par Claude quand la demande correspond. Les skills invocables (3-7) ne se lancent que via `/nom-skill`.
 
@@ -35,11 +35,11 @@ Les skills auto-déclenchés (1-2) sont activés par Claude quand la demande cor
 
 Rédige des spécifications SDD structurées par cas d'utilisation (UC).
 
-**Déclenchement :** demander une spec SDD par cas d'utilisation, ou fournir un SPEC.md existant à modifier.
+**Déclenchement :** demander une spec SDD par cas d'utilisation, fournir un SPEC existant à modifier, ou demander une extension fonctionnelle.
 
-**Processus :** dialogue en 3 étapes — Cadrage → Cas d'utilisation → Compléments.
+**Processus :** 4 modes — création racine (3 étapes), reprise, modification, extension (4 étapes).
 
-**Produit :** `docs/SPEC.md` structuré par UC, avec diagrammes Mermaid.
+**Produit :** `docs/SPEC-racine-<NomProjet>.md` ou `docs/SPEC-extension-<NomProjet>-<NomFonction>.md`.
 
 ### 📐 sdd-uc-system-design
 
@@ -121,19 +121,24 @@ Le flux de test simule un vrai projet SDD dans `tests/output/` :
 
 | # | Étape | Cible make | Type |
 |---|-------|-----------|------|
-| 1 | Contrôles structurels du skill | `test-system-design` | Déterministe |
+| 1 | Contrôles structurels des skills | `test-skills-check-structure` | Déterministe |
 | 2 | Génération CLAUDE.md | `test-init` | Claude |
-| 3 | Production SPEC.md | `test-uc-spec` | Claude |
-| 4 | Évaluation SPEC.md | `test-review` | Claude |
-| 5 | Production docs de conception | `test-uc-system-design` | Claude |
-| 6 | Planification en lots | `test-plan` | Claude |
-| 7 | Développement premier lot | `test-dev-workflow` | Claude |
-| 8 | Brief projet | `test-brief` | Claude |
-| 9 | Contrôles SPEC.md | `test-check` | Déterministe |
-| 10 | Contrôles docs de conception | `test-system-design-check` | Déterministe |
-| 11 | Contrôles fichiers de plan | `test-plan-check` | Déterministe |
-| 12 | Contrôles code + tests | `test-dev-check` | Déterministe |
-| 13 | Contrôles brief | `test-brief-check` | Déterministe |
+| 3 | Production SPEC racine | `test-uc-spec-racine` | Claude |
+| 4 | Production SPEC extension | `test-uc-spec-extension` | Claude |
+| 5 | Revue qualité SPEC racine | `test-uc-spec-racine-review-content` | Claude |
+| 6 | Revue qualité SPEC extension | `test-uc-spec-extension-review-content` | Claude |
+| 7 | Production docs de conception | `test-uc-system-design` | Claude |
+| 8 | Planification en lots | `test-plan` | Claude |
+| 9 | Développement premier lot | `test-dev-workflow` | Claude |
+| 10 | QA premier lot | `test-qa-workflow` | Claude |
+| 11 | Brief projet | `test-brief` | Claude |
+| 12 | Contrôles SPEC racine | `test-uc-spec-racine-check-structure` | Déterministe |
+| 13 | Contrôles SPEC extension | `test-uc-spec-extension-check-structure` | Déterministe |
+| 14 | Contrôles docs de conception | `test-uc-system-design-check-structure` | Déterministe |
+| 15 | Contrôles fichiers de plan | `test-plan-check-structure` | Déterministe |
+| 16 | Contrôles code + tests | `test-dev-workflow-check-structure` | Déterministe |
+| 17 | Contrôles QA | `test-qa-workflow-check-structure` | Déterministe |
+| 18 | Contrôles brief | `test-brief-check-structure` | Déterministe |
 
 `make test` lance la chaîne complète. Prérequis : `python3`, `claude`, `rsync`, `tar` (vérifiés par `make check-deps`).
 

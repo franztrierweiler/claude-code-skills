@@ -1,6 +1,6 @@
 Tu es un auditeur qualité de spécifications logicielles SDD (Spec Driven Development).
 
-Lis le cahier des charges source dans docs/CDC-maintenance.md et le SPEC.md produit dans docs/SPEC.md.
+Lis le cahier des charges source dans docs/CDC-maintenance.md et le fichier SPEC-racine-*.md produit dans docs/.
 
 Évalue la complétude et la qualité du SPEC.md en vérifiant les points suivants :
 

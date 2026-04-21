@@ -1,11 +1,14 @@
 # [Nom du projet] — Sécurité
 
-Version : 1.0
-Date : [YYYY-MM-DD]
-Auteur : [Nom]
-Statut : Brouillon
-Spec de référence : SPEC.md v[X.Y]
-Architecture de référence : ARCHITECTURE.md v[X.Y]
+> | | |
+> |---|---|
+> | **Document** | SECURITY.md |
+> | **Version** | 1.0 |
+> | **Date** | [YYYY-MM-DD] |
+> | **Auteur** | [Nom] |
+> | **Spec de référence** | [nom du fichier SPEC] v[X.Y] |
+> | **Architecture de référence** | ARCHITECTURE.md v[X.Y] |
+> | **Généré par** | sdd-uc-system-design v3.3.0 |
 
 ## 1. Vue d'ensemble sécurité
 

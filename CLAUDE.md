@@ -17,7 +17,7 @@ All content is written in French.
 
 The skills form a pipeline for target projects. All skills use the UC (Use Case) approach — structured around use cases (cas d'utilisation). Skills with `disable-model-invocation: true` are user-invocable only (slash commands).
 
-1. **Spec writing** (`sdd-uc-spec-write`) — produces `docs/SPEC.md`
+1. **Spec writing** (`sdd-uc-spec-write`) — produces `docs/SPEC-racine-<NomProjet>.md` and `docs/SPEC-extension-<NomProjet>-<NomFonction>.md`
 2. **System design** (`sdd-uc-system-design`) — produces `docs/ARCHITECTURE.md`, `DEPLOYMENT.md`, `SECURITY.md`, `COMPLIANCE_MATRIX.md`
 3. **Planning** (`/sdd-plan`) — produces `plan/<lot>.md` files (user-invocable)
 4. **Dev workflow** (`/sdd-dev-workflow <lot>`) — implementation loop with AC verification (user-invocable)
