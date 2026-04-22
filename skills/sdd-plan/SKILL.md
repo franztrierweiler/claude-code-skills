@@ -1,10 +1,10 @@
 ---
 name: sdd-plan
 description: >
-  Planifie le développement d'un projet SDD en lots à partir du SPEC.md
-  et de l'ARCHITECTURE.md. Produit les fichiers plan/<lot>.md utilisables
-  par /sdd-dev-workflow.
-argument-hint: (sans argument)
+  Planifie le développement d'un projet SDD en lots à partir des
+  SPEC-racine-*.md (+ extensions) et de l'ARCHITECTURE.md. Produit les
+  fichiers plan/<lot>.md consommés par l'étape de développement. Skill
+  slash-command (/sdd-plan).
 disable-model-invocation: true
 metadata:
   version: "1.1.0"

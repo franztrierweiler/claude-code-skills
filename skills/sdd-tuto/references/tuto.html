@@ -387,7 +387,7 @@
         </table>
 
         <h3>Principe fondamental : traçabilité</h3>
-        <p>Chaque décision d'architecture est rattachée à un <code>UC-xxx</code>, une <code>RG-xxxx</code>, une <code>ENF-xxx</code> ou un <code>CA-UC-xxx-yy</code> du SPEC.md. Pas de décision sans justification.</p>
+        <p>Chaque décision d'architecture est rattachée à un <code>UC-xxx</code>, une <code>RG-xxxx</code>, une <code>ENF-xxx</code> ou un <code>CA-UC-xxx-yy</code> de la spec. Pas de décision sans justification.</p>
 
         <h3>Types d'architecture supportés</h3>
         <ul>
@@ -413,7 +413,7 @@
             <li>Regroupe des UC liés (même package ou relations include/extend)</li>
             <li>Est ordonné par <strong>dépendances</strong> (fondations d'abord)</li>
             <li>Est <strong>testable de bout en bout</strong> une fois implémenté</li>
-            <li>A ses <strong>critères d'acceptation</strong> issus du SPEC.md</li>
+            <li>A ses <strong>critères d'acceptation</strong> issus de la spec</li>
         </ul>
 
         <h3>Principes de découpage</h3>
@@ -548,7 +548,7 @@
 
     // Build final pipeline
     const pipelineData = [
-        { icon: '🖊️', label: 'Spécification', desc: 'SPEC.md — cas d\'utilisation', color: 'var(--spec)' },
+        { icon: '🖊️', label: 'Spécification', desc: 'SPEC-racine + extensions — cas d\'utilisation', color: 'var(--spec)' },
         { icon: '📐', label: 'Conception', desc: 'Architecture, Déploiement, Sécurité, Conformité', color: 'var(--design)' },
         { icon: '🗺️', label: 'Planification', desc: 'Découpe en lots', color: 'var(--plan)' },
         { icon: '🏗️', label: 'Développement', desc: 'Code + Tests, lot par lot', color: 'var(--dev)' },

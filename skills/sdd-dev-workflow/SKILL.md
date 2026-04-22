@@ -1,9 +1,10 @@
 ---
 name: sdd-dev-workflow
 description: >
-  Pilote le développement d'un lot SDD : implémentation itérative,
-  écriture des tests unitaires, vérification des critères d'acceptation,
-  mise à jour du plan. Supporte la reprise après un échec QA.
+  Pilote le développement d'un lot SDD : implémentation itérative, tests
+  unitaires, vérification des critères d'acceptation, mise à jour du plan.
+  Supporte la reprise après un échec QA. Skill slash-command
+  (/sdd-dev-workflow <lot>).
 argument-hint: <nom-lot>
 disable-model-invocation: true
 metadata:

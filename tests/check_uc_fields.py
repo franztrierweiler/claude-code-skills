@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Vérifie que chaque UC d'un SPEC.md contient les champs structurels requis.
+"""Vérifie que chaque UC d'une spec SDD contient les champs structurels requis.
 
-Usage : python3 check_uc_fields.py <chemin/vers/SPEC.md>
+Usage : python3 check_uc_fields.py <chemin/vers/SPEC-racine-ou-extension.md>
 
 Code retour :
   0 — tous les UC sont conformes
@@ -48,7 +48,7 @@ def check_block(uc_id, block):
 
 def main():
     if len(sys.argv) != 2:
-        print(f"Usage : {sys.argv[0]} <SPEC.md>", file=sys.stderr)
+        print(f"Usage : {sys.argv[0]} <SPEC-racine-ou-extension.md>", file=sys.stderr)
         sys.exit(2)
 
     path = sys.argv[1]

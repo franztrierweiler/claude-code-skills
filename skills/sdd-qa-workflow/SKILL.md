@@ -1,8 +1,9 @@
 ---
 name: sdd-qa-workflow
 description: >
-  Pilote la recette de test d'un lot SDD : plan de test, exécution,
-  revue de code (incluant sécurité), rapport QA avec sévérités.
+  Pilote la recette de test d'un lot SDD : plan de test, exécution, revue
+  de code (incluant sécurité), rapport QA avec sévérités. Skill
+  slash-command (/sdd-qa-workflow <lot>).
 argument-hint: <nom-lot>
 disable-model-invocation: true
 metadata:

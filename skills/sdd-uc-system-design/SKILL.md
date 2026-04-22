@@ -1,9 +1,11 @@
 ---
 name: sdd-uc-system-design
 description: >
-  Produit les documents de conception technique (architecture, déploiement,
-  sécurité, conformité) à partir d'un SPEC.md structuré par cas d'utilisation
-  (UC) selon la méthodologie SDD.
+  Produit les documents de conception technique SDD (ARCHITECTURE.md,
+  DEPLOYMENT.md, SECURITY.md, COMPLIANCE_MATRIX.md) à partir d'un
+  SPEC-racine-*.md (+ extensions). En CLI écrit dans docs/, sur claude.ai
+  livre des artefacts Markdown. S'active pour concevoir l'architecture
+  technique d'un projet SDD.
 metadata:
   version: "3.3.0"
   author: "Franz TRIERWEILER"
@@ -60,9 +62,9 @@ de référence manque.
 ### Déclenchement primaire (active le skill directement)
 
 - L'utilisateur demande de produire l'architecture, le déploiement, la sécurité
-  ou la conformité d'un projet à partir d'un SPEC.md.
+  ou la conformité d'un projet à partir d'une spec.
 - L'utilisateur mentionne la « phase de conception » ou « phase 1 » du flux
-  SDD et fournit (ou référence) un SPEC.md.
+  SDD et fournit (ou référence) une spec.
 - L'utilisateur demande explicitement un ARCHITECTURE.md, DEPLOYMENT.md,
   SECURITY.md ou COMPLIANCE_MATRIX.md.
 - L'utilisateur demande de produire « les documents de conception » ou
@@ -71,15 +73,15 @@ de référence manque.
 ### Déclenchement secondaire (demande confirmation avant d'activer)
 
 - L'utilisateur mentionne « concevoir le système » sans référence SDD →
-  Demande : « Tu veux des documents de conception SDD à partir d'un SPEC.md,
+  Demande : « Tu veux des documents de conception SDD à partir d'une spec,
   ou une conception libre ? »
-- L'utilisateur fournit un SPEC.md sans préciser ce qu'il veut → Demande :
+- L'utilisateur fournit une spec sans préciser ce qu'il veut → Demande :
   « Tu veux lancer la phase de conception (architecture, déploiement, sécurité,
   conformité) ? »
 
 ### Ne pas déclencher (anti-triggers)
 
-- L'utilisateur veut rédiger ou modifier un SPEC.md → Utiliser sdd-uc-spec-write.
+- L'utilisateur veut rédiger ou modifier une spec → Utiliser sdd-uc-spec-write.
 - L'utilisateur demande de planifier des lots ou des User Stories → Phase 2.
 - L'utilisateur demande d'implémenter du code → Phase 3.
 - L'utilisateur demande une revue de code → Phase 4.
@@ -87,8 +89,8 @@ de référence manque.
 
 ### Validation du format d'entrée
 
-Ce skill attend un SPEC.md structuré par **cas d'utilisation (UC)**, produit
-par le skill sdd-uc-spec-write. Les marqueurs d'un SPEC.md compatible sont :
+Ce skill attend une spec structurée par **cas d'utilisation (UC)**, produite
+par le skill sdd-uc-spec-write. Les marqueurs d'une spec compatible sont :
 
 - Présence d'identifiants `UC-xxx` (cas d'utilisation numérotés)
 - Structure par packages (niveau 2 / niveau 1)
@@ -96,23 +98,23 @@ par le skill sdd-uc-spec-write. Les marqueurs d'un SPEC.md compatible sont :
 - Critères d'acceptation au format `CA-UC-xxx-yy`
 - Règles de gestion `RG-xxxx`
 
-Si le SPEC.md fourni utilise un autre format (exigences plates EXG-xxx,
+Si la spec fournie utilise un autre format (exigences plates EXG-xxx,
 user stories, cahier des charges classique), Claude informe l'utilisateur :
 
-> Ce skill attend un SPEC.md structuré par cas d'utilisation (format
+> Ce skill attend une spec structurée par cas d'utilisation (format
 > sdd-uc-spec-write). Le document fourni semble utiliser un autre format.
 > Veux-tu convertir la spec en format UC d'abord (via sdd-uc-spec-write),
 > ou continuer avec le format actuel en mode dégradé ?
 
 ## Message d'accueil
 
-Quand le skill est activé et que le SPEC.md est validé, Claude affiche :
+Quand le skill est activé et que la spec est validée, Claude affiche :
 
 ```
 📐 skill:sdd-uc-system-design v3.3.0 · Architecture [░░░░░░░] 0/7 — Démarrage
 
-Ce skill produit les documents de conception technique à partir de ton
-SPEC.md, selon la méthodologie SDD. Je vais produire jusqu'à 4 documents :
+Ce skill produit les documents de conception technique à partir de ta
+spec, selon la méthodologie SDD. Je vais produire jusqu'à 4 documents :
 
 1. ARCHITECTURE.md — Comment le système est construit (composants, stack,
    flux, données, décisions).
@@ -155,20 +157,21 @@ progressivement. L'ingénieur valide, corrige, complète.
 1. **Traçabilité** : chaque décision d'architecture doit être rattachable à
    un cas d'utilisation (UC-xxx), une règle de gestion (RG-xxxx), une
    exigence non fonctionnelle (ENF-xxx), ou un critère d'acceptation
-   (CA-UC-xxx-yy) du SPEC.md.
+   (CA-UC-xxx-yy) de la spec.
 2. **Détail sans redondance** : être exhaustif mais ne jamais répéter la même
    information dans deux documents. Utiliser des renvois croisés.
 3. **Spécificité** : pas de généralités vagues. Si on choisit PostgreSQL,
    expliquer pourquoi et dans quelle version.
-4. **Autonomie du lecteur** : un agent IA lisant ces documents avec le SPEC.md
+4. **Autonomie du lecteur** : un agent IA lisant ces documents avec la spec
    doit pouvoir implémenter sans poser de questions d'architecture.
 
 ## Entrées requises
 
-- **SPEC.md** (obligatoire) : le fichier de spécification SDD structuré par
-  cas d'utilisation, produit par sdd-uc-spec-write.
-- **Fichiers référencés par le SPEC.md** (si présents) : DATA-MODEL.md,
-  ou tout document listé dans la section « Documents de référence » du SPEC.md.
+- **`SPEC-racine-*.md` (+ extensions éventuelles)** (obligatoire) : les
+  fichiers de spécification SDD structurés par cas d'utilisation, produits
+  par sdd-uc-spec-write.
+- **Fichiers référencés par la spec** (si présents) : DATA-MODEL.md,
+  ou tout document listé dans la section « Documents de référence » de la spec.
 - **Contexte organisationnel** (collecté par Q&A) : contraintes d'infrastructure,
   politiques de sécurité internes, cadre réglementaire applicable.
 
@@ -177,7 +180,7 @@ progressivement. L'ingénieur valide, corrige, complète.
 Le format UC offre une richesse d'information architecturale que Claude
 exploite systématiquement :
 
-| Élément du SPEC.md | Exploitation architecturale |
+| Élément de la spec | Exploitation architecturale |
 |---|---|
 | **Diagramme de contexte** | Vue d'ensemble du périmètre, acteurs, systèmes adjacents — base pour la vue d'ensemble (§ 1) |
 | **Section Architecture** | Contraintes techniques imposées — entrée directe pour le cadrage macro (A.1) |
@@ -279,7 +282,7 @@ exactement où il va et combien d'étapes l'attendent.
 > **Étapes de réflexion :**
 >
 > 1. **Cadrage macro** — Type de solution, contraintes imposées, écosystème
-> 2. **Analyse du SPEC.md** — Exploitation des UC, packages, flux et objets
+> 2. **Analyse de la spec** — Exploitation des UC, packages, flux et objets
 > 3. **Modèle de données** — Entités (objets participants), relations, volumes
 > 4. **Flux et interactions** — Flux métier (étapes UC), intégrations, événements
 > 5. **Choix technologiques** — Stack, justifications, alternatives écartées
@@ -301,9 +304,9 @@ et devra être repris plus tard. »).
 **Objectif :** Comprendre la nature du système et ses contraintes structurantes
 avant toute réflexion technique.
 
-**Exploitation préalable du SPEC.md :**
+**Exploitation préalable de la spec :**
 
-Avant de poser les questions, Claude exploite les sections du SPEC.md qui
+Avant de poser les questions, Claude exploite les sections de la spec qui
 fournissent déjà du contexte architectural :
 
 - **Diagramme de contexte** (si présent) — Identifier les acteurs, systèmes
@@ -316,7 +319,7 @@ fournissent déjà du contexte architectural :
 - **Section Hors périmètre** — Délimite ce que l'architecture ne doit PAS
   couvrir. Évite de concevoir des composants pour des fonctionnalités exclues.
 
-Claude synthétise ce qu'il a trouvé dans le SPEC.md et adapte ses questions
+Claude synthétise ce qu'il a trouvé dans la spec et adapte ses questions
 en conséquence (ne pas redemander ce qui est déjà documenté).
 
 **Questions obligatoires :**
@@ -355,9 +358,9 @@ en conséquence (ne pas redemander ce qui est déjà documenté).
 le présente pour validation : « Voici ce que je comprends du contexte. Tu
 confirmes / tu corriges ? »
 
-#### A.2 — Analyse du SPEC.md
+#### A.2 — Analyse de la spec
 
-**Objectif :** Exploiter la structure UC du SPEC.md pour extraire toutes les
+**Objectif :** Exploiter la structure UC de la spec pour extraire toutes les
 implications architecturales. Le format UC fournit une matière beaucoup plus
 riche qu'une liste d'exigences plates : les flux sont déjà documentés dans
 les étapes, les dépendances dans les relations, les données dans les objets
@@ -365,7 +368,7 @@ participants.
 
 **Travail d'analyse (Claude, en autonomie) :**
 
-Claude lit le SPEC.md complet et les documents référencés, puis produit :
+Claude lit la spec complète et les documents référencés, puis produit :
 
 1. **Cartographie des flux à partir des UC** — Pour chaque UC, les étapes
    Na/Nb fournissent directement le flux nominal. Claude les regroupe par
@@ -386,7 +389,7 @@ Claude lit le SPEC.md complet et les documents référencés, puis produit :
      choix de couche présentation (SSR, SPA, WebSocket).
 
 3. **Analyse des objets participants** — La liste des objets participants
-   et les éventuels diagrammes d'objets/interactions du SPEC.md fournissent
+   et les éventuels diagrammes d'objets/interactions de la spec fournissent
    le brouillon du modèle de données. Claude les exploite comme point de
    départ pour l'étape A.3.
 
@@ -406,7 +409,7 @@ Claude lit le SPEC.md complet et les documents référencés, puis produit :
 
 Claude présente cette analyse sous forme structurée :
 
-> **Analyse du SPEC.md — Implications architecturales**
+> **Analyse de la spec — Implications architecturales**
 >
 > J'ai identifié **N cas d'utilisation à impact architectural**, **M besoins
 > implicites** non formulés dans la spec, et **P tensions** à arbitrer.
@@ -418,7 +421,7 @@ Claude présente cette analyse sous forme structurée :
 **Questions de clarification (3-5 max) :**
 
 Les questions portent sur les zones d'ombre révélées par l'analyse. Elles ne
-sont pas pré-définies — elles émergent de la lecture du SPEC.md. Exemples
+sont pas pré-définies — elles émergent de la lecture de la spec. Exemples
 typiques :
 
 - « UC-012 décrit une étape 3b (notification) mais ne précise pas le canal
@@ -437,21 +440,21 @@ choisir comment les stocker et les transporter.
 
 **Travail d'analyse (Claude, en autonomie) :**
 
-Claude part des **objets participants** du SPEC.md comme base. Cette section
-du SPEC.md liste les entités métier identifiées à travers les cas
+Claude part des **objets participants** de la spec comme base. Cette section
+de la spec liste les entités métier identifiées à travers les cas
 d'utilisation. Claude enrichit cette liste avec :
 
 - Les attributs principaux déduits des étapes et règles de gestion des UC
 - Les relations entre entités déduites des relations entre UC (include,
-  extend) et des diagrammes d'objets/interactions (si présents dans le
-  SPEC.md)
+  extend) et des diagrammes d'objets/interactions (si présents dans la
+  spec)
 - La classification de sensibilité par entité (public, interne,
   confidentiel, secret)
 - L'estimation des volumes (nombre d'enregistrements, taille, croissance)
 - Le cycle de vie des données (création, modification, archivage,
   suppression)
 
-Si le SPEC.md contient un DATA-MODEL.md référencé, Claude l'utilise
+Si la spec contient un DATA-MODEL.md référencé, Claude l'utilise
 directement comme point de départ au lieu des objets participants.
 
 **Questions obligatoires :**
@@ -486,7 +489,7 @@ les exceptions sont les flux d'erreur.
 
 **Travail d'analyse (Claude, en autonomie) :**
 
-À partir des UC du SPEC.md et des étapes précédentes, Claude identifie :
+À partir des UC de la spec et des étapes précédentes, Claude identifie :
 
 1. **Flux métier principaux** — Extraits directement des étapes Na/Nb des
    UC. Claude regroupe les UC liés par des relations include/extend pour
@@ -497,14 +500,14 @@ les exceptions sont les flux d'erreur.
 
 2. **Flux d'intégration** — Identifiés via les étapes où le système
    interagit avec un acteur de type « système » ou un service externe
-   mentionné dans le SPEC.md.
+   mentionné dans la spec.
 
 3. **Flux d'événements** — Identifiés via les étapes asynchrones des UC
    (notifications, traitements différés, jobs planifiés) et les acteurs de
    type « système » (cron, batch).
 
 4. **Flux d'erreur** — Extraits directement des exceptions des UC. Chaque
-   exception documentée dans le SPEC.md correspond à un chemin d'erreur
+   exception documentée dans la spec correspond à un chemin d'erreur
    que l'architecture doit supporter.
 
 5. **Cycles de vie des entités** — Les champs **État initial** et **État
@@ -550,7 +553,7 @@ alternative écartée doit être mentionnée.
 À partir des contraintes (A.1), des données (A.3) et des flux (A.4), Claude
 propose une stack technique en respectant ces principes :
 
-1. **Contraintes d'abord** — Les technologies imposées par le SPEC.md ou
+1. **Contraintes d'abord** — Les technologies imposées par la spec ou
    l'utilisateur sont non négociables.
 2. **Cohérence de l'écosystème** — Préférer des technologies qui fonctionnent
    bien ensemble (ex : ne pas mixer 4 langages sans raison).
@@ -584,12 +587,12 @@ Pour chaque brique, Claude présente :
 
 #### A.6 — Propriétés non-fonctionnelles
 
-**Objectif :** Traduire les exigences non-fonctionnelles du SPEC.md (ENF-xxx)
+**Objectif :** Traduire les exigences non-fonctionnelles de la spec (ENF-xxx)
 et les contraintes non fonctionnelles rattachées aux UC en décisions
 architecturales concrètes. Couvrir aussi les propriétés non explicitement
 demandées mais nécessaires.
 
-**Exploitation préalable du SPEC.md :**
+**Exploitation préalable de la spec :**
 
 Claude exploite le champ **Fréquence d'utilisation** de chaque UC pour
 alimenter le dimensionnement. Les UC à haute fréquence (ex : « 500 fois/jour »)
@@ -630,7 +633,7 @@ Claude produit un document de synthèse structuré :
 1. **Vision architecturale** — Description en 5-10 phrases du système tel
    qu'il sera construit.
 2. **Composants identifiés** — Liste des composants avec leurs responsabilités.
-   Les packages de niveau 2 du SPEC.md servent de piste initiale pour le
+   Les packages de niveau 2 de la spec servent de piste initiale pour le
    découpage, mais l'architecture n'est pas tenue de reproduire exactement
    la structure des packages (un package peut être éclaté en plusieurs
    composants, ou plusieurs packages fusionnés dans un composant).
@@ -675,7 +678,7 @@ Rédige le ARCHITECTURE.md section par section en suivant le template
 `references/TEMPLATE-ARCHITECTURE.md`. La rédaction s'appuie intégralement sur les livrables intermédiaires
 validés aux étapes A.1 à A.7 :
 
-- § 1 (Vue d'ensemble) ← A.1 cadrage + A.7 vision + diagramme de contexte du SPEC.md
+- § 1 (Vue d'ensemble) ← A.1 cadrage + A.7 vision + diagramme de contexte de la spec
 - § 2 (Principes) ← A.7 trade-offs + A.6 propriétés
 - § 3.1 (Choix technologiques) ← A.5 choix avec alternatives écartées
 - § 3.2 (Pérennité) ← A.5 évaluation du risque d'obsolescence par technologie
@@ -690,7 +693,7 @@ validés aux étapes A.1 à A.7 :
 - § 5 (Propriétés non-fonctionnelles) ← A.6 seuils chiffrés + décisions
 - § 6 (Décisions d'architecture) ← A.7 trade-offs + décisions ouvertes tranchées
 - § 7 (Structure répertoire) ← A.7 composants + A.5 stack
-- § 8 (Glossaire) ← termes accumulés + glossaire projet du SPEC.md
+- § 8 (Glossaire) ← termes accumulés + glossaire projet de la spec
 - § 9 (Documents de référence) ← documents utilisés et produits
 
 Présente chaque section majeure à l'utilisateur pour validation avant de
@@ -699,7 +702,7 @@ corrects et refléter fidèlement les flux validés en A.4.
 
 **Convention de traçabilité dans l'ARCHITECTURE.md :**
 
-Les références au SPEC.md utilisent les identifiants suivants :
+Les références à la spec utilisent les identifiants suivants :
 - `UC-xxx` — Cas d'utilisation
 - `CA-UC-xxx-yy` — Critère d'acceptation d'un UC
 - `RG-xxxx` — Règle de gestion
@@ -754,7 +757,7 @@ sous-template, le tronc commun suffit.
 
 **Travail d'analyse (Claude, en autonomie) :**
 
-Claude exploite le SPEC.md (acteurs, interfaces, points d'entrée) et
+Claude exploite la spec (acteurs, interfaces, points d'entrée) et
 l'ARCHITECTURE.md (composants, flux, exposition réseau) pour produire :
 
 1. **Surface d'attaque** — Points d'entrée du système, exposition, données
@@ -772,7 +775,7 @@ poursuivre.
 
 1. Quels sont les actifs à protéger ? (données, accès, disponibilité)
 2. Qui sont les utilisateurs et quels rôles ont-ils ? (exploiter la section
-   Acteurs du SPEC.md)
+   Acteurs de la spec)
 3. Y a-t-il des politiques de sécurité internes à respecter ?
 4. Le système est-il exposé sur Internet ?
 5. Quels référentiels de sécurité appliquer ? (ANSSI, OWASP ASVS, CIS,
@@ -802,7 +805,7 @@ couvre les axes suivants :
    journalisation, segmentation réseau, continuité.
 4. **Référentiels sectoriels** (§ 5) : exigences de sécurité induites par
    les référentiels du marché (PGSSI-S, PCI-DSS, DORA, NIS2, etc.)
-   identifiés dans le SPEC.md. Supprimer si non applicable.
+   identifiés dans la spec. Supprimer si non applicable.
 5. **Principes de développement sécurisé** (§ 6) : règles de codage
    sécurisé (effacement mémoire, fail securely, encodage contextuel, etc.).
 6. **SDLC sécurisé et supply chain** (§ 7) : SAST, DAST, audit dépendances,
@@ -821,16 +824,16 @@ Chaque exigence est numérotée selon la convention définie dans le template.
 
 Avant de rédiger, Claude évalue si un fichier de conformité est pertinent :
 
-- Si le SPEC.md ne mentionne aucun cadre réglementaire → Informer
+- Si la spec ne mentionne aucun cadre réglementaire → Informer
   l'utilisateur que le fichier n'est pas nécessaire et proposer de passer.
-- Si le SPEC.md mentionne un cadre réglementaire (HDS, RGPD, PGSSI-S,
+- Si la spec mentionne un cadre réglementaire (HDS, RGPD, PGSSI-S,
   PCI-DSS, SOC2, etc.) → Identifier les référentiels applicables et
   confirmer avec l'utilisateur.
 
 #### Questions obligatoires (si applicable)
 
 1. Quels référentiels réglementaires s'appliquent au projet ?
-2. Y a-t-il des UC ou ENF du SPEC.md qui déclenchent ces obligations ?
+2. Y a-t-il des UC ou ENF de la spec qui déclenchent ces obligations ?
    (identifier les UC-xxx / ENF-xxx « mères »)
 3. Qui est responsable de la conformité ? (rôle, équipe)
 4. Y a-t-il des certifications à obtenir ?
@@ -843,8 +846,8 @@ Avant de rédiger, Claude évalue si un fichier de conformité est pertinent :
 
 Les exigences de conformité sont numérotées avec un préfixe propre au
 référentiel (HDS-xx, RGPD-xx, PGSSI-xx, etc.) et rattachées à leur
-exigence « mère » dans le SPEC.md (UC-xxx ou ENF-xxx). Elles ne
-réutilisent jamais la numérotation UC-xxx / ENF-xxx du SPEC.md.
+exigence « mère » dans la spec (UC-xxx ou ENF-xxx). Elles ne
+réutilisent jamais la numérotation UC-xxx / ENF-xxx de la spec.
 
 ## Format de livraison
 
@@ -876,11 +879,11 @@ croisés pour éviter la redondance :
 
 - ARCHITECTURE.md → référence les UC (UC-xxx), règles de gestion (RG-xxxx),
   exigences non fonctionnelles (ENF-xxx) et critères d'acceptation
-  (CA-UC-xxx-yy, CA-ENF-xxx-yy) du SPEC.md
+  (CA-UC-xxx-yy, CA-ENF-xxx-yy) de la spec
 - DEPLOYMENT.md → référence les composants de ARCHITECTURE.md
 - SECURITY.md → référence les composants de ARCHITECTURE.md et les UC /
-  ENF du SPEC.md
-- COMPLIANCE_MATRIX.md → référence les UC / ENF « mères » du SPEC.md et les
+  ENF de la spec
+- COMPLIANCE_MATRIX.md → référence les UC / ENF « mères » de la spec et les
   exigences de SECURITY.md quand elles se recoupent
 
 Format de renvoi : `Voir ARCHITECTURE.md § 4.2` ou `Réf. UC-007`.
@@ -892,13 +895,13 @@ Avant de remettre chaque document à l'utilisateur, vérifie :
 ### ARCHITECTURE.md
 - [ ] Le diagramme d'architecture haut niveau (§ 4.1) est présent et lisible.
 - [ ] Chaque composant (§ 4.2) a une responsabilité unique et claire.
-- [ ] La matrice de traçabilité UC → Composants couvre tous les UC du SPEC.md avec leur priorité.
+- [ ] La matrice de traçabilité UC → Composants couvre tous les UC de la spec avec leur priorité.
 - [ ] Les diagrammes Mermaid (flowcharts § 4.3, séquences § 4.4, states § 4.5) sont syntaxiquement corrects.
 - [ ] La stack technique (§ 3.1) est justifiée (chaque choix avec alternative écartée).
 - [ ] La pérennité des choix (§ 3.2) est évaluée (risque d'obsolescence, plan de mitigation si risque modéré+).
 - [ ] Les propriétés non-fonctionnelles (§ 5) ont des seuils chiffrés et des décisions associées.
 - [ ] Les décisions d'architecture (§ 6) documentent les trade-offs et leurs conséquences.
-- [ ] L'inventaire des données (§ 4.6) couvre les objets participants du SPEC.md.
+- [ ] L'inventaire des données (§ 4.6) couvre les objets participants de la spec.
 - [ ] La structure du répertoire (§ 7) est cohérente avec l'architecture.
 - [ ] Le glossaire technique (§ 8) couvre les termes spécifiques sans dupliquer le glossaire projet.
 - [ ] Les coûts de fonctionnement (§ 3.2) sont estimés.
@@ -925,9 +928,9 @@ Avant de remettre chaque document à l'utilisateur, vérifie :
 
 ### COMPLIANCE_MATRIX.md
 - [ ] Chaque exigence est rattachée à son référentiel source.
-- [ ] Les UC / ENF « mères » du SPEC.md sont identifiés.
+- [ ] Les UC / ENF « mères » de la spec sont identifiés.
 - [ ] Chaque exigence a un responsable et une échéance.
-- [ ] La numérotation est indépendante du SPEC.md.
+- [ ] La numérotation est indépendante de la spec.
 - [ ] La légende des statuts est présente.
 
 ## Passage de relais

@@ -4,7 +4,7 @@ Ces termes sont imposés par la méthodologie Spec Driven Development (SDD). Ils
 constituent le vocabulaire commun entre profils techniques et décideurs. Ne les
 remplace pas par des synonymes.
 
-Reproduis ce glossaire en dernière section de chaque SPEC.md produite.
+Reproduis ce glossaire en dernière section de chaque spec produite.
 
 | Terme | Définition |
 |---|---|

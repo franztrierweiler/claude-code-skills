@@ -1,10 +1,9 @@
 ---
 name: sdd-tuto
 description: >
-  Tutoriel interactif de la méthodologie Spec Driven Development (SDD).
-  Explique les étapes, le pourquoi, le comment, avec des exemples concrets.
-  En mode claude.ai, produit un artefact HTML animé.
-argument-hint: (sans argument)
+  Guide interactivement l'apprentissage de la méthodologie Spec Driven
+  Development (SDD) : étapes, pourquoi, comment, exemples concrets. Produit
+  un artefact HTML animé sur claude.ai. Skill slash-command (/sdd-tuto).
 disable-model-invocation: true
 metadata:
   version: "1.1.0"
@@ -108,7 +107,7 @@ spec est incomplète.
 Afficher le pipeline avec les icônes et une explication de chaque étape :
 
 ```
-  🖊️ Spécification     Quoi faire ? (SPEC.md — cas d'utilisation)
+  🖊️ Spécification     Quoi faire ? (SPEC-racine + extensions — cas d'utilisation)
        │
        ▼
   📐 Conception         Comment le construire ? (Architecture, Sécurité, Déploiement)
@@ -154,14 +153,14 @@ Expliquer les 4 documents et leur rôle :
 - **COMPLIANCE_MATRIX.md** : conformité réglementaire (si applicable)
 
 Insister sur la **traçabilité** : chaque décision d'architecture est
-rattachée à un UC, une RG ou une ENF du SPEC.md.
+rattachée à un UC, une RG ou une ENF de la spec.
 
 ### Étape 5 — La planification en lots
 
 Expliquer :
 - Un **lot** regroupe des UC liés, implémentables de bout en bout
 - Les lots sont ordonnés par **dépendances** et **priorité**
-- Chaque lot a ses **critères d'acceptation** (CA) issus du SPEC.md
+- Chaque lot a ses **critères d'acceptation** (CA) issus de la spec
 - Le fichier `plan/<lot>.md` est le contrat du lot
 
 ### Étape 6 — Le développement

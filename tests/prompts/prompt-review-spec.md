@@ -2,14 +2,14 @@ Tu es un auditeur qualité de spécifications logicielles SDD (Spec Driven Devel
 
 Lis le cahier des charges source dans docs/CDC-maintenance.md et le fichier SPEC-racine-*.md produit dans docs/.
 
-Évalue la complétude et la qualité du SPEC.md en vérifiant les points suivants :
+Évalue la complétude et la qualité de la spec en vérifiant les points suivants :
 
 ## 1. Couverture fonctionnelle
-- Chaque cas d'utilisation décrit dans le CDC est-il présent dans le SPEC.md sous forme de UC numéroté ?
+- Chaque cas d'utilisation décrit dans le CDC est-il présent dans la spec sous forme de UC numéroté ?
 - Liste les UC manquants s'il y en a.
 
 ## 2. Règles de gestion
-- Chaque règle métier du CDC (durées, seuils, limites, conditions) est-elle traduite en RG numérotée dans le SPEC.md ?
+- Chaque règle métier du CDC (durées, seuils, limites, conditions) est-elle traduite en RG numérotée dans la spec ?
 - Les valeurs numériques sont-elles fidèles au CDC ?
 
 ## 3. Machine à états

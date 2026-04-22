@@ -1,8 +1,11 @@
 ---
 name: sdd-uc-spec-write
 description: >
-  Rédige et met à jour des spécifications logicielles structurées par cas d'utilisation (UC)
-  selon la méthodologie SDD. Produit des SPEC.md exploitables par des agents IA.
+  Rédige et met à jour les spécifications SDD par cas d'utilisation (UC) :
+  spec racine (projet principal) ou spec d'extension (fonction ajoutée à
+  une racine existante). Exploitable par des agents IA. En CLI écrit dans
+  docs/, sur claude.ai livre des artefacts Markdown. S'active dès qu'on
+  demande une spec SDD, à formaliser des UC, ou à étendre une spec racine.
 metadata:
   version: "2.4.0"
   author: "Franz TRIERWEILER"
@@ -49,7 +52,7 @@ Le skill ne peut pas fonctionner sans ces fichiers. Vérifie que le skill
 a été installé avec son répertoire references/ complet.
 ```
 
-Ne tente pas de générer le SPEC.md de mémoire si un fichier de référence manque.
+Ne tente pas de générer la spec de mémoire si un fichier de référence manque.
 
 ## Message d'accueil
 
@@ -170,15 +173,15 @@ Que veux-tu faire ?
 
 ### Déclenchement primaire (haute confiance — active le skill directement)
 
-- L'utilisateur demande explicitement une spec SDD, un SPEC.md, ou mentionne
-  "Spec Driven Development" / "SDD" comme méthodologie.
+- L'utilisateur demande explicitement une spec SDD (racine ou extension)
+  ou mentionne "Spec Driven Development" / "SDD" comme méthodologie.
 - L'utilisateur demande de rédiger des cas d'utilisation (UC) pour un projet logiciel.
 - L'utilisateur demande de rédiger une spécification par cas d'utilisation.
 - L'utilisateur demande de produire une spécification structurée destinée
   à être implémentée par un agent IA.
 - L'utilisateur fournit des notes informelles et demande de les transformer
   en spécification structurée par cas d'utilisation.
-- L'utilisateur fournit un SPEC.md existant et demande de le modifier, compléter
+- L'utilisateur fournit une spec existante et demande de la modifier, compléter
   ou mettre à jour.
 
 ### Déclenchement secondaire (confiance moyenne — demande confirmation)
@@ -195,7 +198,7 @@ Que veux-tu faire ?
 ### Anti-triggers (ne pas déclencher)
 
 - L'utilisateur demande de lire, analyser ou résumer une spec existante sans
-  intention de produire ou modifier un SPEC.md.
+  intention de la produire ou la modifier.
 - L'utilisateur rédige de la documentation utilisateur, un README, ou un guide
   d'utilisation.
 - L'utilisateur écrit des tests, même s'il mentionne des critères d'acceptation
@@ -212,9 +215,9 @@ humaine mais aussi par un agent IA : suffisamment précis pour qu'un agent IA pr
 une implémentation conforme sans poser de questions, et suffisamment clair pour qu'un décideur
 non technique comprenne ce qui sera livré.
 
-Une fois le SPEC.md produit, un autre agent (ou skill) l'utilise comme entrée pour construire
+Une fois la spec produite, un autre agent (ou skill) l'utilise comme entrée pour construire
 l'architecture technique, les consignes de sécurité et les plans de développement, en vue de
-commencer l'implémentation. Le SPEC.md est donc le point d'entrée de toute la chaîne de
+commencer l'implémentation. La spec est donc le point d'entrée de toute la chaîne de
 production logicielle.
 
 Chaque phrase de la spec doit répondre à cette question : **"Un agent IA qui lit uniquement ce
@@ -562,7 +565,7 @@ d'acceptation Soit/Quand/Alors, et les questions à poser à l'utilisateur, cons
 ## Glossaire SDD
 
 Le glossaire SDD est défini dans `references/GLOSSARY-SDD.md`. Reproduis-le en
-dernière section de chaque SPEC.md produite, tel quel. Ces termes sont imposés par
+dernière section de chaque spec produite, tel quel. Ces termes sont imposés par
 la méthodologie SDD et ne doivent pas être remplacés par des synonymes.
 
 ## Structure d'un document racine (SPEC-racine)

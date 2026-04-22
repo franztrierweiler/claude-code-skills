@@ -16,16 +16,16 @@ lourd, driver, etc.), ses caractéristiques architecturales principales
 (monolithe, microservices, event-driven, etc.) et ses contraintes structurantes.
 Ce paragraphe doit permettre à un lecteur de comprendre le système en 30 secondes.
 
-S'appuyer sur le diagramme de contexte du SPEC.md (si présent) pour situer
+S'appuyer sur le diagramme de contexte de la spec (si présent) pour situer
 le système dans son environnement : acteurs, systèmes adjacents, éléments
 géographiques et organisationnels.
 
 Mentionner explicitement ce qui est hors périmètre (section Hors périmètre
-du SPEC.md) pour délimiter ce que l'architecture ne couvre PAS. -->
+de la spec) pour délimiter ce que l'architecture ne couvre PAS. -->
 
 [Description]
 
-**Hors périmètre architectural :** [Résumé des exclusions issues du SPEC.md
+**Hors périmètre architectural :** [Résumé des exclusions issues de la spec
 qui impactent l'architecture — fonctionnalités non couvertes, intégrations
 non prévues, etc.]
 
@@ -33,7 +33,7 @@ non prévues, etc.]
 
 <!-- Lister les principes directeurs qui gouvernent les choix techniques.
 Chaque principe est nommé, décrit en une phrase, et justifié par un UC, une RG,
-une ENF du SPEC.md ou un besoin métier. 5 à 10 principes maximum.
+une ENF de la spec ou un besoin métier. 5 à 10 principes maximum.
 Exemples : séparation des responsabilités, immutabilité des données,
 fail-fast, idempotence, etc. -->
 
@@ -48,13 +48,13 @@ fail-fast, idempotence, etc. -->
 <!-- Chaque choix technique doit être démontré : pas de technologie sans
 raison documentée. Pour chaque brique, justifier pourquoi elle a été
 retenue ET mentionner au moins une alternative écartée avec la raison
-de l'exclusion. Une technologie imposée par le SPEC.md (section Architecture
+de l'exclusion. Une technologie imposée par la spec (section Architecture
 ou contraintes) est marquée « Imposé » — elle n'a pas besoin d'alternative
 mais la contrainte source doit être référencée. -->
 
 | Catégorie | Technologie | Version | Rôle | Justification | Alternative écartée | Raison de l'exclusion | Licence |
 |-----------|-------------|---------|------|---------------|--------------------|-----------------------|---------|
-| Langage | [ex: Python] | [ex: 3.12+] | [ex: Langage principal] | [ex: Imposé par SPEC.md § Architecture] | — | Imposé | [ex: PSF / MIT] |
+| Langage | [ex: Python] | [ex: 3.12+] | [ex: Langage principal] | [ex: Imposé par la spec § Architecture] | — | Imposé | [ex: PSF / MIT] |
 | Framework | [ex: FastAPI] | [ex: 0.110+] | [ex: API REST] | [ex: Async natif, typage, performance] | [ex: Django REST Framework] | [ex: Synchrone par défaut, plus lourd pour une API pure] | [ex: MIT] |
 | Base de données | [ex: PostgreSQL] | [ex: 16+] | [ex: Stockage principal] | [ex: ACID, JSON natif, extensibilité] | [ex: MySQL 8] | [ex: Types JSON moins riches, pas de types composites] | [ex: PostgreSQL License] |
 | <!-- Ajouter : cache, message broker, monitoring, CI/CD, IaC, etc. --> | | | | | | | |
@@ -109,7 +109,7 @@ comprendre l'architecture en le lisant seul. Utiliser Mermaid (flowchart ou
 C4-style). Inclure :
 - Les composants internes (backend, frontend, workers, etc.)
 - Les systèmes externes (APIs tierces, services cloud managés)
-- Les acteurs (issus du SPEC.md)
+- Les acteurs (issus de la spec)
 - Les flux principaux entre composants (protocole, direction)
 - Les frontières de déploiement (réseau, cloud, on-premise) si pertinent -->
 
@@ -144,7 +144,7 @@ de leurs interactions. Référencer les composants détaillés en § 4.2.]
 
 <!-- Chaque composant est un module autonome avec une responsabilité unique.
 Si un composant a deux responsabilités reliées par "et", le découper en deux.
-Référencer les UC et RG du SPEC.md que chaque composant adresse. -->
+Référencer les UC et RG de la spec que chaque composant adresse. -->
 
 | Composant | Responsabilité | Interfaces exposées | Dépendances | UC couverts | RG implémentées |
 |-----------|---------------|---------------------|-------------|-------------|-----------------|
@@ -154,7 +154,7 @@ Référencer les UC et RG du SPEC.md que chaque composant adresse. -->
 
 <!-- Matrice montrant quel composant implémente quel UC.
 Garantit la couverture complète de la spec.
-La colonne Priorité (issue du SPEC.md) guide les arbitrages :
+La colonne Priorité (issue de la spec) guide les arbitrages :
 un UC Critique impose des choix architecturaux non négociables,
 un UC Souhaité peut accepter des compromis. -->
 
@@ -214,7 +214,7 @@ livraison (at-least-once, exactly-once), comportement en cas d'indisponibilité]
 
 <!-- Un diagramme par entité ayant un cycle de vie (statuts, états).
 Utiliser la syntaxe Mermaid stateDiagram-v2.
-Source : les champs État initial et État final de chaque UC du SPEC.md
+Source : les champs État initial et État final de chaque UC de la spec
 révèlent les transitions. En chaînant les UC qui partagent les mêmes
 entités, on reconstitue le cycle de vie complet. -->
 
@@ -232,7 +232,7 @@ stateDiagram-v2
 
 ### 4.6 Inventaire des données
 
-<!-- Basé sur les objets participants du SPEC.md, enrichi lors de l'étape A.3.
+<!-- Basé sur les objets participants de la spec, enrichi lors de l'étape A.3.
 Pour chaque entité, décrire les attributs principaux, le volume attendu,
 la sensibilité et la durée de rétention. -->
 
@@ -252,13 +252,13 @@ Préciser la source, le format, et la procédure de chargement. -->
 
 ## 5. Propriétés non-fonctionnelles
 
-<!-- Traduire les ENF du SPEC.md et les contraintes non-fonctionnelles
+<!-- Traduire les ENF de la spec et les contraintes non-fonctionnelles
 rattachées aux UC en décisions architecturales concrètes. Pour chaque
 propriété, indiquer le seuil chiffré, la décision architecturale prise
-pour l'atteindre, et la référence SPEC.md. Les propriétés non couvertes
-par le SPEC.md mais nécessaires architecturalement sont aussi documentées. -->
+pour l'atteindre, et la référence vers la spec. Les propriétés non couvertes
+par la spec mais nécessaires architecturalement sont aussi documentées. -->
 
-| Propriété | Seuil / Objectif | Décision architecturale | Référence SPEC.md |
+| Propriété | Seuil / Objectif | Décision architecturale | Référence spec |
 |-----------|-----------------|------------------------|-------------------|
 | [ex: Temps de réponse API] | [ex: < 200ms au P95] | [ex: Cache Redis sur les endpoints de lecture, index composites PostgreSQL] | [ex: ENF-001, CA-ENF-001-01] |
 | [ex: Disponibilité] | [ex: 99.9% (8h45 d'indisponibilité/an)] | [ex: Multi-AZ, health checks, failover automatique] | [ex: ENF-003] |
@@ -324,7 +324,8 @@ project-root/
 ├── scripts/                 # Scripts utilitaires (seed, migration, etc.)
 ├── config/                  # Configuration par environnement
 ├── infra/                   # Infrastructure as Code (Terraform, Docker, etc.)
-├── SPEC.md                  # Spécification SDD (cas d'utilisation)
+├── SPEC-racine-*.md         # Spécification SDD racine (cas d'utilisation)
+├── SPEC-extension-*.md      # Extensions fonctionnelles éventuelles
 ├── README.md                # Guide de démarrage rapide
 └── ...
 ```
@@ -332,8 +333,8 @@ project-root/
 ## 8. Glossaire technique
 
 <!-- Termes techniques spécifiques au projet et à son architecture.
-Le glossaire projet du SPEC.md est la base : ne pas dupliquer les termes
-métier qui y sont déjà définis, y renvoyer (« Voir SPEC.md § Glossaire
+Le glossaire projet de la spec est la base : ne pas dupliquer les termes
+métier qui y sont déjà définis, y renvoyer (« Voir la spec § Glossaire
 projet »). Ici, ne documenter que les termes architecturaux et techniques
 absents du glossaire projet : acronymes techniques, noms de composants,
 patterns d'architecture, termes d'infrastructure. -->
@@ -345,11 +346,11 @@ patterns d'architecture, termes d'infrastructure. -->
 ## 9. Documents de référence
 
 <!-- Lister tous les documents liés à l'architecture.
-Inclure les documents du SPEC.md et les documents produits par ce skill. -->
+Inclure les documents de la spec et les documents produits par ce skill. -->
 
 | Document | Description | Relation |
 |----------|-------------|----------|
-| SPEC.md | Spécification fonctionnelle SDD (cas d'utilisation) | Source des exigences |
+| SPEC-racine-*.md (+ extensions) | Spécification fonctionnelle SDD (cas d'utilisation) | Source des exigences |
 | DEPLOYMENT.md | Procédures de déploiement | Consomme l'architecture |
 | SECURITY.md | Exigences de sécurité | Contraint l'architecture |
 | COMPLIANCE_MATRIX.md | Matrice de conformité | Contraint l'architecture (si applicable) |

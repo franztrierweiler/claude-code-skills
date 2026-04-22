@@ -133,7 +133,7 @@ else
         check_section "$ARCH" "$section"
     done
 
-    echo "  Traçabilité SPEC.md :"
+    echo "  Traçabilité vers la spec :"
     check_min_count "$ARCH" "UC-[0-9]+" "Références UC" 3
     check_min_count "$ARCH" "RG-[0-9]+" "Références RG" 1
     check_min_count "$ARCH" "ENF-[0-9]+" "Références ENF" 1
@@ -315,11 +315,11 @@ else
         ko "Colonne Échéance absente"
     fi
 
-    # Renvoi vers SPEC.md
+    # Renvoi vers la spec
     if grep -qE "UC-[0-9]+|ENF-[0-9]+" "$COMP"; then
-        ok "Références UC/ENF vers SPEC.md présentes"
+        ok "Références UC/ENF vers la spec présentes"
     else
-        ko "Aucune référence UC/ENF vers SPEC.md"
+        ko "Aucune référence UC/ENF vers la spec"
     fi
 fi
 

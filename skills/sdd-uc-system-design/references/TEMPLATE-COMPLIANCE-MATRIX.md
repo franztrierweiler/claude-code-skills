@@ -14,10 +14,10 @@
 ## 1. Contexte réglementaire
 
 <!-- Identifier le secteur d'activité, les réglementations applicables,
-et les UC / ENF du SPEC.md qui déclenchent des obligations de conformité.
-Chaque référentiel doit être justifié par un UC ou ENF « mère » du SPEC.md. -->
+et les UC / ENF de la spec qui déclenchent des obligations de conformité.
+Chaque référentiel doit être justifié par un UC ou ENF « mère » de la spec. -->
 
-| Référentiel | Secteur | Exigence mère (SPEC.md) | Obligation |
+| Référentiel | Secteur | Exigence mère (spec) | Obligation |
 |-------------|---------|------------------------|------------|
 | [ex: HDS] | [ex: Santé] | [ex: UC-007] | [ex: Hébergement certifié pour données de santé] |
 | [ex: RGPD] | [ex: Transversal] | [ex: UC-003, ENF-002] | [ex: Protection des données personnelles] |
@@ -48,8 +48,8 @@ Si certains référentiels ne s'appliquent que partiellement, le préciser. -->
      Convention de numérotation :
      - Préfixe = acronyme du référentiel (HDS, RGPD, PGSSI, PCI, SOC, etc.)
      - Numéro séquentiel à deux chiffres : HDS-01, HDS-02, ...
-     - Cette numérotation est INDÉPENDANTE de celle du SPEC.md (UC-xxx, ENF-xxx).
-     - Le lien vers le SPEC.md est assuré par la colonne "Exigence mère"
+     - Cette numérotation est INDÉPENDANTE de celle de la spec (UC-xxx, ENF-xxx).
+     - Le lien vers la spec est assuré par la colonne "Exigence mère"
        dans le tableau § 1.
      ================================================================ -->
 

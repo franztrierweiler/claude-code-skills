@@ -1,12 +1,12 @@
 # Mise à jour d'une spec existante
 
-Quand l'utilisateur fournit un SPEC.md existant et demande une modification, Claude
-ne repart pas de zéro. Il opère en mode chirurgical : modifier ce qui doit l'être,
-préserver tout le reste.
+Quand l'utilisateur fournit une spec existante (racine ou extension) et demande
+une modification, Claude ne repart pas de zéro. Il opère en mode chirurgical :
+modifier ce qui doit l'être, préserver tout le reste.
 
 ## Déclenchement de la mise à jour
 
-Quand l'utilisateur fournit un SPEC.md et demande une modification, Claude :
+Quand l'utilisateur fournit une spec et demande une modification, Claude :
 1. Affiche le message d'accueil en mode modification (voir section Message d'accueil du SKILL.md).
 2. Demande quelle(s) section(s) modifier : UC, glossaire, ENF, niveaux de support,
    hors périmètre, arborescence, objets participants, etc.

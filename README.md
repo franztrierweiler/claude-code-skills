@@ -53,7 +53,7 @@ Produit les documents de conception technique. Gère les architectures SaaS, cli
 
 ### 🗺️ /sdd-plan
 
-Planifie le développement en lots à partir du SPEC.md et de l'ARCHITECTURE.md. Propose un découpage, le soumet au pilote pour validation, puis produit les fichiers `plan/<lot>.md`.
+Planifie le développement en lots à partir des `SPEC-racine-*.md` (+ extensions) et de l'`ARCHITECTURE.md`. Propose un découpage, le soumet au pilote pour validation, puis produit les fichiers `plan/<lot>.md`.
 
 **Usage :** `/sdd-plan`
 

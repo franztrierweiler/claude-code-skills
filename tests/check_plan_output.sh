@@ -7,9 +7,9 @@
 # Vérifie :
 #   1. Fichiers plan/*.md présents
 #   2. Format de chaque fichier (sections obligatoires)
-#   3. Références UC et AC traçables vers le SPEC.md
+#   3. Références UC et AC traçables vers la spec
 #   4. Dépendances entre lots cohérentes
-#   5. Couverture des UC du SPEC.md
+#   5. Couverture des UC de la spec
 # =============================================================================
 
 set -euo pipefail
@@ -172,14 +172,14 @@ if [ -n "$FIRST_PLAN" ]; then
 fi
 
 # =========================================================================
-# 5. Couverture des UC du SPEC.md
+# 5. Couverture des UC de la spec
 # =========================================================================
 
 echo ""
 echo "--- 5. Couverture des UC ---"
 
 if [ ! -f "$SPEC" ]; then
-    skip "SPEC.md absent — impossible de vérifier la couverture"
+    skip "Spec racine absente — impossible de vérifier la couverture"
 else
     # UC dans le SPEC (racine + extensions)
     SPEC_UCS=$(grep -oE "UC-([A-Z]{3,4}-)?[0-9]+" "$SPEC" 2>/dev/null | sort -u)
@@ -198,20 +198,20 @@ else
     PLAN_UC_COUNT=${PLAN_UC_COUNT:-0}
 
     if [ "$PLAN_UC_COUNT" -ge 1 ]; then
-        ok "$PLAN_UC_COUNT UC couverts par les lots (SPEC.md en contient $SPEC_UC_COUNT)"
+        ok "$PLAN_UC_COUNT UC couverts par les lots (la spec en contient $SPEC_UC_COUNT)"
     else
         ko "Aucun UC couvert par les lots"
     fi
 
-    # UC du SPEC.md non couverts
+    # UC de la spec non couverts
     MISSING_UCS=$(comm -23 <(echo "$SPEC_UCS") <(echo "$PLAN_UCS") 2>/dev/null)
     MISSING_COUNT=$(echo "$MISSING_UCS" | grep -c "UC-" || true)
     MISSING_COUNT=${MISSING_COUNT:-0}
 
     if [ "$MISSING_COUNT" -eq 0 ]; then
-        ok "Tous les UC du SPEC.md sont couverts"
+        ok "Tous les UC de la spec sont couverts"
     else
-        ko "$MISSING_COUNT UC du SPEC.md non couverts : $(echo $MISSING_UCS | tr '\n' ' ')"
+        ko "$MISSING_COUNT UC de la spec non couverts : $(echo $MISSING_UCS | tr '\n' ' ')"
     fi
 fi
 

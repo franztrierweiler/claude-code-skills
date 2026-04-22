@@ -1,10 +1,10 @@
-# Template SPEC.md — Cas d'utilisation (UC)
+# Template SPEC-racine — Cas d'utilisation (UC)
 
-Ce fichier est le template de référence pour la génération d'un SPEC.md structuré
-par cas d'utilisation. Ne génère jamais la structure du SPEC.md de mémoire — ce
-template est la référence. Remplis les sections au fil du dialogue, supprime les
-sections marquées comme optionnelles si elles ne s'appliquent pas, et retire les
-commentaires HTML avant livraison.
+Ce fichier est le template de référence pour la génération d'une spec racine
+(`SPEC-racine-<NomProjet>.md`) structurée par cas d'utilisation. Ne génère jamais
+la structure de la spec de mémoire — ce template est la référence. Remplis les
+sections au fil du dialogue, supprime les sections marquées comme optionnelles
+si elles ne s'appliquent pas, et retire les commentaires HTML avant livraison.
 
 ````markdown
 # [Nom du projet] — Spécification SDD par cas d'utilisation

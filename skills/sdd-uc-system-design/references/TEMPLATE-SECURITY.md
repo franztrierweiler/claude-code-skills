@@ -33,7 +33,7 @@ Source : OWASP ASVS Ch.1, STRIDE. -->
 ### 2.1 Surface d'attaque
 
 <!-- Lister tous les points d'entrée du système (issus des acteurs et
-des interfaces du SPEC.md). Pour chaque point, évaluer l'exposition. -->
+des interfaces de la spec). Pour chaque point, évaluer l'exposition. -->
 
 | Point d'entrée | Type | Exposition | Données accessibles | Niveau de risque |
 |----------------|------|-----------|---------------------|-----------------|
@@ -190,9 +190,9 @@ Applicable à tout système, même en SaaS (isolation des services). -->
 
 ## 5. Exigences de sécurité — Référentiels sectoriels
 
-<!-- Section à renseigner si le SPEC.md identifie un cadre réglementaire ou
+<!-- Section à renseigner si la spec identifie un cadre réglementaire ou
 sectoriel qui impose des exigences de sécurité spécifiques. Ces référentiels
-sont normalement identifiés dans les contraintes du SPEC.md (section Contexte
+sont normalement identifiés dans les contraintes de la spec (section Contexte
 ou ENF). Le détail de conformité est dans COMPLIANCE_MATRIX.md — ici on
 ne documente que les exigences de SÉCURITÉ induites par ces référentiels.
 

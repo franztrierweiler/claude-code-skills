@@ -1,10 +1,9 @@
 ---
 name: sdd-brief
 description: >
-  Charge le contexte complet d'un projet SDD en début de session.
-  Affiche l'état des livrables, la phase courante du pipeline, la
-  progression des lots, et les outils disponibles.
-argument-hint: (sans argument)
+  Charge le contexte d'un projet SDD en début de session : état des
+  livrables, phase du pipeline, progression des lots. Skill
+  slash-command (/sdd-brief).
 disable-model-invocation: true
 metadata:
   version: "1.2.0"

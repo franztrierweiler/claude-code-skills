@@ -204,7 +204,7 @@ comme opérationnel après un déploiement initial ? -->
 
 <!-- Plan de reprise d'activité en cas de perte majeure (panne cloud,
 corruption de données, incident de sécurité). S'applique à tout type de
-solution. Les objectifs RPO/RTO sont issus des ENF du SPEC.md ou des
+solution. Les objectifs RPO/RTO sont issus des ENF de la spec ou des
 arbitrages de la phase A.6. -->
 
 | Métrique | Objectif | Mécanisme | Test |

@@ -39,8 +39,8 @@ echo ""
 echo "--- Éléments attendus dans le brief ---"
 
 # Tableau des livrables
-if grep -qi "SPEC.md" "$LOG_FILE" && grep -qi "ARCHITECTURE.md" "$LOG_FILE"; then
-    ok "Livrables SDD mentionnés (SPEC.md, ARCHITECTURE.md)"
+if grep -qiE "SPEC-racine|SPEC\.md" "$LOG_FILE" && grep -qi "ARCHITECTURE.md" "$LOG_FILE"; then
+    ok "Livrables SDD mentionnés (SPEC-racine, ARCHITECTURE.md)"
 else
     ko "Livrables SDD non mentionnés"
 fi

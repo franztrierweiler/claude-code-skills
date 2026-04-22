@@ -23,6 +23,7 @@ The skills form a pipeline for target projects. All skills use the UC (Use Case)
 4. **Dev workflow** (`/sdd-dev-workflow <lot>`) — implementation loop with AC verification (user-invocable)
 5. **QA workflow** (`/sdd-qa-workflow <lot>`) — test plans, execution, code review, reports (user-invocable)
 6. **Brief** (`/sdd-brief`) — loads project context at session start (user-invocable)
+7. **Tuto** (`/sdd-tuto`) — interactive SDD methodology tutorial (user-invocable; produces an HTML artifact on claude.ai)
 
 ## How to Work on This Repository
 

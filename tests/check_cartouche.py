@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Vérifie que le cartouche d'un SPEC.md contient les champs requis.
+"""Vérifie que le cartouche d'une spec SDD contient les champs requis.
 
-Usage : python3 check_cartouche.py <chemin/vers/SPEC.md>
+Usage : python3 check_cartouche.py <chemin/vers/SPEC-racine-ou-extension.md>
 
 Code retour :
   0 — cartouche conforme
@@ -145,7 +145,7 @@ def check_cartouche(text):
 
 def main():
     if len(sys.argv) != 2:
-        print(f"Usage : {sys.argv[0]} <SPEC.md>", file=sys.stderr)
+        print(f"Usage : {sys.argv[0]} <SPEC-racine-ou-extension.md>", file=sys.stderr)
         sys.exit(2)
 
     path = sys.argv[1]
