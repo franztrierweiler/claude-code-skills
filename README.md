@@ -35,7 +35,7 @@ Les skills auto-déclenchés (1-2) sont activés par Claude quand la demande cor
 
 Rédige des spécifications SDD structurées par cas d'utilisation (UC).
 
-**Déclenchement :** demander une spec SDD par cas d'utilisation, fournir un SPEC existant à modifier, ou demander une extension fonctionnelle.
+**Déclenchement :** demander une spec SDD par cas d'utilisation, fournir une spec existante à modifier, ou demander une extension fonctionnelle.
 
 **Processus :** 4 modes — création racine (3 étapes), reprise, modification, extension (4 étapes).
 
@@ -132,13 +132,14 @@ Le flux de test simule un vrai projet SDD dans `tests/output/` :
 | 9 | Développement premier lot | `test-dev-workflow` | Claude |
 | 10 | QA premier lot | `test-qa-workflow` | Claude |
 | 11 | Brief projet | `test-brief` | Claude |
-| 12 | Contrôles SPEC racine | `test-uc-spec-racine-check-structure` | Déterministe |
-| 13 | Contrôles SPEC extension | `test-uc-spec-extension-check-structure` | Déterministe |
-| 14 | Contrôles docs de conception | `test-uc-system-design-check-structure` | Déterministe |
-| 15 | Contrôles fichiers de plan | `test-plan-check-structure` | Déterministe |
-| 16 | Contrôles code + tests | `test-dev-workflow-check-structure` | Déterministe |
-| 17 | Contrôles QA | `test-qa-workflow-check-structure` | Déterministe |
-| 18 | Contrôles brief | `test-brief-check-structure` | Déterministe |
+| 12 | Tutoriel SDD | `test-tuto` | Claude |
+| 13 | Contrôles SPEC racine | `test-uc-spec-racine-check-structure` | Déterministe |
+| 14 | Contrôles SPEC extension | `test-uc-spec-extension-check-structure` | Déterministe |
+| 15 | Contrôles docs de conception | `test-uc-system-design-check-structure` | Déterministe |
+| 16 | Contrôles fichiers de plan | `test-plan-check-structure` | Déterministe |
+| 17 | Contrôles code + tests | `test-dev-workflow-check-structure` | Déterministe |
+| 18 | Contrôles QA | `test-qa-workflow-check-structure` | Déterministe |
+| 19 | Contrôles brief | `test-brief-check-structure` | Déterministe |
 
 `make test` lance la chaîne complète. Prérequis : `python3`, `claude`, `rsync`, `tar` (vérifiés par `make check-deps`).
 
@@ -148,7 +149,6 @@ Le flux de test simule un vrai projet SDD dans `tests/output/` :
 
 Les revues et améliorations sont documentées dans `to-do/` :
 
-- **Rules** — À supprimer ou repurposer : le contenu actuel est redondant avec les skills et le CLAUDE.md.
 - **Distribution** — Valider le format de ZIP attendu par claude.ai enterprise.
 
 ## Fichiers CLAUDE.md
