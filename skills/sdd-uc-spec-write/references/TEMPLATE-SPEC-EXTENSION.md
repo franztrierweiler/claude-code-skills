@@ -22,7 +22,7 @@ et retire les commentaires HTML avant livraison.
 > | **Spec racine** | [SPEC-racine-NomProjet.md] |
 > | **UUID racine** | `[UUID de la spec racine]` |
 > | **Préfixe** | [ALR] |
-> | **Généré par** | sdd-uc-spec-write v2.4.0 |
+> | **Généré par** | sdd-uc-spec-write v2.5.0 |
 
 <!-- CHANGELOG — Ne pas inclure en v1.0. Décommenter à partir de la v1.1.
 ## Changelog
@@ -103,26 +103,57 @@ et retire les commentaires HTML avant livraison.
 
 ## Arborescence des cas d'utilisation
 
-| Package (niveau 2) | Package (niveau 1) | UC | Intitulé |
-|---|---|---|---|
-| [Epic] | [Feature] | UC-[PFX]-XXX | [Intitulé du UC] |
+<!-- Trois vues complémentaires. Identifiants préfixés par l'extension
+     (UC-[PFX]-XXX). Mêmes règles structurelles que la spec racine :
+     enfants mixtes, max 7 sous-paquetages par parent, max 10 UCs par
+     paquetage feuille, profondeur recommandée 3, plafond pratique 4. -->
+
+### Carte d'ensemble
+
+<!-- Liste imbriquée Markdown. Paquetages en gras avec count d'UCs entre
+     parenthèses ; UCs listés sous leur parent direct. -->
+
+- **[Paquetage A]** ([N] UC)
+  - **[Sous-paquetage A.1]** ([N] UC) — UC-[PFX]-XXX, UC-[PFX]-YYY
+- **[Paquetage B]** ([N] UC) — UC-[PFX]-AAA, UC-[PFX]-BBB
+
+### Fiches paquetage
+
+<!-- Une fiche par paquetage non-feuille de l'extension. Format constant. -->
+
+#### Paquetage : [Nom]
+
+**Objectif** — [En une phrase, ce que regroupe le paquetage.]
+
+**Contient :**
+
+| Type | Élément |
+|---|---|
+| Paquetage | [Nom du sous-paquetage] ([N] UC) |
+| UC | UC-[PFX]-XXX — [Intitulé du UC] |
 
 ## Diagramme des cas d'utilisation
 
-<!-- Diagramme des UC de cette extension. Les UC de la spec racine référencés
-     en dépendance peuvent apparaître en pointillés pour montrer les liens.
-     Si > 15-20 UC, découper par package de niveau 2. -->
+<!-- Mermaid avec un subgraph par paquetage de l'extension. Les UCs de la
+     spec racine référencés en dépendance apparaissent en pointillés pour
+     montrer les liens. Si > 20 UC : un diagramme par paquetage racine + un
+     diagramme « 30 000 pieds » des paquetages seuls (sans UCs). -->
 
 ```mermaid
-graph LR
+graph TD
     Acteur1([Acteur 1])
-    Acteur1 --> UC_PFX_001[UC-PFX-001 : Intitulé]
-    UC_PFX_001 -.->|include| UC_005[UC-005 : Intitulé racine]
+    subgraph PA[Paquetage A — extension]
+        UC_PFX_001[UC-PFX-001 : Intitulé]
+    end
+    UC_005[UC-005 : Intitulé racine]:::racine
+    Acteur1 --> UC_PFX_001
+    UC_PFX_001 -.->|include| UC_005
+    classDef racine stroke-dasharray: 5 5;
 ```
 
 ## Cas d'utilisation détaillés
 
-<!-- Regrouper par package de niveau 2, puis par package de niveau 1.
+<!-- Regrouper par paquetage en suivant la profondeur de l'arborescence.
      Chaque UC suit le format exact défini dans references/UC-FORMAT.md.
      Les identifiants portent le préfixe de l'extension (ex : UC-ALR-001).
      Les références aux UC/RG de la racine utilisent les identifiants sans
@@ -130,9 +161,12 @@ graph LR
 
 ---
 
-**📦 [Package niveau 2 : Nom]**
+**📦 [Paquetage racine : Nom]**
 
-**[Package niveau 1 : Nom]**
+<!-- Si le paquetage contient des sous-paquetages, ajouter un sous-titre
+     pour chaque sous-paquetage avant ses UCs (récursivement selon la profondeur). -->
+
+**[Sous-paquetage : Nom]**
 
 <!-- Pour chaque UC, reproduire la structure exacte définie dans references/UC-FORMAT.md,
      en utilisant les identifiants préfixés. -->

@@ -18,7 +18,7 @@ si elles ne s'appliquent pas, et retire les commentaires HTML avant livraison.
 > | **Auteur** | [Nom] |
 > | **Statut** | Brouillon |
 > | **Type** | Document racine |
-> | **Généré par** | sdd-uc-spec-write v2.4.0 |
+> | **Généré par** | sdd-uc-spec-write v2.5.0 |
 
 <!-- CHANGELOG — Ne pas inclure en v1.0. Décommenter à partir de la v1.1.
 ## Changelog
@@ -102,35 +102,78 @@ si elles ne s'appliquent pas, et retire les commentaires HTML avant livraison.
 
 ## Arborescence des cas d'utilisation
 
-| Package (niveau 2) | Package (niveau 1) | UC | Intitulé |
-|---|---|---|---|
-| [Epic] | [Feature] | UC-XXX | [Intitulé du UC] |
+<!-- Trois vues complémentaires. Règles structurelles : un paquetage peut
+     contenir à la fois des paquetages et des UCs (enfants mixtes) ; max
+     7 sous-paquetages par parent, max 10 UCs par paquetage feuille.
+     Profondeur recommandée 3, plafond pratique 4, avertissement au-delà. -->
+
+### Carte d'ensemble
+
+<!-- Liste imbriquée Markdown. Paquetages en gras avec count d'UCs entre
+     parenthèses ; UCs listés sous leur parent direct (identifiants
+     individuels ou plage compacte UC-XXX → UC-YYY). -->
+
+- **[Paquetage A]** ([N] UC)
+  - **[Sous-paquetage A.1]** ([N] UC) — UC-XXX, UC-YYY
+  - **[Sous-paquetage A.2]** ([N] UC)
+    - **[Sous-sous-paquetage A.2.1]** ([N] UC) — UC-ZZZ → UC-WWW
+- **[Paquetage B]** ([N] UC) — UC-AAA, UC-BBB
+
+### Fiches paquetage
+
+<!-- Une fiche par paquetage non-feuille, dans l'ordre de la carte d'ensemble.
+     Format constant quelle que soit la profondeur. -->
+
+#### Paquetage : [Nom]
+
+**Objectif** — [En une phrase, ce que regroupe le paquetage.]
+
+**Contient :**
+
+| Type | Élément |
+|---|---|
+| Paquetage | [Nom du sous-paquetage] ([N] UC) |
+| UC | UC-XXX — [Intitulé du UC] |
 
 ## Diagramme des cas d'utilisation
 
-<!-- Diagramme global fourni par l'utilisateur ou généré en Mermaid.
-     Si > 15-20 UC, découper en un diagramme par package de niveau 2. -->
+<!-- Mermaid avec un subgraph par paquetage. Si ≤ 20 UC : un seul diagramme
+     global. Si > 20 UC : un diagramme par paquetage racine, plus un
+     diagramme « 30 000 pieds » qui ne montre que les paquetages (sans UCs). -->
 
 ```mermaid
-graph LR
+graph TD
     Acteur1([Acteur 1])
-    Acteur1 --> UC001[UC-001 : Intitulé]
-    Acteur1 --> UC002[UC-002 : Intitulé]
-    UC001 -.->|include| UC003[UC-003 : Intitulé]
-    UC002 -.->|extend| UC004[UC-004 : Intitulé]
+    subgraph PA[Paquetage A]
+        subgraph SA1[Sous-paquetage A.1]
+            UC001[UC-001 : Intitulé]
+            UC002[UC-002 : Intitulé]
+        end
+    end
+    subgraph PB[Paquetage B]
+        UC003[UC-003 : Intitulé]
+    end
+    Acteur1 --> UC001
+    Acteur1 --> UC003
+    UC001 -.->|include| UC002
 ```
 
 ## Cas d'utilisation détaillés
 
-<!-- Regrouper par package de niveau 2, puis par package de niveau 1.
-     Chaque UC suit le format exact ci-dessous. Ne pas modifier la structure.
-     Numéroter séquentiellement. Ne jamais réutiliser un identifiant supprimé. -->
+<!-- Regrouper par paquetage en suivant la profondeur de l'arborescence.
+     Chaque UC suit le format exact défini dans references/UC-FORMAT.md.
+     Ne pas modifier la structure. Numéroter séquentiellement.
+     Ne jamais réutiliser un identifiant supprimé. -->
 
 ---
 
-**📦 [Package niveau 2 : Nom]**
+**📦 [Paquetage racine : Nom]**
 
-**[Package niveau 1 : Nom]**
+<!-- Si le paquetage contient des sous-paquetages, ajouter un sous-titre
+     pour chaque sous-paquetage avant ses UCs (et ainsi de suite récursivement
+     selon la profondeur). -->
+
+**[Sous-paquetage : Nom]**
 
 <!-- Pour chaque UC, reproduire la structure exacte définie dans references/UC-FORMAT.md. -->
 

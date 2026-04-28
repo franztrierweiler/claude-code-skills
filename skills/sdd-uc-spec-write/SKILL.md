@@ -7,15 +7,15 @@ description: >
   docs/, sur claude.ai livre des artefacts Markdown. S'active dès qu'on
   demande une spec SDD, à formaliser des UC, ou à étendre une spec racine.
 metadata:
-  version: "2.4.0"
+  version: "2.5.0"
   author: "Franz TRIERWEILER"
 license: "MIT"
 ---
 
 # Spec Driven Development (SDD) — Rédaction par cas d'utilisation
 
-Version : 2.4.0
-Date : 2026-04-21
+Version : 2.5.0
+Date : 2026-04-28
 
 ## Barre de progression — OBLIGATION STRICTE
 
@@ -23,7 +23,7 @@ Date : 2026-04-21
 progression ci-dessous. AUCUNE EXCEPTION. Cela inclut le message d'accueil.**
 
 ```
-🖊️ skill:sdd-uc-spec-write v2.4.0 · [Étape] [barre] sous-étape N/T — [Nom]
+🖊️ skill:sdd-uc-spec-write v2.5.0 · [Étape] [barre] sous-étape N/T — [Nom]
 ```
 
 Caractère plein : `█` — Caractère vide : `░`. Voir la section
@@ -87,7 +87,7 @@ attendues du template sont absentes.
 
 **Mode 1 — Rédaction initiale (aucun SPEC-racine-*.md trouvé) :**
 ```
-🖊️ skill:sdd-uc-spec-write v2.4.0 · Cadrage [░░░░] 0/4 — Démarrage
+🖊️ skill:sdd-uc-spec-write v2.5.0 · Cadrage [░░░░] 0/4 — Démarrage
 
 Ce skill produit des spécifications logicielles structurées par cas d'utilisation (UC),
 selon la méthodologie Spec Driven Development (SDD). L'objectif est de produire un
@@ -108,7 +108,7 @@ Si plusieurs documents existent, lister ceux qui sont incomplets et demander
 sur lequel travailler.
 
 ```
-🖊️ skill:sdd-uc-spec-write v2.4.0 · [Étape détectée] [barre] — Reprise
+🖊️ skill:sdd-uc-spec-write v2.5.0 · [Étape détectée] [barre] — Reprise
 
 J'ai trouvé [nom du fichier] mais il est incomplet. Sections manquantes ou
 incomplètes :
@@ -124,7 +124,7 @@ section spécifique ?
 Si plusieurs documents complets existent, lister et demander lequel modifier.
 
 ```
-🖊️ skill:sdd-uc-spec-write v2.4.0 · Mise à jour [░░░] 0/3 — Démarrage
+🖊️ skill:sdd-uc-spec-write v2.5.0 · Mise à jour [░░░] 0/3 — Démarrage
 
 J'ai trouvé [nom du fichier]. Ce skill permet de modifier une spécification
 SDD existante structurée par cas d'utilisation. Je peux intervenir sur :
@@ -141,7 +141,7 @@ Quelle section veux-tu modifier ?
 **Mode 4 — Création d'une extension (spec racine complète + intention extension) :**
 
 ```
-🖊️ skill:sdd-uc-spec-write v2.4.0 · Extension [░░░░] 0/4 — Démarrage
+🖊️ skill:sdd-uc-spec-write v2.5.0 · Extension [░░░░] 0/4 — Démarrage
 
 J'ai trouvé [nom de la spec racine] ([N] UC, v[X.Y]).
 
@@ -158,7 +158,7 @@ On commence par le cadrage de la fonction.
 **Choix proposé (spec racine complète, intention non détectée) :**
 
 ```
-🖊️ skill:sdd-uc-spec-write v2.4.0 · Démarrage
+🖊️ skill:sdd-uc-spec-write v2.5.0 · Démarrage
 
 J'ai trouvé [liste des documents SPEC].
 
@@ -259,20 +259,40 @@ Trois types de relations peuvent exister entre UC :
 Chaque UC documente ses relations dans un champ dédié. Les diagrammes Mermaid
 sont régénérés à chaque livraison pour refléter ces relations.
 
-### Packages et arborescence
+### Paquetages et arborescence
 
-Les cas d'utilisation sont organisés en une arborescence à deux niveaux de packages :
+Les cas d'utilisation sont organisés en une arborescence de **paquetages**.
+Le modèle est volontairement souple : un paquetage peut contenir à la fois
+d'autres paquetages **et** des cas d'utilisation (enfants mixtes), à
+n'importe quelle profondeur.
 
-| Niveau | Rôle | Équivalent Agile |
+**Règles de structuration :**
+
+| Règle | Valeur | Origine |
 |---|---|---|
-| **Package niveau 2** | Regroupement de haut niveau | Epic |
-| **Package niveau 1** | Sous-regroupement fonctionnel | Feature |
-| **UC** | Cas d'utilisation unitaire | ≈ User Story |
+| Sous-paquetages max par paquetage parent | **7** | Loi de Miller (7±2) |
+| UC max par paquetage feuille | **10** | Lisibilité d'un diagramme UC |
+| Profondeur recommandée | **3 niveaux** | Convergence UML (Fowler, Larman, Booch) |
+| Profondeur plafond pratique | **4 niveaux** | Au-delà : signe de sur-décomposition |
+| Profondeur > 4 | **Avertissement** | Proposer une fusion |
 
-Un diagramme de cas d'utilisation ne doit pas dépasser **15 à 20 UC**. Au-delà,
-découper en packages ou sous-diagrammes.
+Aucune limite formelle au-delà de 4, mais Claude alerte l'utilisateur si la
+profondeur dépasse ce seuil et propose un regroupement.
 
-L'arborescence sert de cartographie du système et sera réutilisable pour le
+**Trois vues complémentaires** structurent la livraison de l'arborescence :
+
+1. **Carte d'ensemble** — liste imbriquée Markdown. Lecture en 10 secondes,
+   table des matières du système. Paquetages en gras avec count d'UCs entre
+   parenthèses ; UCs listés sous leur parent direct.
+2. **Fiches paquetage** — un bloc par paquetage non-feuille, avec objectif
+   et tableau à 2 colonnes (Type | Élément) listant ses enfants directs.
+   Format constant quelle que soit la profondeur, scannable et parsable.
+3. **Diagramme Mermaid** — vue géographique. Si ≤ 20 UC : un seul diagramme
+   global avec `subgraph` par paquetage. Si > 20 UC : un diagramme par
+   paquetage racine + un diagramme « 30 000 pieds » des paquetages seuls
+   (sans les UCs).
+
+L'arborescence sert de cartographie du système et est réutilisable pour le
 lotissement et la priorisation du développement.
 
 ### Diagramme de contexte
@@ -305,16 +325,16 @@ cette ligne, même si le fichier SKILL.md a été lu partiellement.
 **Format :**
 
 ```
-🖊️ skill:sdd-uc-spec-write v2.4.0 · [Étape] [barre] sous-étape N/T — [Nom]
+🖊️ skill:sdd-uc-spec-write v2.5.0 · [Étape] [barre] sous-étape N/T — [Nom]
 ```
 
-La version affichée est celle indiquée dans l'en-tête du skill (actuellement v2.4.0).
+La version affichée est celle indiquée dans l'en-tête du skill (actuellement v2.5.0).
 
 **Règles de la barre de progression :**
 
 - Caractère plein : `█` — Caractère vide : `░`
 - Largeur fixe : 4 caractères pour Cadrage (4 sous-étapes), variable pour
-  Cas d'utilisation (1 caractère par package de niveau 1), 3 caractères pour Compléments.
+  Cas d'utilisation (1 caractère par paquetage racine), 3 caractères pour Compléments.
 - La barre reflète la sous-étape en cours (incluse).
 
 **Découpage en sous-étapes (document racine) :**
@@ -322,7 +342,7 @@ La version affichée est celle indiquée dans l'en-tête du skill (actuellement 
 | Étape | Sous-étapes | Total |
 |-------|-------------|-------|
 | Cadrage | 1. Questions obligatoires · 2. Questions conditionnelles · 3. Diagramme de contexte · 4. Rédaction & validation sections initiales | 4 |
-| Cas d'utilisation | 1. Arborescence & diagramme global · puis 1 sous-étape par package de niveau 1 (nombre variable, noté N/M) | 1+M |
+| Cas d'utilisation | 1. Arborescence & diagramme global · puis 1 sous-étape par paquetage racine (nombre variable, noté N/M) | 1+M |
 | Compléments | 1. Objets participants · 2. Exigences non fonctionnelles · 3. Rédaction finale & passage de relais | 3 |
 
 **Découpage en sous-étapes (extension) :**
@@ -330,24 +350,24 @@ La version affichée est celle indiquée dans l'en-tête du skill (actuellement 
 | Étape | Sous-étapes | Total |
 |-------|-------------|-------|
 | Cadrage fonction | 1. Identification fonction & préfixe · 2. Contexte & dépendances racine · 3. Diagramme de contexte fonction · 4. Rédaction & validation sections initiales | 4 |
-| Cas d'utilisation | 1. Arborescence & diagramme · puis 1 sous-étape par package de niveau 1 | 1+M |
+| Cas d'utilisation | 1. Arborescence & diagramme · puis 1 sous-étape par paquetage racine | 1+M |
 | Compléments | 1. Objets participants · 2. Exigences non fonctionnelles | 2 |
 | Finalisation | 1. Vérification table des dépendances · 2. Rédaction finale & passage de relais | 2 |
 
 **Exemples :**
 
 ```
-🖊️ skill:sdd-uc-spec-write v2.4.0 · Cadrage [█░░░] 1/4 — Questions obligatoires
-🖊️ skill:sdd-uc-spec-write v2.4.0 · Cadrage [████] 4/4 — Rédaction & validation
-🖊️ skill:sdd-uc-spec-write v2.4.0 · Cas d'utilisation [█░░░░] arborescence — Structure des packages
-🖊️ skill:sdd-uc-spec-write v2.4.0 · Cas d'utilisation [████░] package 3/4 — Export
-🖊️ skill:sdd-uc-spec-write v2.4.0 · Compléments [███] 3/3 — Rédaction finale & passage de relais
+🖊️ skill:sdd-uc-spec-write v2.5.0 · Cadrage [█░░░] 1/4 — Questions obligatoires
+🖊️ skill:sdd-uc-spec-write v2.5.0 · Cadrage [████] 4/4 — Rédaction & validation
+🖊️ skill:sdd-uc-spec-write v2.5.0 · Cas d'utilisation [█░░░░] arborescence — Structure des paquetages
+🖊️ skill:sdd-uc-spec-write v2.5.0 · Cas d'utilisation [████░] paquetage 3/4 — Export
+🖊️ skill:sdd-uc-spec-write v2.5.0 · Compléments [███] 3/3 — Rédaction finale & passage de relais
 ```
 
 **Cas particulier — Mise à jour d'une spec existante :**
 
 ```
-🖊️ skill:sdd-uc-spec-write v2.4.0 · Mise à jour [██░] 2/3 — Application des modifications
+🖊️ skill:sdd-uc-spec-write v2.5.0 · Mise à jour [██░] 2/3 — Application des modifications
 ```
 
 Sous-étapes de mise à jour : 1. Lecture & périmètre · 2. Application ·
@@ -356,10 +376,10 @@ Sous-étapes de mise à jour : 1. Lecture & périmètre · 2. Application ·
 **Cas particulier — Création d'une extension :**
 
 ```
-🖊️ skill:sdd-uc-spec-write v2.4.0 · Extension [█░░░] 1/4 — Cadrage fonction
-🖊️ skill:sdd-uc-spec-write v2.4.0 · Extension [██░░] package 2/3 — Import
-🖊️ skill:sdd-uc-spec-write v2.4.0 · Extension [███░] 3/4 — Compléments
-🖊️ skill:sdd-uc-spec-write v2.4.0 · Extension [████] 4/4 — Finalisation
+🖊️ skill:sdd-uc-spec-write v2.5.0 · Extension [█░░░] 1/4 — Cadrage fonction
+🖊️ skill:sdd-uc-spec-write v2.5.0 · Extension [██░░] paquetage 2/3 — Import
+🖊️ skill:sdd-uc-spec-write v2.5.0 · Extension [███░] 3/4 — Compléments
+🖊️ skill:sdd-uc-spec-write v2.5.0 · Extension [████] 4/4 — Finalisation
 ```
 
 Si plusieurs messages se succèdent au sein de la même sous-étape (ex :
@@ -422,11 +442,15 @@ Avant de commencer la rédaction des UC, demande à l'utilisateur :
 1. **"As-tu un diagramme des cas d'utilisation à fournir ?"** — Si oui, interprète
    le schéma fourni (image) pour identifier les UC, les acteurs et les relations.
 
-2. **Propose l'arborescence des packages :** "Je vois N packages de niveau 2
-   regroupant M packages de niveau 1. Voici la structure que je propose :
-   [arborescence]. Tu valides, tu corriges, tu complètes ?"
+2. **Propose l'arborescence des paquetages :** "Voici la structure que je
+   propose pour ton système : [arborescence]. Profondeur : N niveaux,
+   M paquetages racine. Tu valides, tu corriges, tu complètes ?"
 
-Pour chaque package de niveau 1 :
+   Si la profondeur dépasse 4, signale-le explicitement et propose une
+   fusion : "L'arborescence dépasse 4 niveaux, ce qui est généralement
+   un signe de sur-décomposition. Veux-tu fusionner [paquetages X et Y] ?"
+
+Pour chaque paquetage racine :
 
 1. **Propose** un lot de cas d'utilisation (2 à 4) avec leur structure complète.
    Consulte `references/UC-FORMAT.md` pour le format exact et les questions à poser.
@@ -434,13 +458,15 @@ Pour chaque package de niveau 1 :
 3. **Intègre** les retours et passe au lot suivant.
 
 Ne cherche pas l'exhaustivité dès le premier passage. Il vaut mieux couvrir les UC
-principaux de chaque package, puis revenir affiner.
+principaux de chaque paquetage, puis revenir affiner.
 
 Si l'utilisateur fournit des informations que tu ne maîtrises pas entièrement,
 demande des précisions plutôt que de deviner. Un UC faux est pire qu'un UC absent.
 
 **Régénération des diagrammes :** À chaque livraison du document, régénère les
-diagrammes Mermaid des relations entre UC. Si > 15-20 UC, découpe par package.
+diagrammes Mermaid des relations entre UC. Si > 20 UC, découpe par paquetage
+racine et ajoute un diagramme « 30 000 pieds » des paquetages seuls (sans
+les UCs) en complément.
 
 ### Étape 3 — Compléments
 
@@ -491,12 +517,12 @@ Schéma de données : `DATA-MODEL.md` (nommage inchangé).
 ### Passage de relais
 
 Quand les trois étapes sont terminées et que le document contient un cadrage validé,
-des cas d'utilisation couvrant les packages principaux, et des compléments documentés,
+des cas d'utilisation couvrant les paquetages principaux, et des compléments documentés,
 informe l'utilisateur que le document est suffisamment structuré pour qu'il puisse le
 compléter et l'enrichir lui-même.
 
 Dis-le explicitement, par exemple : "[nom du fichier] a maintenant une structure solide
-avec [N] cas d'utilisation répartis en [packages]. Tu peux désormais le compléter
+avec [N] cas d'utilisation répartis en [paquetages]. Tu peux désormais le compléter
 directement — ajouter des UC, affiner les étapes et exceptions, préciser les règles de
 gestion — en suivant le format et les conventions établis. Le glossaire et la structure
 des identifiants (UC/RG/IHM/ENF/CA) te guident."
@@ -538,7 +564,7 @@ Pour le workflow complet de création d'extension, consulte
 
 **Étape 2 — Cas d'utilisation :**
 
-Même processus que pour un document racine (arborescence, puis UC par package),
+Même processus que pour un document racine (arborescence, puis UC par paquetage),
 avec deux différences :
 - Tous les identifiants portent le préfixe de l'extension (UC-ALR-001, RG-ALR-0001).
 - À chaque référence à un UC ou RG de la racine, mettre à jour la table
@@ -581,9 +607,9 @@ Le document racine suit cet ordre de sections. Le template complet est dans
 6. **Documents de référence** (si applicable) — Liens vers documents complémentaires.
 7. **Niveaux de support** (si applicable) — Supporté / Ignoré / Erreur explicite.
 8. **Hors périmètre** — Ce que le logiciel ne fait explicitement pas.
-9. **Arborescence des cas d'utilisation** — Tableau hiérarchique packages → UC.
-10. **Diagramme global des cas d'utilisation** — Mermaid, découper si > 15-20 UC.
-11. **Cas d'utilisation détaillés** — Regroupés par package. Format : voir `references/UC-FORMAT.md`.
+9. **Arborescence des cas d'utilisation** — Trois vues : carte d'ensemble (liste imbriquée), fiches paquetage (tableaux 2 colonnes), diagramme Mermaid avec `subgraph`. Voir `references/TEMPLATE-SPEC.md`.
+10. **Diagramme global des cas d'utilisation** — Mermaid avec `subgraph` par paquetage. Découper en diagrammes par paquetage racine si > 20 UC.
+11. **Cas d'utilisation détaillés** — Regroupés par paquetage. Format : voir `references/UC-FORMAT.md`.
 12. **Objets participants** (si applicable) — Entités métier, diagrammes d'objets/interaction.
 13. **Exigences non fonctionnelles** — ENF-XXX avec CA au format Soit/Quand/Alors.
 14. **Glossaire projet** — Termes spécifiques au domaine.
@@ -601,9 +627,9 @@ Le document d'extension suit cet ordre de sections. Le template complet est dans
 5. **Dépendances vers la spec racine** — Tableau des UC/RG racine référencés.
 6. **Niveaux de support** (si applicable) — Supporté / Ignoré / Erreur explicite.
 7. **Hors périmètre** — Ce que la fonction ne fait explicitement pas.
-8. **Arborescence des cas d'utilisation** — Identifiants préfixés.
-9. **Diagramme des cas d'utilisation** — UC de l'extension + UC racine en pointillés.
-10. **Cas d'utilisation détaillés** — Identifiants préfixés. Format : voir `references/UC-FORMAT.md`.
+8. **Arborescence des cas d'utilisation** — Trois vues (carte d'ensemble, fiches paquetage, diagramme Mermaid) avec identifiants préfixés. Voir `references/TEMPLATE-SPEC-EXTENSION.md`.
+9. **Diagramme des cas d'utilisation** — Mermaid avec `subgraph` par paquetage de l'extension. UCs racine référencés en pointillés.
+10. **Cas d'utilisation détaillés** — Regroupés par paquetage. Identifiants préfixés. Format : voir `references/UC-FORMAT.md`.
 11. **Objets participants** (si applicable) — Spécifiques à la fonction.
 12. **Exigences non fonctionnelles** — ENF préfixées, spécifiques à la fonction.
 13. **Glossaire fonction** — Termes nouveaux uniquement.
@@ -651,6 +677,9 @@ Avant de considérer la spec comme terminée, vérifie :
 - [ ] Le glossaire SDD est présent et intact.
 - [ ] Le glossaire projet couvre tous les termes spécifiques utilisés.
 - [ ] L'arborescence des UC est complète et cohérente.
+- [ ] Aucun paquetage ne dépasse 7 sous-paquetages directs.
+- [ ] Aucun paquetage feuille ne dépasse 10 UCs.
+- [ ] La profondeur de l'arborescence est ≤ 4 (avertissement au-delà).
 - [ ] Chaque UC a au moins un critère d'acceptation.
 - [ ] Chaque critère d'acceptation est au format Soit/Quand/Alors.
 - [ ] Les étapes de chaque UC suivent la convention Na/Nb (acteur/système).

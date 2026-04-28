@@ -6,6 +6,15 @@ Ce projet utilise le [Semantic Versioning](https://semver.org/lang/fr/).
 
 ## sdd-uc-spec-write
 
+### [2.5.0] — 2026-04-28
+
+- Modèle de paquetages : profondeur variable (recommandée 3, plafond pratique 4), enfants mixtes (paquetages + UCs dans un même parent), règle 7+10 (max 7 sous-paquetages par parent, max 10 UCs par paquetage feuille)
+- Trois vues complémentaires pour l'arborescence : carte d'ensemble (liste imbriquée), fiches paquetage (tableau 2 colonnes), diagramme Mermaid avec `subgraph`
+- Barre de progression : « 1 caractère par paquetage racine » remplace « 1 par package niveau 1 » (sémantique stable indépendamment de la profondeur)
+- Templates SPEC-racine et SPEC-extension refondus : section *Arborescence* éclatée en trois sous-sections, diagrammes Mermaid avec `subgraph` par paquetage
+- Glossaire : entrée *Package* remplacée par *Paquetage* avec règles structurelles
+- Vocabulaire : « package » → « paquetage » dans tout le skill et ses références
+
 ### [2.0.0] — 2026-03-30
 
 - Restructuration progressive disclosure : extraction du template, glossaire, format UC et workflow de mise à jour dans `references/`

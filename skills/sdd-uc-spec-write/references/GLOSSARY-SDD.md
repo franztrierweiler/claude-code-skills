@@ -17,7 +17,7 @@ Reproduis ce glossaire en dernière section de chaque spec produite.
 | **Critère d'acceptation** | Condition vérifiable prouvant qu'un UC est satisfait. Formulé en Soit/Quand/Alors. |
 | **Hors périmètre** | Ce que le logiciel ne fait explicitement pas. Aussi important que ce qu'il fait. |
 | **Niveau de support** | Degré de prise en charge d'une fonctionnalité : **Supporté** (implémenté), **Ignoré** (no-op silencieux), **Erreur** (rejeté avec message explicite). |
-| **Package** | Regroupement de cas d'utilisation. Deux niveaux : niveau 2 (≈ Epic), niveau 1 (≈ Feature). |
+| **Paquetage** | Regroupement de cas d'utilisation, à profondeur variable. Un paquetage peut contenir d'autres paquetages, des UCs, ou les deux. Profondeur recommandée 3 niveaux, plafond pratique 4 ; max 7 sous-paquetages par parent, max 10 UCs par paquetage feuille. |
 | **Include** | Relation entre UC : un UC inclut obligatoirement un autre UC. |
 | **Extend** | Relation entre UC : un UC étend optionnellement un autre UC sous condition. |
 | **Généralisation** | Relation entre UC : un UC hérite d'un UC parent et le spécialise. Peu fréquent. |

@@ -18,10 +18,10 @@ Avant toute modification, identifie et confirme avec l'utilisateur le type d'op�
 
 | Type | Exemples | Impact |
 |---|---|---|
-| **Ajout** | Nouveau UC, nouveau package, nouvelle ENF | Insertion sans modifier l'existant |
+| **Ajout** | Nouveau UC, nouveau paquetage, nouvelle ENF | Insertion sans modifier l'existant |
 | **Modification** | Reformulation d'une étape, ajout d'une exception, changement de règle de gestion | Mise à jour ciblée d'éléments existants |
 | **Dépréciation** | Un UC n'est plus pertinent mais doit rester traçable | Marquage, pas suppression |
-| **Restructuration** | Découpage d'un UC en deux, fusion de packages, réorganisation de l'arborescence | Modification structurelle avec renumérotation potentielle |
+| **Restructuration** | Découpage d'un UC en deux, fusion de paquetages, réorganisation de l'arborescence, modification de la profondeur | Modification structurelle avec renumérotation potentielle |
 
 ## Règles de gestion des identifiants
 
@@ -67,13 +67,13 @@ inséré entre l'en-tête (section 1) et le contexte (section 2) :
 | Version | Date | Auteur | Modifications |
 |---|---|---|---|
 | 2.1 | 2025-07-15 | [Auteur] | Ajout UC-048, UC-049. Dépréciation UC-012. Ajout RG-0025. |
-| 2.0 | 2025-06-01 | [Auteur] | Restructuration package "Export". Ajout ENF-003. |
+| 2.0 | 2025-06-01 | [Auteur] | Restructuration paquetage "Export". Ajout ENF-003. |
 | 1.0 | 2025-04-10 | [Auteur] | Version initiale. |
 ```
 
 **Convention de versioning :**
 - **Majeure (X.0)** : restructuration significative du périmètre, ajout ou retrait
-  de packages de niveau 2.
+  de paquetages racine, modification de la profondeur de l'arborescence.
 - **Mineure (X.Y)** : ajout, modification ou dépréciation de UC ou ENF à l'intérieur
   du périmètre existant.
 

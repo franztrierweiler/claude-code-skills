@@ -10,7 +10,7 @@ Les skills sont conformes au standard [agentskills.io](https://agentskills.io/ho
 
 | # | Icône | Skill | Version | Invocation | Phase |
 |---|-------|-------|---------|-----------|-------|
-| 1 | 🖊️ | sdd-uc-spec-write | v2.4.0 | Automatique | Spécification |
+| 1 | 🖊️ | sdd-uc-spec-write | v2.5.0 | Automatique | Spécification |
 | 2 | 📐 | sdd-uc-system-design | v3.3.0 | Automatique | Conception technique |
 | 3 | 🗺️ | sdd-plan | v1.1.0 | `/sdd-plan` | Planification |
 | 4 | 🏗️ | sdd-dev-workflow | v2.3.0 | `/sdd-dev-workflow <lot>` | Développement |
