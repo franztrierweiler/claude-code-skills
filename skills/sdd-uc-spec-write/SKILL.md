@@ -573,8 +573,10 @@ Pour le workflow complet de création d'extension, consulte
 Même processus que pour un document racine (arborescence, puis UC par paquetage),
 avec deux différences :
 - Tous les identifiants portent le préfixe de l'extension (UC-ALR-001, RG-ALR-0001).
-- À chaque référence à un UC ou RG de la racine, mettre à jour la table
-  « Dépendances vers la spec racine ».
+- À chaque référence à un identifiant racine (UC, RG, ENF, IHM ou CA — sans préfixe),
+  mettre à jour la table « Dépendances vers la spec racine ». Inclure les
+  références citées dans les étapes, exceptions, RGs, IHMs et critères
+  d'acceptation, pas seulement dans les relations Include / Extend.
 
 **Étape 3 — Compléments :**
 
@@ -583,7 +585,7 @@ Objets participants et exigences non fonctionnelles spécifiques à la fonction
 
 **Étape 4 — Finalisation :**
 
-1. Vérifier que la table des dépendances est complète.
+1. **Passe de consolidation des dépendances** — scanner le document final pour chaque identifiant racine cité (sans préfixe : `UC-\d+`, `RG-\d+`, `ENF-\d+`, `IHM-\d+`, `CA-(UC|ENF)-\d+-\d+`), et vérifier qu'il figure dans la table « Dépendances vers la spec racine » avec sa nature de dépendance. Toute référence orpheline (citée dans le corps mais absente de la table) doit être ajoutée à la table avant livraison.
 2. Vérifier le glossaire fonction (pas de doublons avec la racine).
 3. Passer la checklist extension (voir `references/EXTENSION-WORKFLOW.md`).
 4. Passage de relais.
@@ -706,7 +708,7 @@ Avant de considérer la spec comme terminée, vérifie :
 - [ ] Le cartouche contient les 11 champs requis (dont Spec racine, UUID racine, Préfixe).
 - [ ] Le préfixe est unique (pas de collision avec une autre extension du projet).
 - [ ] Tous les identifiants de l'extension portent le préfixe.
-- [ ] La table « Dépendances vers la spec racine » est complète et à jour.
-- [ ] Les références aux UC/RG de la racine utilisent les identifiants sans préfixe.
+- [ ] La table « Dépendances vers la spec racine » est complète et à jour : couvre UC, RG, ENF, IHM et CA. Aucune référence racine orpheline (citée dans le corps mais absente de la table).
+- [ ] Les références aux UC/RG/ENF/IHM/CA de la racine utilisent les identifiants sans préfixe.
 - [ ] Le glossaire fonction ne duplique pas les termes du glossaire racine.
 - [ ] Les diagrammes Mermaid incluent les UC racine référencés (en pointillés).

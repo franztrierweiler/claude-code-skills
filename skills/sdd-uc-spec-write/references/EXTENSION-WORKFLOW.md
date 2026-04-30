@@ -75,15 +75,32 @@ Cette convention rend les références non ambiguës dans tout le projet.
 ## Table des dépendances
 
 La section « Dépendances vers la spec racine » est un tableau maintenu au fil
-de la rédaction. Chaque fois qu'un UC de l'extension fait un `include` ou
-`extend` vers un UC racine, ou qu'une étape référence une RG racine, ajouter
-une ligne à la table.
+de la rédaction. Elle couvre **tous les types d'identifiants** de la racine
+référencés par l'extension : UC, RG, ENF, IHM ou CA. Chaque fois qu'un élément
+de l'extension cite un identifiant racine — que ce soit dans une relation
+`include` / `extend`, dans une étape, une exception, une RG, une IHM, une
+contrainte non fonctionnelle ou un critère d'acceptation — ajouter une ligne
+à la table.
 
 | Colonne | Contenu |
 |---|---|
-| **Identifiant racine** | L'identifiant du UC ou RG racine (ex : UC-005) |
+| **Identifiant racine** | L'identifiant cité (ex : UC-005, RG-0341, ENF-002) |
 | **Intitulé** | Le titre ou l'énoncé court, pour lisibilité |
 | **Nature de la dépendance** | Include / Extend / Donnée en entrée / Prérequis / Réutilisée / Étendue |
+
+**Passe de consolidation finale (obligatoire avant livraison) :** scanner le
+document final pour chaque identifiant racine cité (sans préfixe d'extension)
+et vérifier qu'il figure dans la table avec sa nature de dépendance. Une
+référence orpheline (citée dans le corps mais absente de la table) est un bug
+de traçabilité — corriger en ajoutant la ligne manquante. Patrons à scanner :
+
+- `UC-\d+` (UC racine)
+- `RG-\d+` (RG racine)
+- `ENF-\d+` (ENF racine)
+- `IHM-\d+` (IHM racine)
+- `CA-(UC|ENF)-\d+-\d+` (CA racine)
+
+Sans préfixe d'extension dans aucun de ces patrons.
 
 Si aucune dépendance n'est identifiée, écrire « Aucune dépendance identifiée. »
 
@@ -117,8 +134,8 @@ Avant de livrer une extension, vérifier :
 - [ ] Le cartouche contient les 11 champs requis (dont Spec racine, UUID racine, Préfixe).
 - [ ] Le préfixe est unique (pas de collision avec une autre extension du projet).
 - [ ] Tous les identifiants de l'extension portent le préfixe.
-- [ ] La table « Dépendances vers la spec racine » est complète et à jour.
-- [ ] Les références aux UC/RG de la racine utilisent les identifiants sans préfixe.
+- [ ] La table « Dépendances vers la spec racine » est complète et à jour : couvre UC, RG, ENF, IHM et CA. Aucune référence racine orpheline (citée dans le corps mais absente de la table).
+- [ ] Les références aux UC/RG/ENF/IHM/CA de la racine utilisent les identifiants sans préfixe.
 - [ ] Le glossaire fonction ne duplique pas les termes du glossaire racine.
 - [ ] Les diagrammes Mermaid sont à jour et incluent les UC racine référencés.
 - [ ] Chaque UC a au moins un critère d'acceptation au format Soit/Quand/Alors.

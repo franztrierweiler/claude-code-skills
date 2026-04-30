@@ -62,14 +62,24 @@ et retire les commentaires HTML avant livraison.
 
 ## Dépendances vers la spec racine
 
-<!-- Table des UC et RG de la spec racine réutilisés ou étendus par cette extension.
-     Maintenir à jour au fil de la rédaction des UC.
+<!-- Table de TOUS les identifiants de la spec racine référencés par cette extension :
+     UC, RG, ENF, IHM ou CA. Inclure aussi bien les références dans les étapes des
+     UCs que dans les exceptions, RGs, IHMs, contraintes non fonctionnelles, et
+     critères d'acceptation. Maintenir à jour au fil de la rédaction.
+
+     ⚠️ Avant livraison, faire une PASSE DE CONSOLIDATION : scanner le document
+     final pour chaque identifiant racine (sans préfixe — UC-XXX, RG-XXXX, ENF-XXX,
+     IHM-XXX, CA-...) et vérifier qu'il figure dans cette table. Une référence
+     orpheline (citée dans le corps mais absente de la table) est un bug de
+     traçabilité.
+
      Si aucune dépendance : écrire "Aucune dépendance identifiée." -->
 
 | Identifiant racine | Intitulé | Nature de la dépendance |
 |---|---|---|
 | UC-XXX | [Intitulé du UC racine] | [Include / Extend / Donnée en entrée / Prérequis] |
 | RG-XXXX | [Énoncé court de la RG racine] | [Réutilisée / Étendue] |
+| ENF-XXX | [Titre de l'ENF racine] | [Réutilisée / Étendue] |
 
 ## Niveaux de support
 

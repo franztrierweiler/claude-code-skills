@@ -16,6 +16,7 @@ Ce projet utilise le [Semantic Versioning](https://semver.org/lang/fr/).
 - Vocabulaire : « package » → « paquetage » dans tout le skill et ses références
 - Nouvelle section optionnelle *Machines à états* dans les templates racine et extension : diagramme Mermaid + table des transitions (De / Vers / Déclencheur / Condition / RG-UC), pour centraliser les cycles de vie d'objets métier autrement éparpillés dans les RGs des UCs
 - Étape *Compléments* étendue : 4 sous-étapes (Machines à états → Objets participants → ENF → Rédaction finale)
+- Table des dépendances racine durcie : couvre désormais explicitement UC, RG, ENF, IHM et CA (et plus seulement UC/RG). Passe de consolidation finale obligatoire avant livraison d'une extension, pour détecter les références orphelines
 
 ### [2.0.0] — 2026-03-30
 
