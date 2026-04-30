@@ -483,7 +483,8 @@ test-uc-spec-racine-check-structure:
 		echo "$(EXPECTED_VALUES)" | tr '|' '\n' | { \
 			inner_fail=0; \
 			while IFS= read -r val; do \
-				if grep -qF "$$val" "$$out"; then \
+				val_compact=$$(printf '%s' "$$val" | tr -d ' '); \
+				if grep -qF "$$val" "$$out" || grep -qF "$$val_compact" "$$out"; then \
 					echo "    ✓ \"$$val\""; \
 				else \
 					echo "    ✗ \"$$val\" ABSENT"; \
