@@ -17,6 +17,7 @@ Ce projet utilise le [Semantic Versioning](https://semver.org/lang/fr/).
 - Nouvelle section optionnelle *Machines à états* dans les templates racine et extension : diagramme Mermaid + table des transitions (De / Vers / Déclencheur / Condition / RG-UC), pour centraliser les cycles de vie d'objets métier autrement éparpillés dans les RGs des UCs
 - Étape *Compléments* étendue : 4 sous-étapes (Machines à états → Objets participants → ENF → Rédaction finale)
 - Table des dépendances racine durcie : couvre désormais explicitement UC, RG, ENF, IHM et CA (et plus seulement UC/RG). Passe de consolidation finale obligatoire avant livraison d'une extension, pour détecter les références orphelines
+- Nouvelle section optionnelle *Phases de livraison* dans les templates racine et extension : pour chaque phase, périmètre (UCs en scope), livrable, dépendances. La liste des UCs par phase fait office de matrice de traçabilité UC ↔ Phase et alimente le découpage en lots aval (`/sdd-plan`). Étape *Compléments* étendue à 5 sous-étapes (racine) et 4 (extension)
 
 ### [2.0.0] — 2026-03-30
 

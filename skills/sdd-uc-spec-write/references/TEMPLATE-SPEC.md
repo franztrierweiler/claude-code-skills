@@ -206,6 +206,32 @@ stateDiagram-v2
 
 - [Énoncé d'un invariant respecté par toutes les transitions.]
 
+## Phases de livraison
+
+<!-- Supprimer cette section si le projet est livré en un seul incrément.
+     Pour chaque phase : périmètre (liste des UCs en scope), livrable (résultat
+     utilisateur observable à la fin de la phase) et dépendances (phase
+     prérequise ou ressource externe). La liste des UCs par phase fait office
+     de matrice de traçabilité UC ↔ Phase et alimente directement le découpage
+     en lots côté /sdd-plan. Couverture exigée : chaque UC du document doit
+     figurer dans exactement une phase. -->
+
+### Phase 1 — [Nom]
+
+**Périmètre :** UC-XXX, UC-YYY, UC-ZZZ.
+
+**Livrable :** [Résultat utilisateur observable à la fin de la phase, en une phrase.]
+
+**Dépendances :** [Aucune | Phase X | Ressource externe Y]
+
+### Phase 2 — [Nom]
+
+**Périmètre :** UC-XXX → UC-YYY.
+
+**Livrable :** [...]
+
+**Dépendances :** Phase 1.
+
 ## Objets participants
 
 <!-- Supprimer cette section si aucun objet participant n'est identifié globalement.

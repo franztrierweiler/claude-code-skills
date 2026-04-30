@@ -209,6 +209,27 @@ stateDiagram-v2
 
 - [Énoncé d'un invariant respecté par toutes les transitions.]
 
+## Phases de livraison
+
+<!-- Supprimer cette section si l'extension est livrée en un seul incrément
+     ou si elle s'intègre dans une phase de la spec racine sans découpage propre.
+
+     Cas 1 — Rattachement à une phase racine : remplacer cette section par
+     une ligne unique :
+     « Cette extension est livrée dans la Phase X de la spec racine. »
+
+     Cas 2 — L'extension a son propre découpage : utiliser la structure
+     ci-dessous, avec les UCs préfixés. Chaque UC de l'extension doit
+     figurer dans exactement une phase. -->
+
+### Phase 1 — [Nom]
+
+**Périmètre :** UC-[PFX]-XXX, UC-[PFX]-YYY.
+
+**Livrable :** [Résultat utilisateur observable, en une phrase.]
+
+**Dépendances :** [Phase racine X | Phase précédente de l'extension | Aucune]
+
 ## Objets participants
 
 <!-- Supprimer cette section si aucun objet spécifique à cette fonction.
