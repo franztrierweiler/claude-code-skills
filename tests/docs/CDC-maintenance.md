@@ -17,6 +17,7 @@
 | Responsable site | Humain | Représentant du site client. Valide les interventions terminées, signale des anomalies, consulte les rapports. |
 | GMAO | Système | Logiciel existant (IBM Maximo). Référentiel des équipements, historique de maintenance, contrats. MaintiX synchronise avec la GMAO mais ne la remplace pas. |
 | Capteurs machines | Système | Capteurs IoT installés sur les équipements critiques. Émettent des mesures (température, vibration, pression) via MQTT. Déclenchent des alertes si les seuils sont dépassés. |
+| Administrateur | Humain | Profil disposant des droits étendus de paramétrage. Gère les référentiels métier, les comptes utilisateurs et les rôles, et configure les politiques métier (seuils, routage, permis, SLA). N'intervient pas sur le terrain. |
 
 ## 3. Contraintes techniques
 
@@ -96,6 +97,58 @@ MaintiX ne remplace pas la GMAO. Elle s'interface avec elle. Le périmètre de l
 - **Synchroniser les OT** : job planifié toutes les 15 minutes. Lit les nouveaux OT et les modifications. Un OT importé peut être transformé en intervention par le dispatcher.
 - **Pousser les comptes-rendus** : à chaque validation d'intervention, le compte-rendu et les consommations sont envoyés à Maximo via son API REST.
 - **Gérer les erreurs de synchronisation** : si la GMAO est indisponible, les synchronisations sont mises en file d'attente et rejouées. Une alerte est émise au dispatcher après 3 échecs consécutifs.
+
+### Administration et configuration
+
+Module d'administration accessible aux profils administrateurs. Trois familles
+distinctes de paramétrage, chacune subdivisée en plusieurs domaines spécialisés.
+
+**Référentiels métier**
+
+*Catalogue d'équipements*
+
+- **Gérer les catégories d'équipements** : créer, modifier, archiver des catégories et leur arborescence de classification (ex : pompe → pompe centrifuge → pompe centrifuge inox). Une catégorie ne peut pas être supprimée si elle référence des équipements actifs.
+- **Importer un catalogue fournisseur** : import CSV des équipements et de leurs caractéristiques techniques, avec correspondance vers les catégories existantes. Les lignes en erreur sont rejetées avec un rapport téléchargeable.
+
+*Modèles documentaires*
+
+- **Gérer les modèles de comptes-rendus** : un gabarit par catégorie d'intervention (correctif, préventif, prédictif), avec champs obligatoires et optionnels paramétrables.
+- **Gérer les modèles de permis de travail** : trame réglementaire par classification ICPE et par site, incluant les rubriques obligatoires (consignation, EPI, points d'attention).
+
+**Sécurité et identité**
+
+*Comptes et rôles*
+
+- **Gérer les comptes utilisateurs** : créer, désactiver, mettre à jour. Chaque compte est rattaché à un site (ou plusieurs pour les profils transverses).
+- **Gérer les rôles applicatifs** : matrice rôle × permission. Quatre rôles prédéfinis (technicien, dispatcher, responsable site, administrateur), avec possibilité de créer des rôles dérivés.
+
+*Politiques d'authentification*
+
+- **Configurer la politique de mot de passe** : longueur minimale, complexité, expiration, historique des derniers mots de passe interdits.
+- **Configurer la politique MFA** : MFA obligatoire pour les profils administrateur, optionnel pour les autres rôles. Méthodes : TOTP, push.
+- **Configurer la durée de session** : par rôle, avec délai d'inactivité avant déconnexion automatique.
+
+*Audit et conformité d'accès*
+
+- **Consulter le journal d'audit** : événements d'accès et de modification de configuration, conservés 5 ans, recherchables par utilisateur, ressource, période.
+- **Exporter le rapport d'audit RGPD** : extraction sur période donnée, par utilisateur ou par site, au format CSV signé.
+
+**Politiques métier configurables**
+
+*Seuils et alertes capteurs*
+
+- **Configurer les seuils par type de mesure** : température, vibration, pression, par catégorie d'équipement, avec hystérésis pour éviter les rebonds d'alertes.
+- **Configurer les règles de routage des alertes** : routage vers un dispatcher de garde selon la criticité de l'équipement, le site et la plage horaire.
+
+*Permis et habilitations*
+
+- **Configurer les conditions du permis de travail** : par site et par catégorie d'équipement, avec dérogations encadrées (durée maximale, profil habilité à déroger).
+- **Configurer les compétences requises** : prérequis associés à une catégorie d'équipement, contrôlés à l'assignation d'une intervention.
+
+*SLA et engagements de service*
+
+- **Configurer les SLA de prise en charge** : par criticité (P1 4h, P2 24h, P3 planifié), par site contractuel, avec calcul automatique du délai cible.
+- **Configurer les seuils d'alerte SLA** : pré-alerte avant dépassement (75 %, 90 %), notification au dispatcher et au responsable site.
 
 ## 7. Machine à états — Intervention
 
