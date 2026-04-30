@@ -171,6 +171,34 @@ graph TD
 <!-- Pour chaque UC, reproduire la structure exacte définie dans references/UC-FORMAT.md,
      en utilisant les identifiants préfixés. -->
 
+## Machines à états
+
+<!-- Supprimer cette section si l'extension n'introduit aucun objet à cycle de
+     vie spécifique et n'étend pas la machine à états d'un objet de la racine.
+     Si l'extension étend une machine racine : reproduire uniquement le delta
+     (nouveaux états, nouvelles transitions) en référençant la machine racine.
+     Identifiants préfixés (RG-[PFX]-XXXX, UC-[PFX]-XXX) ; les RG/UC racine
+     restent sans préfixe. -->
+
+### Machine à états : [Nom de l'objet]
+
+```mermaid
+stateDiagram-v2
+    [*] --> ÉtatInitial : Créer
+    ÉtatInitial --> ÉtatSuivant : [Action]
+    ÉtatSuivant --> [*]
+```
+
+**Transitions autorisées :**
+
+| De | Vers | Déclencheur | Condition | RG / UC |
+|---|---|---|---|---|
+| ÉtatInitial | ÉtatSuivant | [Acteur fait quoi] | [Précondition] | RG-[PFX]-XXXX (UC-[PFX]-XXX) |
+
+**Invariants :**
+
+- [Énoncé d'un invariant respecté par toutes les transitions.]
+
 ## Objets participants
 
 <!-- Supprimer cette section si aucun objet spécifique à cette fonction.

@@ -14,6 +14,8 @@ Ce projet utilise le [Semantic Versioning](https://semver.org/lang/fr/).
 - Templates SPEC-racine et SPEC-extension refondus : section *Arborescence* éclatée en trois sous-sections, diagrammes Mermaid avec `subgraph` par paquetage
 - Glossaire : entrée *Package* remplacée par *Paquetage* avec règles structurelles
 - Vocabulaire : « package » → « paquetage » dans tout le skill et ses références
+- Nouvelle section optionnelle *Machines à états* dans les templates racine et extension : diagramme Mermaid + table des transitions (De / Vers / Déclencheur / Condition / RG-UC), pour centraliser les cycles de vie d'objets métier autrement éparpillés dans les RGs des UCs
+- Étape *Compléments* étendue : 4 sous-étapes (Machines à états → Objets participants → ENF → Rédaction finale)
 
 ### [2.0.0] — 2026-03-30
 

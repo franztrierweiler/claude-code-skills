@@ -334,7 +334,7 @@ La version affichée est celle indiquée dans l'en-tête du skill (actuellement 
 
 - Caractère plein : `█` — Caractère vide : `░`
 - Largeur fixe : 4 caractères pour Cadrage (4 sous-étapes), variable pour
-  Cas d'utilisation (1 caractère par paquetage racine), 3 caractères pour Compléments.
+  Cas d'utilisation (1 caractère par paquetage racine), 4 caractères pour Compléments.
 - La barre reflète la sous-étape en cours (incluse).
 
 **Découpage en sous-étapes (document racine) :**
@@ -343,7 +343,7 @@ La version affichée est celle indiquée dans l'en-tête du skill (actuellement 
 |-------|-------------|-------|
 | Cadrage | 1. Questions obligatoires · 2. Questions conditionnelles · 3. Diagramme de contexte · 4. Rédaction & validation sections initiales | 4 |
 | Cas d'utilisation | 1. Arborescence & diagramme global · puis 1 sous-étape par paquetage racine (nombre variable, noté N/M) | 1+M |
-| Compléments | 1. Objets participants · 2. Exigences non fonctionnelles · 3. Rédaction finale & passage de relais | 3 |
+| Compléments | 1. Machines à états · 2. Objets participants · 3. Exigences non fonctionnelles · 4. Rédaction finale & passage de relais | 4 |
 
 **Découpage en sous-étapes (extension) :**
 
@@ -351,7 +351,7 @@ La version affichée est celle indiquée dans l'en-tête du skill (actuellement 
 |-------|-------------|-------|
 | Cadrage fonction | 1. Identification fonction & préfixe · 2. Contexte & dépendances racine · 3. Diagramme de contexte fonction · 4. Rédaction & validation sections initiales | 4 |
 | Cas d'utilisation | 1. Arborescence & diagramme · puis 1 sous-étape par paquetage racine | 1+M |
-| Compléments | 1. Objets participants · 2. Exigences non fonctionnelles | 2 |
+| Compléments | 1. Machines à états · 2. Objets participants · 3. Exigences non fonctionnelles | 3 |
 | Finalisation | 1. Vérification table des dépendances · 2. Rédaction finale & passage de relais | 2 |
 
 **Exemples :**
@@ -361,7 +361,7 @@ La version affichée est celle indiquée dans l'en-tête du skill (actuellement 
 🖊️ skill:sdd-uc-spec-write v2.5.0 · Cadrage [████] 4/4 — Rédaction & validation
 🖊️ skill:sdd-uc-spec-write v2.5.0 · Cas d'utilisation [█░░░░] arborescence — Structure des paquetages
 🖊️ skill:sdd-uc-spec-write v2.5.0 · Cas d'utilisation [████░] paquetage 3/4 — Export
-🖊️ skill:sdd-uc-spec-write v2.5.0 · Compléments [███] 3/3 — Rédaction finale & passage de relais
+🖊️ skill:sdd-uc-spec-write v2.5.0 · Compléments [████] 4/4 — Rédaction finale & passage de relais
 ```
 
 **Cas particulier — Mise à jour d'une spec existante :**
@@ -472,11 +472,17 @@ les UCs) en complément.
 
 Une fois les UC principaux posés, aborde successivement :
 
-1. **Objets participants** : "Veux-tu documenter une liste d'objets métier identifiés
+1. **Machines à états** : "Y a-t-il un ou plusieurs objets métier dont le cycle
+   de vie passe par des états bien définis avec des transitions contraintes
+   (ex. intervention, commande, dossier, alerte) ? Si oui, je centralise le
+   diagramme et la table des transitions dans une section dédiée — sinon les
+   transitions restent éparpillées dans les RGs des UCs et un implémenteur
+   doit reconstituer le graphe lui-même."
+2. **Objets participants** : "Veux-tu documenter une liste d'objets métier identifiés
    (entités, agrégats) ? Tu peux aussi fournir des diagrammes d'objets."
-2. **Exigences non fonctionnelles** : "Y a-t-il des contraintes non fonctionnelles
+3. **Exigences non fonctionnelles** : "Y a-t-il des contraintes non fonctionnelles
    à documenter (performance, sécurité, fiabilité, portabilité, etc.) ?"
-3. **Passage de relais** — Voir section dédiée.
+4. **Passage de relais** — Voir section dédiée.
 
 ### Format de livraison
 
@@ -610,10 +616,11 @@ Le document racine suit cet ordre de sections. Le template complet est dans
 9. **Arborescence des cas d'utilisation** — Trois vues : carte d'ensemble (liste imbriquée), fiches paquetage (tableaux 2 colonnes), diagramme Mermaid avec `subgraph`. Voir `references/TEMPLATE-SPEC.md`.
 10. **Diagramme global des cas d'utilisation** — Mermaid avec `subgraph` par paquetage. Découper en diagrammes par paquetage racine si > 20 UC.
 11. **Cas d'utilisation détaillés** — Regroupés par paquetage. Format : voir `references/UC-FORMAT.md`.
-12. **Objets participants** (si applicable) — Entités métier, diagrammes d'objets/interaction.
-13. **Exigences non fonctionnelles** — ENF-XXX avec CA au format Soit/Quand/Alors.
-14. **Glossaire projet** — Termes spécifiques au domaine.
-15. **Glossaire SDD** — Vocabulaire méthodologique. Voir `references/GLOSSARY-SDD.md`.
+12. **Machines à états** (si applicable) — Pour chaque objet métier à cycle de vie significatif : diagramme Mermaid des états + tableau des transitions autorisées (De / Vers / Déclencheur / Condition / RG-UC). Centralise une information autrement éparpillée dans les RGs.
+13. **Objets participants** (si applicable) — Entités métier, diagrammes d'objets/interaction.
+14. **Exigences non fonctionnelles** — ENF-XXX avec CA au format Soit/Quand/Alors.
+15. **Glossaire projet** — Termes spécifiques au domaine.
+16. **Glossaire SDD** — Vocabulaire méthodologique. Voir `references/GLOSSARY-SDD.md`.
 
 ## Structure d'un document d'extension (SPEC-extension)
 
@@ -630,9 +637,10 @@ Le document d'extension suit cet ordre de sections. Le template complet est dans
 8. **Arborescence des cas d'utilisation** — Trois vues (carte d'ensemble, fiches paquetage, diagramme Mermaid) avec identifiants préfixés. Voir `references/TEMPLATE-SPEC-EXTENSION.md`.
 9. **Diagramme des cas d'utilisation** — Mermaid avec `subgraph` par paquetage de l'extension. UCs racine référencés en pointillés.
 10. **Cas d'utilisation détaillés** — Regroupés par paquetage. Identifiants préfixés. Format : voir `references/UC-FORMAT.md`.
-11. **Objets participants** (si applicable) — Spécifiques à la fonction.
-12. **Exigences non fonctionnelles** — ENF préfixées, spécifiques à la fonction.
-13. **Glossaire fonction** — Termes nouveaux uniquement.
+11. **Machines à états** (si applicable) — Si l'extension introduit un nouvel objet à cycle de vie ou étend une machine racine, documenter le delta (nouveaux états et transitions) avec identifiants préfixés. Les états et RGs racine restent référencés sans préfixe.
+12. **Objets participants** (si applicable) — Spécifiques à la fonction.
+13. **Exigences non fonctionnelles** — ENF préfixées, spécifiques à la fonction.
+14. **Glossaire fonction** — Termes nouveaux uniquement.
 
 ## Directives de rédaction
 
@@ -687,6 +695,7 @@ Avant de considérer la spec comme terminée, vérifie :
 - [ ] Les règles de gestion sont identifiées (RG-XXXX) et rattachées à une étape.
 - [ ] Les relations entre UC (include, extend) sont documentées.
 - [ ] Les diagrammes Mermaid des relations sont à jour.
+- [ ] Si un objet métier a un cycle de vie significatif, une section *Machines à états* est présente avec diagramme et table des transitions, et chaque transition est tracée vers une RG / un UC.
 - [ ] La section Hors périmètre est renseignée.
 - [ ] Les niveaux de support sont documentés (si applicable).
 - [ ] Les exigences non fonctionnelles pertinentes sont documentées.

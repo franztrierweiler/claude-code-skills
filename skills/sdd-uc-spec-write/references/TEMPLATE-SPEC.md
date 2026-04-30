@@ -177,6 +177,35 @@ graph TD
 
 <!-- Pour chaque UC, reproduire la structure exacte définie dans references/UC-FORMAT.md. -->
 
+## Machines à états
+
+<!-- Supprimer cette section si aucun objet métier n'a un cycle de vie significatif.
+     Pour chaque objet à cycle de vie : un diagramme Mermaid des états et un tableau
+     des transitions autorisées. La colonne « RG / UC » trace chaque transition vers
+     la règle de gestion et le UC qui la pilote, garantissant la cohérence avec
+     les UCs détaillés ci-dessus. Une transition non rattachée à au moins un UC est
+     un signal d'incomplétude. -->
+
+### Machine à états : [Nom de l'objet]
+
+```mermaid
+stateDiagram-v2
+    [*] --> ÉtatInitial : Créer
+    ÉtatInitial --> ÉtatSuivant : [Action]
+    ÉtatSuivant --> ÉtatFinal : [Action]
+    ÉtatFinal --> [*]
+```
+
+**Transitions autorisées :**
+
+| De | Vers | Déclencheur | Condition | RG / UC |
+|---|---|---|---|---|
+| ÉtatInitial | ÉtatSuivant | [Acteur fait quoi] | [Précondition vérifiable] | RG-XXXX (UC-XXX) |
+
+**Invariants :**
+
+- [Énoncé d'un invariant respecté par toutes les transitions.]
+
 ## Objets participants
 
 <!-- Supprimer cette section si aucun objet participant n'est identifié globalement.
