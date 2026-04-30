@@ -17,6 +17,9 @@
 #   make zip-check  — Affiche le contenu des ZIPs pour vérification
 #   make clean-dist — Supprime le répertoire dist/
 #
+# Tests — Chaîne complète :
+#   make test                                   Enchaîne génération + revues + contrôles déterministes (≈ 1h45)
+#
 # Tests — Génération (Claude) :
 #   make test-init                              Génère le CLAUDE.md
 #   make test-uc-spec-racine                    Produit le SPEC racine
@@ -93,6 +96,9 @@ help:
 	@echo "    make zip-all    Ajoute un ZIP global avec toutes les skills"
 	@echo "    make zip-check  Affiche le contenu des ZIPs"
 	@echo "    make clean-dist Supprime le répertoire dist/"
+	@echo ""
+	@echo "  Tests — Chaîne complète :"
+	@echo "    make test                                   Enchaîne génération + revues + contrôles déterministes (≈ 1h45)"
 	@echo ""
 	@echo "  Tests — Génération (Claude) :"
 	@echo "    make test-init                              Génère le CLAUDE.md"
