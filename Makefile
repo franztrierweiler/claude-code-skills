@@ -278,7 +278,7 @@ clean-dist:
 # =============================================================================
 
 # Valeurs métier qui doivent apparaître dans le SPEC racine (séparées par |)
-EXPECTED_VALUES := 15 min|4h|24h|10 ans|6 mois|2 ans|300ms|99,5%|200 techniciens|8 heures|30 secondes|10 secondes
+EXPECTED_VALUES := 15 min|4 h|24 h|10 ans|6 mois|2 ans|300 ms|99,5 %|200 techniciens|8 heures|30 secondes|10 secondes
 
 # Seuils minimaux d'identifiants dans le SPEC racine
 MIN_UC  := 10
@@ -480,14 +480,19 @@ test-uc-spec-racine-check-structure:
 			fi; \
 		done; \
 		echo "  Valeurs métier :"; \
-		echo "$(EXPECTED_VALUES)" | tr '|' '\n' | while IFS= read -r val; do \
-			if grep -q "$$val" "$$out"; then \
-				echo "    ✓ \"$$val\""; \
-			else \
-				echo "    ✗ \"$$val\" ABSENT"; \
-				fail=1; \
-			fi; \
-		done; \
+		echo "$(EXPECTED_VALUES)" | tr '|' '\n' | { \
+			inner_fail=0; \
+			while IFS= read -r val; do \
+				if grep -qF "$$val" "$$out"; then \
+					echo "    ✓ \"$$val\""; \
+				else \
+					echo "    ✗ \"$$val\" ABSENT"; \
+					inner_fail=1; \
+				fi; \
+			done; \
+			exit $$inner_fail; \
+		}; \
+		if [ $$? -ne 0 ]; then fail=1; fi; \
 	fi; \
 	echo ""; \
 	if [ "$$fail" -eq 0 ]; then \
