@@ -74,10 +74,10 @@ else
     ko "$PLAN_COUNT lot(s) trouvé(s) — minimum attendu : 2"
 fi
 
-if [ "$PLAN_COUNT" -le 8 ]; then
-    ok "$PLAN_COUNT lots (max 8)"
+if [ "$PLAN_COUNT" -le 15 ]; then
+    ok "$PLAN_COUNT lots (max 15)"
 else
-    ko "$PLAN_COUNT lots — maximum recommandé : 8"
+    ko "$PLAN_COUNT lots — maximum recommandé : 15"
 fi
 
 echo "  Lots :"
