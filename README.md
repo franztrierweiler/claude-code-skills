@@ -20,6 +20,18 @@ Les skills sont conformes au standard [agentskills.io](https://agentskills.io/ho
 
 Les skills auto-déclenchés (1-2) sont activés par Claude quand la demande correspond. Les skills invocables (3-7) ne se lancent que via `/nom-skill`.
 
+## Nouveautés v2.5.0 — avril 2026
+
+`sdd-uc-spec-write` est enrichi pour couvrir les projets d'envergure tout en restant lisible :
+
+- **Paquetages à profondeur variable** — l'arborescence des UC peut désormais aller jusqu'à 4 niveaux (3 recommandés), avec **enfants mixtes** (paquetages et UCs dans un même parent). Règle structurelle 7+10 (max 7 sous-paquetages par parent, max 10 UCs par paquetage feuille), inspirée de la loi de Miller et de la convergence des références UML (Fowler, Larman, Booch).
+- **Trois vues d'arborescence** complémentaires dans chaque spec : carte d'ensemble (liste imbriquée), fiches paquetage (tableau 2 colonnes), diagramme Mermaid avec `subgraph` par paquetage. Vue « 30 000 pieds » des paquetages seuls quand la spec dépasse 20 UCs.
+- **Section *Machines à états*** (optionnelle) : diagramme Mermaid `stateDiagram-v2` + table des transitions autorisées (De / Vers / Déclencheur / Condition / RG-UC). Centralise un cycle de vie d'objet métier autrement éparpillé dans les RGs.
+- **Section *Phases de livraison*** (optionnelle) : pour chaque phase, périmètre (liste des UCs en scope), livrable, dépendances. Sert aussi de matrice de traçabilité UC ↔ Phase pour le découpage en lots aval (`/sdd-plan`).
+- **Table des dépendances racine** durcie côté extensions : couvre désormais explicitement UC, RG, ENF, IHM et CA. Passe de consolidation finale obligatoire avant livraison pour détecter les références orphelines.
+
+Voir [`CHANGELOG.md`](CHANGELOG.md) pour le détail complet.
+
 ## Contenu
 
 | Répertoire | Rôle | Cible |
@@ -37,7 +49,9 @@ Rédige des spécifications SDD structurées par cas d'utilisation (UC).
 
 **Déclenchement :** demander une spec SDD par cas d'utilisation, fournir une spec existante à modifier, ou demander une extension fonctionnelle.
 
-**Processus :** 4 modes — création racine (3 étapes), reprise, modification, extension (4 étapes).
+**Processus :** 4 modes — création racine (3 étapes : Cadrage / Cas d'utilisation / Compléments), reprise, modification, extension (4 étapes).
+
+**Capacités v2.5.0 :** arborescence de paquetages à profondeur variable (jusqu'à 4 niveaux, recommandé 3) avec enfants mixtes ; trois vues complémentaires de l'arborescence (carte d'ensemble + fiches paquetage + Mermaid avec `subgraph`) ; sections optionnelles *Machines à états* et *Phases de livraison* ; matrice de traçabilité UC ↔ Phase pour le découpage en lots aval.
 
 **Produit :** `docs/SPEC-racine-<NomProjet>.md` ou `docs/SPEC-extension-<NomProjet>-<NomFonction>.md`.
 
